@@ -1,5 +1,9 @@
 {
     "compilerOptions": {
+        "typeRoots": [
+            "src/types"
+        ],
+        "declaration": true,
         "types": [
             "jest",
             "node"
@@ -22,5 +26,8 @@
     },
     "include": [
         "src/**/*",
-    ]
+    ],
+    "exclude": [
+        "node_modules"
+    ],
 }

@@ -7,7 +7,7 @@
 			"path": "server/backend/",
 			"group": "build",
 			"problemMatcher": [],
-			"label": "npm: build - server/backend",
+			"label": "tsc: build",
 			"detail": "tsc"
 		}
 	]
