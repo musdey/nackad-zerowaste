@@ -1,0 +1,22 @@
+{
+  products(first: 50) {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      cursor
+      node {
+        id
+        title
+        metafields(first: 10) {
+          edges {
+            node {
+              key
+              value
+            }
+          }
+        }
+      }
+    }
+  }
+}
