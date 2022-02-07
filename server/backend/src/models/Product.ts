@@ -27,5 +27,5 @@ const ProductSchema = new Schema(
   { strict: false, versionKey: false }
 )
 
-const User: Model<IProduct> = model('Product', ProductSchema)
-export default User
+const Product: Model<IProduct> = model('Product', ProductSchema)
+export default Product
