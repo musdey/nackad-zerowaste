@@ -5,7 +5,6 @@ import cors from 'cors'
 import * as dotenv from 'dotenv'
 import notFoundHandler from './middleware/not-found-handler'
 import errorHandler from './middleware/error-handler'
-import crypto from 'crypto'
 import connectDB from './lib/db/connect'
 import initalizeRoles from './lib/db/initalizeRoles'
 // import dbNotUp from './middleware/db-not-up'
@@ -46,5 +45,12 @@ app.use(
 app.use('/api/v1', routerV1)
 app.use(notFoundHandler())
 app.use(errorHandler())
+
+// async function dings() {
+//   console.log('dingsrunning')
+//   const users = await User.find()
+//   console.log(users)
+// }
+// dings()
 
 export default app

@@ -23,55 +23,40 @@ const verifyToken = (req: any, res: Response, next: NextFunction) => {
 }
 
 const isAdmin = async (req: any, res: Response, next: NextFunction) => {
-  const IUser = await User.findById(req.userId).exec()
-  if (!IUser) {
+  const user = await User.findById(req.userId).populate('role').exec()
+  if (!user) {
     res.status(500).send({ message: 'User not found!' })
     return
   }
 
-  if (IUser.role === 'ADMIN') {
+  if (user.role.name === 'ADMIN') {
     next()
   } else {
     res.status(403).send({ message: 'Require Admin Role!' })
   }
 }
-
-const isShopOwner = async (req: any, res: Response, next: NextFunction) => {
-  const IUser = await User.findById(req.userId).exec()
-  if (!IUser) {
-    res.status(500).send({ message: 'User not found!' })
-    return
-  }
-
-  if (IUser.role === 'SHOPOWNER') {
-    next()
-  } else {
-    res.status(403).send({ message: 'Require SHOPOWNER Role!' })
-  }
-}
-
 const isEmployee = async (req: any, res: Response, next: NextFunction) => {
-  const IUser = await User.findById(req.userId).exec()
-  if (!IUser) {
+  const user = await User.findById(req.userId).populate('role').exec()
+  if (!user) {
     res.status(500).send({ message: 'User not found!' })
     return
   }
 
-  if (IUser.role === 'SHOPOWNER' || IUser.role === 'EMPLOYEE') {
+  if (user.role.name === 'ADMIN' || user.role.name === 'EMPLOYEE') {
     next()
   } else {
-    res.status(403).send({ message: 'Require Moderator Role!' })
+    res.status(403).send({ message: 'Require Employee Role!' })
   }
 }
 
 const isCustomer = async (req: any, res: Response, next: NextFunction) => {
-  const IUser = await User.findById(req.userId).exec()
-  if (!IUser) {
+  const user = await User.findById(req.userId).populate('role').exec()
+  if (!user) {
     res.status(500).send({ message: 'User not found!' })
     return
   }
-
-  if (IUser.role === 'SHOPOWNER' || IUser.role === 'EMPLOYEE' || IUser.role === 'CUSTOMER') {
+  console.log(user.role.name)
+  if (user.role.name === 'ADMIN' || user.role.name === 'EMPLOYEE' || user.role.name === 'CUSTOMER') {
     next()
   } else {
     res.status(403).send({ message: 'Require Customer Role' })
@@ -81,7 +66,6 @@ const isCustomer = async (req: any, res: Response, next: NextFunction) => {
 const authJwt = {
   verifyToken,
   isAdmin,
-  isShopOwner,
   isEmployee,
   isCustomer
 }

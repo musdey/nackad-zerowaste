@@ -3,7 +3,10 @@ import { Document, Schema, Model, model } from 'mongoose'
 export interface IUser extends Document {
   // _id let it autogenerate by mongodb
   username?: string
-  role: string
+  role: {
+    name: string
+    _id: string
+  }
   password: string
   firstName: string
   lastName: string

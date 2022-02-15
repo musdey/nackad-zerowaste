@@ -15,11 +15,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/morgan": "^1.9.3",
     "@types/node": "^17.0.4",
     "@types/node-fetch": "^2.5.12",
+    "@types/nodemailer": "^6.4.4",
     "@types/shopify-buy": "^2.10.8",
     "@typescript-eslint/eslint-plugin": "^5.8.0",
     "@typescript-eslint/parser": "^5.8.0",
@@ -45,6 +47,7 @@
     "nodemailer": "^6.7.2",
     "shopify-buy": "^2.13.0",
     "shopify-graphql-client": "^0.0.26",
-    "shopify-graphql-node": "^0.0.0-semantic-release"
+    "shopify-graphql-node": "^0.0.0-semantic-release",
+    "validate": "^5.2.0"
   }
 }
