@@ -46,11 +46,4 @@ app.use('/api/v1', routerV1)
 app.use(notFoundHandler())
 app.use(errorHandler())
 
-// async function dings() {
-//   console.log('dingsrunning')
-//   const users = await User.find()
-//   console.log(users)
-// }
-// dings()
-
 export default app

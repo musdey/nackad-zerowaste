@@ -5,8 +5,6 @@ import Config from '../Config'
 // Verify incoming webhook.
 const checkVerification = (payload: Buffer, hmac: string) => {
   const genHash = crypto.createHmac('sha256', Config.webHooks.newOrder).update(payload).digest('base64')
-  console.log(hmac)
-  console.log(genHash)
   return genHash === hmac
 }
 
@@ -24,7 +22,7 @@ const verifyWebhook = async (req: any, res: Response, next: NextFunction) => {
 
   const data = req.body.toString()
 
-  console.log(`Verified webhook request. Shop: ${shop} Topic: ${topic} \n Payload: \n ${data}`)
+  console.log(`Verified webhook request. Shop: ${shop} Topic: ${topic}`)
 
   next()
 }
