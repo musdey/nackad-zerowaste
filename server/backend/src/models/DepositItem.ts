@@ -3,6 +3,7 @@ import { Document, Schema, Model, model } from 'mongoose'
 export interface IDepositItem extends Document {
   // _id let it autogenerate by mongodb
   type: string
+  productName: string
   amount: number
   returned: number
   returnDates: [
@@ -20,14 +21,19 @@ const DepositItemSchema = new Schema(
     type: {
       type: String
     },
+    productName: {
+      type: String
+    },
     amount: {
       type: Number
     },
     returned: {
-      type: Number
+      type: Number,
+      default: 0
     },
     returnDates: {
-      type: [Object]
+      type: [Object],
+      default: undefined
     },
     pricePerItem: {
       type: String

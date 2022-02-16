@@ -9,13 +9,18 @@ export interface IDeposit extends Document {
   status: DepositStatus
   depositItems: [IDepositItem]
   totalPrice: string
+  paidDeposit: string
 }
 
 const DepositSchema = new Schema(
   {
     // _id let it autogenerate by mongodb
-    id: {
+    totalPrice: {
       type: String
+    },
+    paidDeposit: {
+      type: String,
+      default: ''
     },
     status: {
       type: String,
@@ -27,11 +32,12 @@ const DepositSchema = new Schema(
       ref: 'Order',
       default: undefined
     },
-    depositItems: {
-      type: [Schema.Types.ObjectId],
-      ref: 'Deposit',
-      default: undefined
-    }
+    depositItems: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'DepositItem'
+      }
+    ]
   },
   { strict: false, versionKey: false }
 )
