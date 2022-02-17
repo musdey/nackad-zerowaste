@@ -1,0 +1,7 @@
+{
+  "name": "NackadDepositApp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
