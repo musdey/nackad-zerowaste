@@ -15,12 +15,15 @@ import Cancellation from '../types/cancellation'
 const createNewOrder: Handler = async (req: Request, res: Response, next: NextFunction) => {
   console.log('Congratulations, a new order has been made!')
   const newOrder = req.body as Order
+
+  // TODO: add delivery day and timeslot to newOrder!!
+
   const orderDatabase = await new OrderModel(newOrder).save()
   const shippingAddress = newOrder.shipping_address as Address
 
-  const user = await UserModel.findOne({ shopifyUserId: newOrder.customer?.id })
+  let user = await UserModel.findOne({ shopifyUserId: newOrder.customer?.id })
   if (!user) {
-    new UserModel({
+    user = await new UserModel({
       shopifyUserId: newOrder.customer?.id,
       email: newOrder.customer?.email,
       address: shippingAddress,
@@ -60,8 +63,13 @@ const createNewOrder: Handler = async (req: Request, res: Response, next: NextFu
     totalPrice / 100
   )
   // Create deposit object and fill with all data
-  await new DepositModel({ order: orderDatabase, depositItems: depositItemArr!, totalPrice: totalPriceString }).save()
-  await new DeliveryModel({ shopifyOrder: orderDatabase, shopifyOrderId: newOrder.id, address: shippingAddress }).save()
+  await new DepositModel({
+    customer: user._id,
+    order: orderDatabase,
+    depositItems: depositItemArr!,
+    totalPrice: totalPriceString
+  }).save()
+  await new DeliveryModel({ shopifyOrder: orderDatabase, address: shippingAddress }).save()
   return res.status(200).send('Public Content.')
 }
 

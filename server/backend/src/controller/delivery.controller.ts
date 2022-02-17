@@ -1,10 +1,36 @@
-import { Handler, NextFunction, Request, Response } from 'express'
-import DeliveryModel, { IDelivery } from '../models/Delivery'
+import DeliveryModel from '../models/Delivery'
 
-const showAllOpenOrders: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  const delivery = await DeliveryModel.find({ $or: [{ status: 'OPEN' }, { status: 'INDELIVERY' }] })
-
-  return res.status(200).send(delivery)
+const getAll = async () => {
+  const delivery = await DeliveryModel.find({})
+  return delivery
 }
 
-export { showAllOpenOrders }
+const getAllWithStatus = async (status: string) => {
+  const delivery = await DeliveryModel.find({ status })
+  return delivery
+}
+
+const getCurrent = async () => {
+  const delivery = await DeliveryModel.find({ $or: [{ status: 'OPEN' }, { status: 'INDELIVERY' }] })
+  return delivery
+}
+
+const getTodays = async () => {
+  const todayMorning = new Date()
+  todayMorning.setHours(0)
+  todayMorning.setMinutes(0)
+  const todayNight = Date.now()
+  todayMorning.setHours(23)
+  todayMorning.setMinutes(59)
+  const delivery = await DeliveryModel.find({
+    deliveryDay: {
+      $gte: todayMorning,
+      $lt: todayNight
+    }
+  }).populate('shopifyOrder')
+  return delivery
+}
+
+const deliverycontroller = { getAll, getAllWithStatus, getCurrent, getTodays }
+
+export default deliverycontroller

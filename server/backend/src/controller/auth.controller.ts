@@ -40,7 +40,7 @@ const signin: Handler = async (req: Request, res: Response, next: NextFunction) 
       return res.status(404).send({ message: 'User Not found.' })
     }
 
-    const passwordIsValid = bcrypt.compareSync(req.body.password, user.password)
+    const passwordIsValid = bcrypt.compareSync(req.body.password, user.password!)
 
     if (!passwordIsValid) {
       return res.status(401).send({
@@ -54,7 +54,7 @@ const signin: Handler = async (req: Request, res: Response, next: NextFunction) 
       return res.status(201).send({ message: 'OTP successfully created.' })
     }
     const token = jwt.sign({ id: user.id }, secret, {
-      expiresIn: 86400 // 24 hours
+      expiresIn: 2592000 // 60 * 60 * 24 * 30 // 1 month
     })
     // res.cookie('Token ', token, { httpOnly: true });
     const role = await Role.findById(user.role)
@@ -78,7 +78,7 @@ const requestOTP: Handler = async (req: Request, res: Response, next: NextFuncti
       return res.status(404).send({ message: 'User Not found.' })
     }
 
-    const passwordIsValid = bcrypt.compareSync(req.body.password, user.password)
+    const passwordIsValid = bcrypt.compareSync(req.body.password, user.password!)
 
     if (!passwordIsValid) {
       return res.status(401).send({
@@ -116,7 +116,7 @@ const signinWithOTP: Handler = async (req: Request, res: Response, next: NextFun
       return res.status(404).send({ message: 'User Not found.' })
     }
 
-    const passwordIsValid = bcrypt.compareSync(req.body.password, user.password)
+    const passwordIsValid = bcrypt.compareSync(req.body.password, user.password!)
 
     if (!passwordIsValid) {
       return res.status(401).send({

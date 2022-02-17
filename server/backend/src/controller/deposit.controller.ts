@@ -6,4 +6,5 @@ const getDepositsByCustomer: Handler = async (req: Request, res: Response, next:
   return res.status(200).send('Public Content.')
 }
 
-export { getDepositsByCustomer }
+const depositcontroller = { getDepositsByCustomer }
+export default depositcontroller
