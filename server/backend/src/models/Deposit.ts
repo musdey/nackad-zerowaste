@@ -2,9 +2,11 @@ import { Document, Schema, Model, model } from 'mongoose'
 import { DepositStatus } from '../types'
 import Order from '../types/order'
 import { IDepositItem } from './DepositItem'
+import { IUser } from './User'
 
 export interface IDeposit extends Document {
   // _id let it autogenerate by mongodb
+  customer: IUser
   order: Order
   status: DepositStatus
   depositItems: [IDepositItem]
@@ -15,6 +17,10 @@ export interface IDeposit extends Document {
 const DepositSchema = new Schema(
   {
     // _id let it autogenerate by mongodb
+    customer: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
+    },
     totalPrice: {
       type: String
     },
@@ -29,8 +35,7 @@ const DepositSchema = new Schema(
     },
     order: {
       type: Schema.Types.ObjectId,
-      ref: 'Order',
-      default: undefined
+      ref: 'Order'
     },
     depositItems: [
       {

@@ -4,20 +4,20 @@ import Role from './Role'
 
 export interface IUser extends Document {
   // _id let it autogenerate by mongodb
-  shopifyUserId: string
+  shopifyUserId?: string
   username?: string
   role: {
     name: string
     _id: string
   }
   address: Address
-  password: string
+  password?: string
   firstName: string
   lastName: string
   email: string
-  phoneNumber: string
-  emailIsVerified: boolean
-  otpActivated: boolean
+  phoneNumber?: string
+  emailIsVerified?: boolean
+  otpActivated?: boolean
 }
 
 const UserSchema = new Schema(

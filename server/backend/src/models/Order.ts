@@ -1,15 +1,19 @@
 import { Document, Schema, Model, model } from 'mongoose'
+import { IUser } from './User'
 
 export interface IOrder extends Document {
   // _id let it autogenerate by mongodb
-  id: string
+  user: IUser
+  deliveryDay: string
+  timeslot: string
 }
 
 const OrderSchema = new Schema(
   {
     // _id let it autogenerate by mongodb
-    id: {
-      type: String
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
     }
   },
   { strict: false, versionKey: false }

@@ -5,7 +5,6 @@ import Order from '../types/order'
 export interface IDelivery extends Document {
   // _id let it autogenerate by mongodb
   shopifyOrder: Order
-  shopifyOrderId: string
   status: string
   updates: [object]
   address: Address
@@ -14,9 +13,6 @@ export interface IDelivery extends Document {
 const DeliverySchema = new Schema(
   {
     // _id let it autogenerate by mongodb
-    shopifyOrderId: {
-      type: String
-    },
     shopifyOrder: {
       type: Schema.Types.ObjectId,
       ref: 'Order'
@@ -31,6 +27,12 @@ const DeliverySchema = new Schema(
       type: String,
       enum: ['OPEN', 'INDELIVERY', 'DELIVERED', 'CANCELLED'],
       default: 'OPEN'
+    },
+    deliveryDay: {
+      type: String
+    },
+    timeslot: {
+      type: String
     }
   },
   { strict: false, versionKey: false }

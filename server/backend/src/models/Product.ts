@@ -4,8 +4,9 @@ export interface IProduct extends Document {
   // _id let it autogenerate by mongodb
   shopifyId: string
   title: string
-  packaging: string
-  deposit: string
+  packaging?: string
+  deposit?: string
+  price: string
 }
 
 const ProductSchema = new Schema(
@@ -21,6 +22,9 @@ const ProductSchema = new Schema(
       type: String
     },
     deposit: {
+      type: String
+    },
+    price: {
       type: String
     }
   },

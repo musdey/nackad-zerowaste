@@ -1,8 +1,9 @@
 import { Document, Schema, Model, model } from 'mongoose'
+import { IDelivery } from './Delivery'
 
 export interface IDepositItem extends Document {
   // _id let it autogenerate by mongodb
-  type: string
+  type: string // Glas/Kiste etc..
   productName: string
   amount: number
   returned: number
@@ -10,6 +11,7 @@ export interface IDepositItem extends Document {
     {
       amount: number
       date: string
+      delivery: IDelivery
     }
   ]
   pricePerItem: string
@@ -18,6 +20,10 @@ export interface IDepositItem extends Document {
 const DepositItemSchema = new Schema(
   {
     // _id let it autogenerate by mongodb
+    deposit: {
+      type: Schema.Types.ObjectId,
+      ref: 'Deposit'
+    },
     type: {
       type: String
     },
@@ -31,10 +37,16 @@ const DepositItemSchema = new Schema(
       type: Number,
       default: 0
     },
-    returnDates: {
-      type: [Object],
-      default: undefined
-    },
+    returnDates: [
+      {
+        amount: Number,
+        date: String,
+        delivery: {
+          type: Schema.Types.ObjectId,
+          ref: 'Delivery'
+        }
+      }
+    ],
     pricePerItem: {
       type: String
     }
