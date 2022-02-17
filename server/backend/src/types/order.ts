@@ -1,4 +1,6 @@
 type Order = {
+  deliveryDay?: string
+  timeslot?: string
   id?: string
   email?: string
   closed_at?: string

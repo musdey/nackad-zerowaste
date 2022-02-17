@@ -1,15 +1,12 @@
 import { Document, Schema, Model, model } from 'mongoose'
 import Address from '../types/address'
-import Role from './Role'
+import Role, { IRole } from './Role'
 
 export interface IUser extends Document {
   // _id let it autogenerate by mongodb
   shopifyUserId?: string
   username?: string
-  role: {
-    name: string
-    _id: string
-  }
+  role: IRole
   address: Address
   password?: string
   firstName: string

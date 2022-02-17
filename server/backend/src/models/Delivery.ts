@@ -8,6 +8,8 @@ export interface IDelivery extends Document {
   status: string
   updates: [object]
   address: Address
+  deliveryDay: string
+  timeslot: string
 }
 
 const DeliverySchema = new Schema(

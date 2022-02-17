@@ -1,8 +1,8 @@
 import { Document, Schema, Model, model } from 'mongoose'
 
-interface IRole extends Document {
+export interface IRole extends Document {
   // _id let it autogenerate by mongodb
-  name: string
+  name: 'CUSTOMER' | 'EMPLOYEE' | 'ADMIN'
 }
 
 const RoleSchema = new Schema(
