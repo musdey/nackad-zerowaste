@@ -4,9 +4,6 @@ import {
     IonPage,
     IonButton,
     useIonRouter,
-    IonRow,
-    IonCol,
-    IonCardTitle,
     IonFooter,
     IonGrid,
     IonLabel,
@@ -18,7 +15,6 @@ import {
 import { useAuth } from "../lib/use-auth";
 import { Redirect } from "react-router";
 import { Header } from '../components/Header'
-import { sign } from "crypto";
 interface LoginProps { }
 
 const Login: React.FC<LoginProps> = () => {
@@ -30,7 +26,7 @@ const Login: React.FC<LoginProps> = () => {
     const [password, setPassword] = useState('')
 
     if (loggedIn) {
-        const url = '/dashboard'
+        const url = '/overview'
         return <Redirect to={url} />
     }
 
@@ -41,7 +37,7 @@ const Login: React.FC<LoginProps> = () => {
 
     return (
         <IonPage>
-            <Header />
+            <Header subTitle="Login" />
             <IonContent fullscreen>
                 <IonCard>
                     <IonItem>

@@ -2,9 +2,8 @@ import {
   IonItem,
   IonLabel,
   IonNote
-  } from '@ionic/react';
+} from '@ionic/react';
 import { Message } from '../data/messages';
-import './MessageListItem.css';
 
 interface MessageListItemProps {
   message: Message;
