@@ -22,7 +22,7 @@ const createSettings = async function () {
       thursday: '15:00-20:00',
       friday: '15:00-20:00',
       saturday: '15:00-20:00',
-      sunday: '15:00-20:00'
+      sunday: 'closed'
     }
   })
   try {

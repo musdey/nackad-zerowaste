@@ -6,12 +6,12 @@ const UserValidator: Validator = new Validator({
   // username: {
   //   type: String
   // },
-  // firstName: {
-  //   type: String
-  // },
-  // lastName: {
-  //   type: String
-  // },
+  firstName: {
+    type: String
+  },
+  lastName: {
+    type: String
+  },
   password: {
     type: String,
     required: true
@@ -19,7 +19,7 @@ const UserValidator: Validator = new Validator({
   email: {
     type: String,
     required: true
-  },
+  }
   // phoneNumber: {
   //   type: String
   // }
@@ -48,8 +48,4 @@ const getValidationErrorData = function (validationResult: ValidationError[]): s
   return 'InputValidationError'
 }
 
-export {
-  LoginValidator,
-  UserValidator,
-  getValidationErrorData
-}
+export { LoginValidator, UserValidator, getValidationErrorData }

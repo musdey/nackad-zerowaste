@@ -10,7 +10,7 @@ export interface IDepositItem extends Document {
   returnDates: [
     {
       amount: number
-      date: string
+      date: Date
       delivery: IDelivery
     }
   ]
@@ -40,7 +40,7 @@ const DepositItemSchema = new Schema(
     returnDates: [
       {
         amount: Number,
-        date: String,
+        date: Date,
         delivery: {
           type: Schema.Types.ObjectId,
           ref: 'Delivery'

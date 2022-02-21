@@ -4,7 +4,7 @@ import { IUser } from './User'
 export interface IOrder extends Document {
   // _id let it autogenerate by mongodb
   user: IUser
-  deliveryDay: string
+  deliveryDay: Date
   timeslot: string
 }
 

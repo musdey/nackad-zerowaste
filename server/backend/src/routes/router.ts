@@ -5,10 +5,11 @@ import verifyBody from '../middleware/verifyBody'
 import verifySignUp from '../middleware/verifySignup'
 import authJwt from '../middleware/authJwt'
 import { signup, signin, signinWithOTP, requestOTP } from '../controller/auth.controller'
-import { updateUserRoleHandler, getAllUsersHandler, getUserHandler } from '../handler/user.handler'
+import userHandler from '../handler/user.handler'
 import deliveryHandler from '../handler/delivery.handler'
 import webhookRouter from './webhooks'
 import { getSettingsHandler, updateSettingsHandler } from '../handler/settings.handler'
+import deliverySlotHandler from '../handler/deliverySlots.handler'
 const router = express.Router()
 
 router.post('*', verifyBody)
@@ -16,14 +17,21 @@ router.post('*', verifyBody)
 // User Management
 router.post('/auth/signup', verifySignUp.checkDuplicateUsernameOrEmail, signup)
 router.post('/auth/signin', signin)
-router.post('/auth/updateUserRole', [authJwt.verifyToken, authJwt.isAdmin], updateUserRoleHandler)
-router.get('/user/all', [authJwt.verifyToken, authJwt.isAdmin], getAllUsersHandler)
-router.get('/user', [authJwt.verifyToken, authJwt.isCustomer], getUserHandler)
+router.post('/auth/updateUserRole', [authJwt.verifyToken, authJwt.isAdmin], userHandler.updateUserRole)
+router.get('/user/all', [authJwt.verifyToken, authJwt.isAdmin], userHandler.getAll)
+router.get('/user', [authJwt.verifyToken, authJwt.isCustomer], userHandler.getSelf)
+router.post('/user/search', [authJwt.verifyToken, authJwt.isEmployee], userHandler.searchUser)
+// router.post('/user/update)
 
 // Open routes
 router.get('/settings', getSettingsHandler)
+router.get('/deliveryslots', deliverySlotHandler.getAllPublic)
+
 // Delivery Management ACHTUNG EMPLOYEE
 router.get('/delivery/open', deliveryHandler.getCurrentOpenDeliveries)
+router.get('/deliveryslots/detail', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.getAllManagement)
+router.post('/deliveryslot/add', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.addSlot)
+router.post('/deliveryslot/remove', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.removeSlot)
 
 // Shopify Webhooks & Product Database
 router.get('/update-products', updateProducts)

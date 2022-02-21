@@ -19,7 +19,9 @@ const signup: Handler = async (req: Request, res: Response, next: NextFunction) 
 
     const user = new User({
       email: req.body.email,
-      password: bcrypt.hashSync(req.body.password, 8)
+      password: bcrypt.hashSync(req.body.password, 8),
+      firstName: req.body.firstName,
+      lastName: req.body.lastName
     })
 
     const createdUser = await user.save()
@@ -53,7 +55,7 @@ const signin: Handler = async (req: Request, res: Response, next: NextFunction) 
       await createAndDeliverOTP(user)
       return res.status(201).send({ message: 'OTP successfully created.' })
     }
-    const token = jwt.sign({ id: user.id }, secret, {
+    const token = jwt.sign({ id: user._id }, secret, {
       expiresIn: 2592000 // 60 * 60 * 24 * 30 // 1 month
     })
     // res.cookie('Token ', token, { httpOnly: true });

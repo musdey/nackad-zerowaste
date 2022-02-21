@@ -1,4 +1,4 @@
-import { Document, Schema, Model, model } from 'mongoose'
+import { Document, Schema, Model, model, Date } from 'mongoose'
 import Address from '../types/address'
 import Order from '../types/order'
 
@@ -8,7 +8,7 @@ export interface IDelivery extends Document {
   status: string
   updates: [object]
   address: Address
-  deliveryDay: string
+  deliveryDay: Date
   timeslot: string
 }
 
@@ -31,7 +31,7 @@ const DeliverySchema = new Schema(
       default: 'OPEN'
     },
     deliveryDay: {
-      type: String
+      type: Date
     },
     timeslot: {
       type: String

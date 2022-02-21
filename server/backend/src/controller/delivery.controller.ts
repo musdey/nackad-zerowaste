@@ -31,6 +31,6 @@ const getTodays = async () => {
   return delivery
 }
 
-const deliverycontroller = { getAll, getAllWithStatus, getCurrent, getTodays }
+const deliveryController = { getAll, getAllWithStatus, getCurrent, getTodays }
 
-export default deliverycontroller
+export default deliveryController

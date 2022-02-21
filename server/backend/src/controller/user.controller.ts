@@ -16,10 +16,23 @@ const getAll = async () => {
   return users
 }
 
-const getOne = async (email: string) => {
-  const user = await User.findOne({ email }).populate({ path: 'role', select: 'name -_id' })
+const getOne = async (userId: string) => {
+  const user = await User.findOne({ _id: userId }).populate({ path: 'role', select: 'name -_id' }).select('-password')
   return user
 }
 
-const usercontroller = { updateRole, getAll, getOne }
+const searchUser = async (searchString: string) => {
+  const user = await User.find({
+    $or: [
+      { firstName: { $regex: '(?i)' + searchString } },
+      { lastName: { $regex: '(?i)' + searchString } },
+      { email: { $regex: '(?i)' + searchString } }
+    ]
+  })
+    .populate({ path: 'role', select: 'name -_id' })
+    .select('-password')
+  return user
+}
+
+const usercontroller = { updateRole, getAll, getOne, searchUser }
 export default usercontroller

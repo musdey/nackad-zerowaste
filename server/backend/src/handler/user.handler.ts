@@ -1,7 +1,7 @@
 import { Handler, NextFunction, Request, Response } from 'express'
 import usercontroller from '../controller/user.controller'
 
-const updateUserRoleHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
+const updateUserRole: Handler = async (req: Request, res: Response, next: NextFunction) => {
   // TODO: do input validation
 
   const email = req.body.email
@@ -20,7 +20,7 @@ const updateUserRoleHandler: Handler = async (req: Request, res: Response, next:
   }
 }
 
-const getAllUsersHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
+const getAll: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const users = await usercontroller.getAll()
     return res.status(200).send(users)
@@ -29,15 +29,28 @@ const getAllUsersHandler: Handler = async (req: Request, res: Response, next: Ne
   }
 }
 
-const getUserHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  // TODO: Do input validation
-  const email = req.body.email
+const getSelf: Handler = async (req: Request & { userId?: string }, res: Response, next: NextFunction) => {
   try {
-    const user = usercontroller.getOne(email)
+    const user = await usercontroller.getOne(req.userId!)
     return res.status(200).send(user)
   } catch (err) {
     return next(err)
   }
 }
 
-export { updateUserRoleHandler, getAllUsersHandler, getUserHandler }
+const searchUser: Handler = async (req: Request & { userId?: string }, res: Response, next: NextFunction) => {
+  const searchString = req.body.searchString
+
+  if (!searchString) {
+    return res.status(404).send({ message: 'Role not set.' })
+  }
+  try {
+    const user = await usercontroller.searchUser(searchString)
+    return res.status(200).send(user)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+const userHandler = { updateUserRole, getAll, getSelf, searchUser }
+export default userHandler

@@ -3,27 +3,28 @@ import { IDelivery } from './Delivery'
 import { IUser } from './User'
 export interface IDeliverySlot extends Document {
   // _id let it autogenerate by mongodb
-  deliveryDay: string
+  deliveryDay: Date
   slotHours: string
-  delivery: [IDelivery]
+  deliveries?: [IDelivery]
+  maxSlotSize: number
   available: number
-  lastUpdatedFrom: [{ date: string; user: IUser }]
+  lastUpdatedFrom: [{ date: Date; user: IUser }]
 }
 
 const DeliverySlotSchema = new Schema(
   {
     // _id let it autogenerate by mongodb
     deliveryDay: {
-      type: String
+      type: Date
     },
     slotHours: {
       type: String
     },
-    delivery: {
+    deliveries: {
       type: [Schema.Types.ObjectId],
       ref: 'Delivery'
     },
-    available: {
+    maxSlotSize: {
       type: Number,
       default: 2
     },
@@ -31,7 +32,7 @@ const DeliverySlotSchema = new Schema(
       type: [
         {
           date: {
-            type: String
+            type: Date
           },
           user: {
             type: Schema.Types.ObjectId,

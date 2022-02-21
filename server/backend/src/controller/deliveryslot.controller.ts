@@ -1,17 +1,44 @@
 /* eslint-disable prefer-const */
 import DeliverySlotModel from '../models/DeliverySlots'
-import ShopSettings, { IShopSettings } from '../models/ShopSettings'
+import ShopSettings from '../models/ShopSettings'
+import User from '../models/User'
 
-const getDeliverySlots = async () => {
+const getDeliverySlotsPublic = async () => {
   const todayMorning = new Date()
   todayMorning.setHours(0)
   todayMorning.setMinutes(0)
-  const deliverySlotsOfNextThreeDays = await DeliverySlotModel.find({
+  todayMorning.setSeconds(0)
+  const deliverySlots = await DeliverySlotModel.find({
+    deliveryDay: {
+      $gte: todayMorning
+    }
+  }).select('-_id -lastUpdatedFrom')
+
+  let newArr: object[] = []
+
+  deliverySlots.forEach((data) => {
+    const newObj = {
+      deliveryDay: data.deliveryDay,
+      slotHours: data.slotHours,
+      maxSlotSize: data.maxSlotSize,
+      available: data.maxSlotSize - data.deliveries!.length
+    }
+    newArr.push(newObj)
+  })
+  return newArr
+}
+
+const getDeliverySlotsManagement = async () => {
+  const todayMorning = new Date()
+  todayMorning.setHours(0)
+  todayMorning.setMinutes(0)
+  todayMorning.setSeconds(0)
+  const deliverySlots = await DeliverySlotModel.find({
     deliveryDay: {
       $gte: todayMorning
     }
   })
-  return deliverySlotsOfNextThreeDays
+  return deliverySlots
 }
 
 const createDeliverySlots = async () => {
@@ -27,10 +54,8 @@ const createDeliverySlots = async () => {
   let today = new Date().getDay() // 0-6
   let currentDayMorning = new Date()
   let currentDayNight = new Date()
-  currentDayMorning.setHours(0)
-  currentDayMorning.setMinutes(0)
-  currentDayNight.setHours(23)
-  currentDayNight.setMinutes(59)
+  currentDayMorning.setHours(2, 0, 0)
+  currentDayNight.setHours(22, 0, 0)
   console.log('today  ', today)
   for (let i = 0; i < 3; i++) {
     let hoursString
@@ -75,7 +100,7 @@ const createDeliverySlots = async () => {
         while (from != to) {
           const toSlot = from + 1
           new DeliverySlotModel({
-            deliveryDay: currentDayMorning,
+            deliveryDay: new Date(currentDayMorning).setHours(12, 0, 0),
             slotHours: `${from}:00-${toSlot}:00`
           }).save()
           from++
@@ -94,7 +119,38 @@ const createDeliverySlots = async () => {
   return 'ok'
 }
 
-// const updateDeliverySlot = async () => {}
+const updateSlot = async (deliverySlotId: string, userId: string, type: 'ADD' | 'REMOVE') => {
+  const slot = await DeliverySlotModel.findOne({
+    _id: {
+      $eq: deliverySlotId
+    }
+  })
+  if (!slot) {
+    throw new Error('No open slots to remove.')
+  } else {
+    if (type == 'ADD') {
+      slot.maxSlotSize = slot.maxSlotSize + 1
+    } else {
+      if (slot.maxSlotSize <= slot.deliveries!.length || slot.maxSlotSize <= 2) {
+        throw new Error('No open slots to remove.')
+      } else {
+        slot.maxSlotSize = slot.maxSlotSize - 1
+      }
+    }
+    const user = await User.findById({ _id: userId }).select('-role -password')
+    if (user) {
+      slot.lastUpdatedFrom.push({ date: new Date(), user: user })
+    }
+    await slot.save()
 
-const deliverySlotController = { createDeliverySlots }
+    return slot
+  }
+}
+
+const deliverySlotController = {
+  createDeliverySlots,
+  getDeliverySlotsManagement,
+  getDeliverySlotsPublic,
+  updateSlot
+}
 export default deliverySlotController
