@@ -4,13 +4,9 @@ import ShopSettings from '../models/ShopSettings'
 import User from '../models/User'
 
 const getDeliverySlotsPublic = async () => {
-  const todayMorning = new Date()
-  todayMorning.setHours(0)
-  todayMorning.setMinutes(0)
-  todayMorning.setSeconds(0)
   const deliverySlots = await DeliverySlotModel.find({
     deliveryDay: {
-      $gte: todayMorning
+      $gt: new Date()
     }
   }).select('-_id -lastUpdatedFrom')
 
@@ -29,13 +25,9 @@ const getDeliverySlotsPublic = async () => {
 }
 
 const getDeliverySlotsManagement = async () => {
-  const todayMorning = new Date()
-  todayMorning.setHours(0)
-  todayMorning.setMinutes(0)
-  todayMorning.setSeconds(0)
   const deliverySlots = await DeliverySlotModel.find({
     deliveryDay: {
-      $gte: todayMorning
+      $gte: new Date()
     }
   })
   return deliverySlots
@@ -100,7 +92,7 @@ const createDeliverySlots = async () => {
         while (from != to) {
           const toSlot = from + 1
           new DeliverySlotModel({
-            deliveryDay: new Date(currentDayMorning).setHours(12, 0, 0),
+            deliveryDay: new Date(currentDayMorning).setHours(from, 0, 0),
             slotHours: `${from}:00-${toSlot}:00`
           }).save()
           from++

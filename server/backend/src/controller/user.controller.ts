@@ -1,18 +1,28 @@
 import Role from '../models/Role'
 import User from '../models/User'
 
-const updateRole = async (email: string, newRole: string) => {
-  const user = await User.findOne({ email: email })
+const updateRole = async (userId: string, newRole: string) => {
+  const user = await User.findOne({ _id: userId })
   const role = await Role.findOne({ name: newRole })
   if (!user) {
     throw new Error('User Not found.')
   }
   user.role = role!
-  await user.save()
+  const newUser = await user.save()
+  return newUser
+}
+
+const getUserByRole = async (desiredRole: string) => {
+  const role = await Role.findOne({ name: desiredRole })
+  const user = await User.find({ role: role }).select('-password -role')
+  if (!user) {
+    throw new Error('No users found.')
+  }
+  return user
 }
 
 const getAll = async () => {
-  const users = await User.find().populate({ path: 'role', select: 'name -_id' }).select('-password -_id')
+  const users = await User.find().populate({ path: 'role', select: 'name -_id' }).select('-password')
   return users
 }
 
@@ -34,5 +44,5 @@ const searchUser = async (searchString: string) => {
   return user
 }
 
-const usercontroller = { updateRole, getAll, getOne, searchUser }
+const usercontroller = { updateRole, getAll, getOne, searchUser, getUserByRole }
 export default usercontroller

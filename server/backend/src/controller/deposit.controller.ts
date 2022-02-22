@@ -1,10 +1,28 @@
-import { Handler, NextFunction, Request, Response } from 'express'
-import DepositItemModel from '../models/DepositItem'
+import DepositModel from '../models/Deposit'
+import User from '../models/User'
 
-const getDepositsByCustomer: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  //const openDeposits = await DepositItemModel.find({shopifyOrder:})
-  return res.status(200).send('Public Content.')
+const getDepositByUserId = async (userId: string) => {
+  const customer = await User.findOne({ _id: userId })
+  if (!customer) {
+    throw new Error('User not found.')
+  }
+  const deposits = await DepositModel.find({ customer: customer }).populate('depositItems')
+  return deposits
 }
 
-const depositcontroller = { getDepositsByCustomer }
+const getDepositByShopifyId = async (userId: string) => {
+  const customer = await User.findOne({ shopifyUserId: userId })
+  if (!customer) {
+    throw new Error('User not found.')
+  }
+  const deposits = await DepositModel.find({ customer: customer }).populate('depositItems').select('-customer ')
+  return deposits
+}
+
+const getDepositById = async (depositId: string) => {
+  const deposits = await DepositModel.find({ _id: depositId })
+  return deposits
+}
+
+const depositcontroller = { getDepositByUserId, getDepositById, getDepositByShopifyId }
 export default depositcontroller

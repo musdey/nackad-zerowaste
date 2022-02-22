@@ -1,6 +1,7 @@
 import { Document, Schema, Model, model, Date } from 'mongoose'
 import Address from '../types/address'
 import Order from '../types/order'
+import { IDeliverySlot } from './DeliverySlots'
 
 export interface IDelivery extends Document {
   // _id let it autogenerate by mongodb
@@ -8,8 +9,7 @@ export interface IDelivery extends Document {
   status: string
   updates: [object]
   address: Address
-  deliveryDay: Date
-  timeslot: string
+  deliverySlot: IDeliverySlot
 }
 
 const DeliverySchema = new Schema(
@@ -30,11 +30,9 @@ const DeliverySchema = new Schema(
       enum: ['OPEN', 'INDELIVERY', 'DELIVERED', 'CANCELLED'],
       default: 'OPEN'
     },
-    deliveryDay: {
-      type: Date
-    },
-    timeslot: {
-      type: String
+    deliverySlot: {
+      type: Schema.Types.ObjectId,
+      ref: 'Deliveryslot'
     }
   },
   { strict: false, versionKey: false }

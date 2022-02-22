@@ -4,7 +4,7 @@ import usercontroller from '../controller/user.controller'
 const updateUserRole: Handler = async (req: Request, res: Response, next: NextFunction) => {
   // TODO: do input validation
 
-  const email = req.body.email
+  const userId = req.body.userId
   const newRole = req.body.role
 
   if (!newRole || !(newRole == 'ADMIN' || newRole == 'EMPLOYEE' || newRole == 'CUSTOMER')) {
@@ -12,9 +12,9 @@ const updateUserRole: Handler = async (req: Request, res: Response, next: NextFu
   }
 
   try {
-    await usercontroller.updateRole(email, newRole)
+    const user = await usercontroller.updateRole(userId, newRole)
 
-    return res.status(200).send('User role update successfully. ' + email + ' is now a ' + newRole)
+    return res.status(200).send('User role update successfully. ' + user.email + ' is now a ' + newRole)
   } catch (err) {
     return next(err)
   }
@@ -52,5 +52,25 @@ const searchUser: Handler = async (req: Request & { userId?: string }, res: Resp
   }
 }
 
-const userHandler = { updateUserRole, getAll, getSelf, searchUser }
+const getEmployees: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await usercontroller.getUserByRole('EMPLOYEE')
+
+    return res.status(200).send(user)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+const getAdmins: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const user = await usercontroller.getUserByRole('ADMIN')
+
+    return res.status(200).send(user)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+const userHandler = { updateUserRole, getAll, getSelf, searchUser, getEmployees, getAdmins }
 export default userHandler

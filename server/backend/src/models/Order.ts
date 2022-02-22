@@ -6,6 +6,13 @@ export interface IOrder extends Document {
   user: IUser
   deliveryDay: Date
   timeslot: string
+  created_at: Date
+  note_attributes: [
+    {
+      name: string
+      value: string
+    }
+  ]
 }
 
 const OrderSchema = new Schema(
@@ -14,6 +21,9 @@ const OrderSchema = new Schema(
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User'
+    },
+    created_at: {
+      type: Date
     }
   },
   { strict: false, versionKey: false }

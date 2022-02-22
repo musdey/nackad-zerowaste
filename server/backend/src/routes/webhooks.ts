@@ -1,8 +1,8 @@
 import express from 'express'
-import { createNewOrder, orderCancelled, orderUpdates } from '../controller/orders.controller'
+import orderHandler from '../handler/orders.handler'
 
 const webhookRouter = express.Router()
-webhookRouter.post('/new-order', createNewOrder)
-webhookRouter.post('/order-updates', orderUpdates)
-webhookRouter.post('/order-cancelled', orderCancelled)
+webhookRouter.post('/new-order', orderHandler.createNewOrder)
+webhookRouter.post('/order-updates', orderHandler.orderUpdates)
+webhookRouter.post('/order-cancelled', orderHandler.orderCancelled)
 export default webhookRouter

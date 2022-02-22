@@ -1,43 +1,51 @@
 import { Handler, NextFunction, Request, Response } from 'express'
-import usercontroller from '../controller/user.controller'
+import depositcontroller from '../controller/deposit.controller'
 
-const updateUserRoleHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  // TODO: do input validation
-
-  const email = req.body.email
-  const newRole = req.body.role
-
-  if (!newRole || !(newRole == 'ADMIN' || newRole == 'EMPLOYEE' || newRole == 'CUSTOMER')) {
-    return res.status(404).send({ message: 'Role not set.' })
+const getDepositById: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  const depositId = req.params.id
+  if (!depositId) {
+    return res.status(404).send('DepositId missing')
   }
 
   try {
-    await usercontroller.updateRole(email, newRole)
-
-    return res.status(200).send('User role update successfully. ' + email + ' is now a ' + newRole)
-  } catch (err) {
-    return next(err)
-  }
-}
-
-const getAllUsersHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const users = await usercontroller.getAll()
+    const users = await depositcontroller.getDepositById(depositId)
     return res.status(200).send(users)
   } catch (err) {
     return next(err)
   }
 }
 
-const getUserHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
+const getDepositByUserId: Handler = async (req: Request, res: Response, next: NextFunction) => {
   // TODO: Do input validation
-  const email = req.body.email
+
+  const userId = req.params.id
+  if (!userId) {
+    return res.status(404).send('Userid missing')
+  }
+
   try {
-    const user = usercontroller.getOne(email)
-    return res.status(200).send(user)
+    const deposit = await depositcontroller.getDepositByUserId(userId)
+    return res.status(200).send(deposit)
   } catch (err) {
     return next(err)
   }
 }
 
-export { updateUserRoleHandler, getAllUsersHandler, getUserHandler }
+const getDepositByShopifyId: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  // TODO: Do input validation
+
+  const shopifyUserId = req.params.shopifyUserId
+  if (!shopifyUserId) {
+    return res.status(404).send('Userid missing')
+  }
+
+  try {
+    const deposit = await depositcontroller.getDepositByShopifyId(shopifyUserId)
+    return res.status(200).send(deposit)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+const depositHandler = { getDepositByUserId, getDepositById, getDepositByShopifyId }
+export default depositHandler

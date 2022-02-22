@@ -1,5 +1,5 @@
 type Order = {
-  deliveryDay?: string
+  deliveryDay?: Date
   timeslot?: string
   id?: string
   email?: string
@@ -56,7 +56,7 @@ type Order = {
     }
   ]
   discount_codes?: []
-  note_attributes?: []
+  note_attributes?: [{ name: string; value: string }]
   payment_gateway_names?: [string]
   processing_method?: string
   checkout_id?: string
