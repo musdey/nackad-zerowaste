@@ -8,21 +8,15 @@ import {
     IonList,
     IonCard,
     IonCardContent,
-    IonCardHeader,
     IonCardTitle,
     IonCardSubtitle,
-    IonItemGroup,
-    IonItemDivider,
-    IonLabel,
     IonItem,
     IonText,
     IonRow,
-    IonTitle,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
 import { Redirect, useParams } from "react-router";
 import { Header } from '../components/Header'
-import OverviewListItem from "../components/OverviewListItem";
 import DepositListItem from "../components/DepositListItem";
 
 const OrderDetail: React.FC = () => {
@@ -54,16 +48,16 @@ const OrderDetail: React.FC = () => {
 
     return (
         <IonPage>
-            <Header subTitle={"Orderdetail of " + params.orderId} />
+            <Header subTitle={"Bestellung " + params.orderId} />
             <IonContent fullscreen>
                 <IonCard>
                     <IonCardContent>
-                        <IonCardTitle>
+                        {/* <IonCardTitle>
                             ion card title
                         </IonCardTitle>
                         <IonCardSubtitle>
                             Subtitle
-                        </IonCardSubtitle>
+                        </IonCardSubtitle> */}
                         <IonItem>
                             <IonGrid>
                                 <IonRow>

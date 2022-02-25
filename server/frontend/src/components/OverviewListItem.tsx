@@ -28,7 +28,7 @@ const OverviewListItem: React.FC<OverviewListItemProps> = (data) => {
                     <IonImg class='overviewitemimg' slot='start' src='./assets/images/red-circle.png' />
             }
             <IonLabel className="ion-text-wrap">
-                <p> Order {data.orderId}</p>
+                <p>Id {data.orderId}</p>
                 <h2>
                     {data.firstName} {data.lastName}
                 </h2>

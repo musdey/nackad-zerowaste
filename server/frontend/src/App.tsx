@@ -26,6 +26,8 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import './theme/custom.css'
 import OrderDetail from './pages/OrderDetail';
+import { Menu } from './components/Menu';
+import Signup from './pages/Signup';
 setupIonicReact();
 
 const App: React.FC = () => (
@@ -34,6 +36,7 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonRouterOutlet>
         <ProvideAuth>
+          <Menu />
           <Route path="/" exact={true}>
             <Redirect to="/overview" />
           </Route>
@@ -41,6 +44,7 @@ const App: React.FC = () => (
             <Home />
           </Route>
           <Route path="/login" component={Login} exact />
+          <Route path="/signup" component={Signup} exact />
           <Route path="/overview" component={Overview} exact />
           <Route path="/order/:orderId" component={OrderDetail} />
           <Route path="/deposit/:depositId" component={Deposit} exact />

@@ -4,18 +4,12 @@ import {
     IonPage,
     useIonRouter,
     IonFooter,
-    IonGrid,
     IonList,
     IonCard,
     IonCardContent,
     IonCardTitle,
     IonCardSubtitle,
-    IonItem,
-    IonText,
-    IonRow,
-    IonBackButton,
     IonToolbar,
-    IonTitle,
     IonButtons,
     IonButton,
     IonIcon,
@@ -23,7 +17,6 @@ import {
 import { useAuth } from "../lib/use-auth";
 import { Redirect, useParams } from "react-router";
 import { Header } from '../components/Header'
-import DepositListItem from "../components/DepositListItem";
 import DepositDetailListItem from "../components/DepositDetailListItem";
 import { personCircle } from "ionicons/icons";
 
@@ -51,21 +44,22 @@ const OrderDetail: React.FC = () => {
         address: { street: "Lebinizgasse 61", postal: "1100", city: "Wien" },
         orderId: "someid",
         deliveryStatus: "OPEN",
-        timeslot: "16:00-17:00"
+        timeslot: "16:00-17:00",
+        orderDate: "2022-02-23T15:00:00.000+00:00"
     }
 
     // TODO: sort date and sort returned
     return (
         <IonPage>
-            <Header subTitle={"Deposit detail of " + params.depositId} />
+            <Header subTitle={"Pfand " + params.depositId} />
             <IonContent fullscreen>
                 <IonCard>
                     <IonCardContent>
                         <IonCardTitle>
-                            Deposit Card TItle
+
                         </IonCardTitle>
                         <IonCardSubtitle>
-                            Subtitle
+                            Hier siehst du die Übersicht des Pfandes von der Bestellung vom {new Date(obj.orderDate).toLocaleDateString()} um {new Date(obj.orderDate).toLocaleTimeString()}
                         </IonCardSubtitle>
                     </IonCardContent>
                 </IonCard>
