@@ -12,6 +12,7 @@ export interface IDeposit extends Document {
   depositItems: [IDepositItem]
   totalPrice: string
   paidDeposit: string
+  returnedDeposit: string
 }
 
 const DepositSchema = new Schema(
@@ -25,6 +26,10 @@ const DepositSchema = new Schema(
       type: String
     },
     paidDeposit: {
+      type: String,
+      default: ''
+    },
+    returnedDeposit: {
       type: String,
       default: ''
     },

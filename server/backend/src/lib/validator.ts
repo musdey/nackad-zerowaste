@@ -3,9 +3,9 @@ import InputValidationError from './errors'
 
 const UserValidator: Validator = new Validator({
   // _id let it autogenerate by mongodb
-  // username: {
-  //   type: String
-  // },
+  pin: {
+    type: String
+  },
   firstName: {
     type: String
   },

@@ -75,9 +75,10 @@ const createNewOrder = async (newOrder: Order) => {
     })
   )
 
-  const totalPriceString = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(
-    totalPrice / 100
-  )
+  // const totalPriceString = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(
+  //   totalPrice / 100
+  // )
+  const totalPriceString = totalPrice.toString()
   // Create deposit object and fill with all data
   await new DepositModel({
     customer: user._id,
@@ -150,10 +151,13 @@ const getFuture = async () => {
 }
 
 const getToday = async () => {
+  console.log(new Date(new Date().setHours(2, 0, 0)))
+  console.log(new Date(new Date().setHours(23, 59, 0)))
+
   const order = await OrderModel.find({
     deliveryDay: {
-      $gte: new Date().setHours(2, 0, 0),
-      $lte: new Date().setHours(23, 59, 0)
+      $gte: new Date(new Date().setHours(2, 0, 0)),
+      $lte: new Date(new Date().setHours(23, 59, 0))
     }
   })
   return order
@@ -162,8 +166,8 @@ const getToday = async () => {
 const getCurrent = async () => {
   const order = await OrderModel.find({
     deliveryDay: {
-      $gte: new Date().setHours(new Date().getHours() - 1),
-      $lte: new Date().setHours(new Date().getHours() + 1)
+      $gte: new Date(new Date().setHours(new Date().getHours() - 2)),
+      $lte: new Date(new Date().setHours(new Date().getHours() + 2))
     }
   })
   return order

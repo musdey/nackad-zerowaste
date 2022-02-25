@@ -11,7 +11,7 @@ export interface IDepositItem extends Document {
     {
       amount: number
       date: Date
-      delivery: IDelivery
+      delivery: IDelivery | null
     }
   ]
   pricePerItem: string

@@ -35,6 +35,7 @@ router.get('/deposit/:shopifyUserId', depositHandler.getDepositByShopifyId)
 // Delivery Management ACHTUNG EMPLOYEE
 router.get('/user/:id/deposit', [authJwt.verifyToken, authJwt.isEmployee], depositHandler.getDepositByUserId)
 router.get('/deposit/:id', [authJwt.verifyToken, authJwt.isEmployee], depositHandler.getDepositById)
+router.post('/deposit/update', [authJwt.verifyToken, authJwt.isEmployee, depositHandler.updateDeposit])
 router.get('/delivery/open', [authJwt.verifyToken, authJwt.isEmployee], deliveryHandler.getCurrentOpenDeliveries)
 router.get('/deliveryslots/detail', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.getAllManagement)
 router.post('/deliveryslot/add', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.addSlot)
