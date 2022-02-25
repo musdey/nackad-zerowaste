@@ -2,12 +2,11 @@ import React from 'react';
 import { IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonRouterOutlet, IonIcon, IonLabel } from '@ionic/react';
 import { useAuth } from '../lib/use-auth';
 import { personCircle, logInOutline, logOutOutline } from 'ionicons/icons';
-import { Redirect } from 'react-router';
-import { menuController, MenuControllerI, MenuI } from '@ionic/core';
-
+import { Redirect, useHistory } from 'react-router';
 
 export const Menu: React.FC = () => {
     const { signin, signout, user, loggedIn } = useAuth();
+    const history = useHistory()
 
     const logoutHandler = async () => {
         signout().then(async () => {
@@ -22,6 +21,13 @@ export const Menu: React.FC = () => {
         const url = '/login'
         return <Redirect to={url} />
     }
+
+    const userHandler = async () => {
+        const menu: HTMLElement & { toggle?: Function } = document.getElementById('first')!
+        await menu.toggle!()
+        await history.push('/user')
+    }
+
     return (<>
         <IonMenu menuId="first" contentId='content1' side="start" id='first'>
             <IonHeader>
@@ -35,7 +41,7 @@ export const Menu: React.FC = () => {
             <IonContent>
                 {loggedIn ?
                     <IonList>
-                        <IonItem>
+                        <IonItem onClick={userHandler}>
                             <IonIcon icon={personCircle} slot="start"></IonIcon>
                             <IonLabel>Userdetails anzeigen</IonLabel>
                         </IonItem>

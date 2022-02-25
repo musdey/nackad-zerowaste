@@ -1,79 +1,75 @@
-import React, { useState } from "react";
+import React, { PropsWithChildren, useContext, useEffect, useState } from "react";
 import {
     IonContent,
     IonPage,
-    useIonRouter,
     IonFooter,
     IonGrid,
     IonList,
     IonCard,
     IonCardContent,
-    IonCardTitle,
-    IonCardSubtitle,
     IonItem,
     IonText,
     IonRow,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
-import { Redirect, useParams } from "react-router";
+import { Redirect, RouteProps, useParams } from "react-router";
 import { Header } from '../components/Header'
 import DepositListItem from "../components/DepositListItem";
+import api from '../lib/api'
+import { Deposit, UserOrderProp } from "../lib/types";
 
-const OrderDetail: React.FC = () => {
+const OrderDetail: React.FC = (props) => {
     const params = useParams<{ orderId: string }>();
     const { signin, signout, user, loggedIn } = useAuth();
-    const [userData, setUserData] = useState()
-    const [error, setError] = useState(false)
-    const router = useIonRouter();
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [deposits, setDeposits] = useState([])
+    const [delivery, setDelivery] = useState({
+        firstName: "No", lastName: "data", deliveryStatus: "OPEN", timeslot: "", address: {
+            street: "", postal: "", city: ""
+        }, deliveryDay: ""
+    })
+
+    useEffect(() => {
+        const data: UserOrderProp = props
+        if (data!.location?.state?.state) {
+            setDelivery(data!.location!.state!.state!)
+        }
+        const fn = async () => {
+            const data = await api.getDepositByUserId(user!.id)
+            console.log(data)
+            setDeposits(data)
+        }
+        fn()
+    }, [])
 
     if (!loggedIn) {
         const url = '/login'
         return <Redirect to={url} />
     }
-
-    const handleLogin = async () => {
-        // await signin();
-        await signin(email, password)
-    };
-    const obj = {
-        firstName: "Mustafa",
-        lastName: "Tester",
-        address: { street: "Lebinizgasse 61", postal: "1100", city: "Wien" },
-        orderId: "someid",
-        deliveryStatus: "OPEN",
-        timeslot: "16:00-17:00"
-    }
-
     return (
         <IonPage>
             <Header subTitle={"Bestellung " + params.orderId} />
             <IonContent fullscreen>
                 <IonCard>
                     <IonCardContent>
-                        {/* <IonCardTitle>
-                            ion card title
-                        </IonCardTitle>
-                        <IonCardSubtitle>
-                            Subtitle
-                        </IonCardSubtitle> */}
                         <IonItem>
                             <IonGrid>
                                 <IonRow>
-                                    <IonText><b>{obj.firstName} {obj.lastName}</b></IonText>
+                                    <IonText><b>{delivery.firstName} {delivery.lastName}</b></IonText>
                                 </IonRow>
                                 <IonRow>
-                                    <IonText>{obj.address.street}</IonText>
+                                    <IonText>{delivery.address.street}</IonText>
                                 </IonRow>
                                 <IonRow>
-                                    <IonText>{obj.address.postal} {obj.address.city}</IonText>
+                                    <IonText>{delivery.address.postal} {delivery.address.city}</IonText>
                                 </IonRow>
                                 <IonRow>
-                                    <IonText color="secondary">Timeslot {obj.timeslot}</IonText>
+                                    <IonText>Datum  {new Date(delivery.deliveryDay).toLocaleDateString()}</IonText>
                                 </IonRow>
                                 <IonRow>
-                                    <IonText>Status {obj.deliveryStatus}</IonText>
+                                    <IonText color="secondary">Timeslot {delivery.timeslot}</IonText>
+                                </IonRow>
+                                <IonRow>
+                                    <IonText>Status {delivery.deliveryStatus}</IonText>
                                 </IonRow>
 
                             </IonGrid>
@@ -81,12 +77,15 @@ const OrderDetail: React.FC = () => {
                     </IonCardContent>
                 </IonCard>
                 <IonList>
-                    <DepositListItem status={"OPEN"}
-                        totalPrice={"12,23€"}
-                        paidDeposit={"4,13€"}
-                        depositId={"someDepositId"}
-                        orderDate="20.02.2022 | 16:00-17:00">
-                    </DepositListItem>
+                    {deposits!.map((obj: Deposit, i) =>
+                        <DepositListItem key={"key" + obj._id}
+                            status={obj.status}
+                            totalPrice={obj.totalPrice}
+                            paidDeposit={obj.paidDeposit}
+                            depositId={obj._id}
+                            orderDate={obj.orderDate}>
+                        </DepositListItem>
+                    )}
                 </IonList>
 
             </IonContent>

@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
     IonContent,
     IonPage,
-    useIonRouter,
     IonFooter,
     IonGrid,
     IonList,
@@ -13,9 +12,7 @@ import { Header } from '../components/Header'
 import OverviewListItem from "../components/OverviewListItem";
 import api from '../lib/api'
 
-interface LoginProps { }
-
-const Overview: React.FC<LoginProps> = () => {
+const Overview: React.FC = () => {
     const { signin, signout, user, loggedIn } = useAuth();
     const [deliveries, setDeliveries] = useState([])
 
@@ -33,19 +30,21 @@ const Overview: React.FC<LoginProps> = () => {
         return <Redirect to={url} />
     }
 
-
     return (
         <IonPage>
             <Header subTitle="Übersicht" />
             <IonContent fullscreen>
                 <IonList>
                     {deliveries!.map((obj: any, i) =>
-                        <OverviewListItem key={obj.shopifyOrder} firstName={obj.address!.first_name}
+                        <OverviewListItem
+                            key={obj.shopifyOrder}
+                            firstName={obj.address!.first_name}
                             lastName={obj.address.last_name}
-                            address={{ street: obj.address.address1, postal: obj.address.zip, city: obj.address.city }}
+                            address={{ street: obj.address.address1, extra: obj.address.adress2 || '', postal: obj.address.zip, city: obj.address.city }}
                             orderId={obj.shopifyOrder}
                             deliveryStatus={obj.status}
-                            timeslot={obj.deliverySlot.slotHours}>
+                            timeslot={obj.deliverySlot.slotHours}
+                            deliveryDay={obj.deliverySlot.deliveryDay}>
                         </OverviewListItem>
                     )}
                 </IonList>

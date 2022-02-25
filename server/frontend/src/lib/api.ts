@@ -51,11 +51,19 @@ const signin = async (email: string, password: string): Promise<any> => {
     body: JSON.stringify(obj),
     headers: { "Content-Type": "application/json" },
   });
+  // Status 200
   if (result.ok) {
     return await result.json();
-  } else {
-    throw new Error("Unauthorized");
   }
+
+  // Error status
+  let data;
+  try {
+    data = await result.json();
+  } catch (err) {
+    throw new Error(result.statusText);
+  }
+  throw new Error(data.message);
 };
 
 const getUser = async (shopId: string): Promise<any> => {
@@ -86,5 +94,46 @@ const getCurrentDeliveries = async (): Promise<any> => {
     console.log(err);
   }
 };
-const apiObj = { signin, signup, getUser, getUserData, getCurrentDeliveries };
+
+const getDepositByUserId = async (userId: string): Promise<any> => {
+  const url = Config.User.DEPOSIT_BYID;
+  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
+  try {
+    const result = await fetch(url + "/" + userId + "/deposit", {
+      method: "GET",
+      headers: { Authorization: "Token " + localStorage.getItem("TOKEN") },
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const getDepositItems = async (depositId: string): Promise<any> => {
+  const url = Config.Delivery.DEPOSIT_BYID;
+  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
+  try {
+    const result = await fetch(url + depositId, {
+      method: "GET",
+      headers: { Authorization: "Token " + localStorage.getItem("TOKEN") },
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const apiObj = {
+  signin,
+  signup,
+  getUser,
+  getUserData,
+  getCurrentDeliveries,
+  getDepositByUserId,
+  getDepositItems,
+};
 export default apiObj;

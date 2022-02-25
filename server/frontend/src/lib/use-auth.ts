@@ -2,7 +2,15 @@ import React, { useContext, createContext, useState } from "react";
 import api from "./api";
 
 const useProvideAuth = (): AuthContextInterface => {
-  const [user, setUser] = useState<User>();
+  const auser = {
+    firstName: "Mustafa",
+    lastName: "Test",
+    address: "wien",
+    email: "mustafa@nackad.at",
+    phoneNumber: "123456789",
+    userId: "someid",
+  };
+  const [user, setUser] = useState<User | undefined>();
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
   const signout = async (): Promise<void> => {
@@ -11,7 +19,10 @@ const useProvideAuth = (): AuthContextInterface => {
     localStorage.setItem("TOKEN", "");
   };
 
-  const signin = async (email: string, password: string): Promise<boolean> => {
+  const signin = async (
+    email: string,
+    password: string
+  ): Promise<{ success: boolean; error?: Error }> => {
     return new Promise(async (resolve, reject) => {
       await api
         .signin(email, password)
@@ -20,10 +31,10 @@ const useProvideAuth = (): AuthContextInterface => {
           console.log(data);
           setUser(data);
           setLoggedIn(true);
-          resolve(true);
+          resolve({ success: true });
         })
         .catch((err) => {
-          resolve(false);
+          resolve({ success: false, error: err });
         });
     });
   };
@@ -54,12 +65,15 @@ type User = {
   address: string;
   email: string;
   phoneNumber: string;
-  userId: string;
+  id: string;
 };
 
 interface AuthContextInterface {
   signout: () => Promise<void>;
-  signin: (email: string, password: string) => Promise<boolean>;
+  signin: (
+    email: string,
+    password: string
+  ) => Promise<{ success: boolean; error?: Error }>;
   user?: User;
   loggedIn: boolean;
 }

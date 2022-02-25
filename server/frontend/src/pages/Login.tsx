@@ -36,19 +36,19 @@ const Login: React.FC<LoginProps> = () => {
     const [password, setPassword] = useState('')
     const [present, dismiss] = useIonToast();
 
-
-
     if (loggedIn) {
         const url = '/overview'
         return <Redirect to={url} />
     }
 
     const handleLogin = async () => {
-        // await signin();
         if (!validator.isEmail(email) || password.length <= 0) {
-            await present('E-mail oder Passwort nicht korrekt!')
+            await present('E-mail oder Passwort nicht korrekt!', 2000)
         } else {
-            await signin(email, password)
+            const result = await signin(email, password)
+            if (!result.success) {
+                await present(result.error!.message, 2000)
+            }
         }
     };
 
@@ -67,7 +67,7 @@ const Login: React.FC<LoginProps> = () => {
                     <IonItem>
                         <IonCardContent>
                             <IonLabel position="floating">E-Mail:</IonLabel>
-                            <IonInput type="email" value={email} onIonChange={(data) => { setEmail(data.detail.value || '') }} placeholder={"pazi@nackad.at"}> </IonInput>
+                            <IonInput type="email" value={email} onIonChange={(data) => { setEmail(data.detail.value || '') }} autocomplete="on" placeholder={"pazi@nackad.at"} ></IonInput>
                         </IonCardContent>
                     </IonItem>
                     <IonItem>

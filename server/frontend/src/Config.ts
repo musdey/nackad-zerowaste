@@ -7,9 +7,11 @@ const Config = {
   User: {
     ALL_URL: "http://localhost:3000/api/v1/user/all",
     SELF_URL: "http://localhost:3000/api/v1/user",
+    DEPOSIT_BYID: "http://localhost:3000/api/v1/user",
   },
   Delivery: {
     ALLOPEN_URL: "http://localhost:3000/api/v1/delivery/open",
+    DEPOSIT_BYID: "http://localhost:3000/api/v1/deposit/",
   },
 };
 

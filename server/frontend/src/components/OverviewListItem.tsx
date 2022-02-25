@@ -3,6 +3,8 @@ import {
     IonItem,
     IonLabel,
 } from '@ionic/react';
+import { useState } from 'react';
+import { useHistory } from 'react-router';
 import './custom.css';
 
 interface OverviewListItemProps {
@@ -11,33 +13,48 @@ interface OverviewListItemProps {
     address: {
         street: string
         postal: string
+        extra?: string
         city: string
     }
     orderId: string
     deliveryStatus: 'OPEN' | 'INDELIVERY' | 'DELIVERED' | 'CANCELLED'
     timeslot: string
+    deliveryDay: string
 }
 
-const OverviewListItem: React.FC<OverviewListItemProps> = (data) => {
+const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
+
+    const history = useHistory()
+
+    const handleClick = () => {
+        console.log("onclick")
+        history.push('/order/' + listData.orderId, {
+            state: listData
+        })
+    }
+
     return (
-        <IonItem routerLink={`/order/${data.orderId}`} detail={false}>
-            {data.deliveryStatus === 'OPEN' ? <IonImg class='overviewitemimg' slot='start' src='./assets/images/green-circle.png' />
+        <IonItem onClick={handleClick} detail={false}>
+            {listData.deliveryStatus === 'OPEN' ? <IonImg class='overviewitemimg' slot='start' src='./assets/images/green-circle.png' />
                 :
-                data.deliveryStatus === 'INDELIVERY' ? <IonImg class='overviewitemimg' slot='start' src='./assets/images/orange-circle.png' />
+                listData.deliveryStatus === 'INDELIVERY' ? <IonImg class='overviewitemimg' slot='start' src='./assets/images/orange-circle.png' />
                     :
                     <IonImg class='overviewitemimg' slot='start' src='./assets/images/red-circle.png' />
             }
             <IonLabel className="ion-text-wrap">
-                <p>Id {data.orderId}</p>
+                <p>Id {listData.orderId}</p>
                 <h2>
-                    {data.firstName} {data.lastName}
+                    {listData.firstName} {listData.lastName}
                 </h2>
-                <h3>{data.address.street}, {data.address.postal} {data.address.city}</h3>
+                <h3>{listData.address.street},{listData.address.extra} {listData.address.postal}, {listData.address.city}</h3>
             </IonLabel>
             <IonLabel slot='end'>
                 <p> Timeslot</p>
-                <h2>
-                    {data.timeslot}
+                <p>
+                    {new Date(listData.deliveryDay).toLocaleDateString()}
+                </p>
+                <h2 color='primary'>
+                    {listData.timeslot}
                 </h2>
                 <h3></h3>
             </IonLabel>

@@ -18,16 +18,16 @@ const DepositListItem: React.FC<DepositListItemProps> = (data) => {
     return (
         <IonItem disabled={allReturned} routerLink={`/deposit/${data.depositId}`} detail={false}>
             <IonLabel className="ion-text-wrap">
-                <p> Deposit {data.depositId}</p>
+                <p> Pfand {data.depositId}</p>
                 <h2>
                     Status {data.status}
                 </h2>
-                <h3>Created {data.orderDate}</h3>
+                <h3>Erstellt {new Date(data.orderDate).toLocaleDateString()}</h3>
             </IonLabel>
             <IonLabel slot='end'>
-                <p> Paid </p>
+                <p slot="end"> Bezahlt</p>
                 <h2>
-                    {data.paidDeposit}/{data.totalPrice}
+                    {data.paidDeposit || 0}/{new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(parseInt(data.totalPrice) / 100)}
                 </h2>
                 <h3></h3>
             </IonLabel>

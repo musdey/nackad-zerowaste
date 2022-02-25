@@ -28,31 +28,36 @@ import './theme/custom.css'
 import OrderDetail from './pages/OrderDetail';
 import { Menu } from './components/Menu';
 import Signup from './pages/Signup';
+import User from './pages/User';
 setupIonicReact();
 
-const App: React.FC = () => (
+const App: React.FC = () => {
 
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <ProvideAuth>
-          <Menu />
-          <Route path="/" exact={true}>
-            <Redirect to="/overview" />
-          </Route>
-          <Route path="/home" exact={true}>
-            <Home />
-          </Route>
-          <Route path="/login" component={Login} exact />
-          <Route path="/signup" component={Signup} exact />
-          <Route path="/overview" component={Overview} exact />
-          <Route path="/order/:orderId" component={OrderDetail} />
-          <Route path="/deposit/:depositId" component={Deposit} exact />
-        </ProvideAuth>
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
+  return (
+    <IonApp>
+      <IonReactRouter>
+        <IonRouterOutlet>
+          <ProvideAuth>
+            <Menu />
+            <Route path="/" exact={true}>
+              <Redirect to="/overview" />
+            </Route>
+            <Route path="/home" exact={true}>
+              <Home />
+            </Route>
+            <Route path="/login" component={Login} exact />
+            <Route path="/user" component={User} exact />
+            <Route path="/signup" component={Signup} exact />
+            <Route path="/overview" component={Overview} exact />
+            <Route path="/order/:orderId" component={OrderDetail} />
+            <Route path="/deposit/:depositId" component={Deposit} exact />
 
-);
+          </ProvideAuth>
+        </IonRouterOutlet>
+      </IonReactRouter>
+    </IonApp>
+
+  )
+};
 
 export default App;

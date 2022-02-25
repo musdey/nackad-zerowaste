@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     IonContent,
     IonPage,
@@ -19,25 +19,27 @@ import { Redirect, useParams } from "react-router";
 import { Header } from '../components/Header'
 import DepositDetailListItem from "../components/DepositDetailListItem";
 import { personCircle } from "ionicons/icons";
+import api from '../lib/api'
 
 const OrderDetail: React.FC = () => {
     const params = useParams<{ depositId: string }>();
     const { signin, signout, user, loggedIn } = useAuth();
-    const [userData, setUserData] = useState()
-    const [error, setError] = useState(false)
-    const router = useIonRouter();
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [depositItems, setDepositItems] = useState([])
+
+    useEffect(() => {
+        const fn = async () => {
+            const data = await api.getDepositItems(params.depositId)
+            console.log(data)
+            setDepositItems(data.depositItems)
+        }
+        fn()
+    }, [])
 
     if (!loggedIn) {
         const url = '/login'
         return <Redirect to={url} />
     }
 
-    const handleLogin = async () => {
-        // await signin();
-        await signin(email, password)
-    };
     const obj = {
         firstName: "Mustafa",
         lastName: "Tester",
@@ -65,8 +67,19 @@ const OrderDetail: React.FC = () => {
                 </IonCard>
                 <IonList>
 
+                    {depositItems.map((obj: any, i) =>
+                        <DepositDetailListItem
+                            amount={obj.amount}
+                            pricePerItem={obj.pricePerItem}
+                            productName={obj.productName}
+                            returnDates={obj.returnDates}
+                            returned={obj.returned}
+                            type={obj.type}>
+                        </DepositDetailListItem>
+                    )}
 
-                    <DepositDetailListItem
+
+                    {/* <DepositDetailListItem
                         amount={7}
                         pricePerItem="1,24"
                         productName="Bauernmilch"
@@ -90,7 +103,7 @@ const OrderDetail: React.FC = () => {
                         returnDates={[{ date: "21.12.2021 | 17:12", type: "Bierflasche" }]}
                         returned={18}
                         type="Bierflasche">
-                    </DepositDetailListItem>
+                    </DepositDetailListItem> */}
 
                 </IonList>
             </IonContent>
