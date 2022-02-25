@@ -8,8 +8,8 @@ const getDepositById: Handler = async (req: Request, res: Response, next: NextFu
   }
 
   try {
-    const users = await depositcontroller.getDepositById(depositId)
-    return res.status(200).send(users)
+    const deposit = await depositcontroller.getDepositById(depositId)
+    return res.status(200).send(deposit)
   } catch (err) {
     return next(err)
   }

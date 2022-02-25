@@ -23,7 +23,7 @@ const getDepositByShopifyId = async (userId: string) => {
 }
 
 const getDepositById = async (depositId: string) => {
-  const deposits = await DepositModel.find({ _id: depositId })
+  const deposits = await DepositModel.findOne({ _id: depositId }).populate('depositItems')
   return deposits
 }
 

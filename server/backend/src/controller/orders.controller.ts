@@ -84,7 +84,8 @@ const createNewOrder = async (newOrder: Order) => {
     customer: user._id,
     order: orderDatabase,
     depositItems: depositItemArr!,
-    totalPrice: totalPriceString
+    totalPrice: totalPriceString,
+    orderDate: deliveryDay
   }).save()
 
   // const dateParts = deliveryDay.split('.')

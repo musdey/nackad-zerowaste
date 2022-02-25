@@ -13,6 +13,7 @@ export interface IDeposit extends Document {
   totalPrice: string
   paidDeposit: string
   returnedDeposit: string
+  orderDate: string
 }
 
 const DepositSchema = new Schema(
@@ -47,7 +48,10 @@ const DepositSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: 'DepositItem'
       }
-    ]
+    ],
+    orderDate: {
+      type: String
+    }
   },
   { strict: false, versionKey: false }
 )

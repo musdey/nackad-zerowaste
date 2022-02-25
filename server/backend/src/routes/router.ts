@@ -30,7 +30,7 @@ router.get('/user', [authJwt.verifyToken, authJwt.isCustomer], userHandler.getSe
 // Open routes
 router.get('/settings', getSettingsHandler)
 router.get('/deliveryslots', deliverySlotHandler.getAllPublic)
-router.get('/deposit/:shopifyUserId', depositHandler.getDepositByShopifyId)
+router.get('/opendeposit/:shopifyUserId', depositHandler.getDepositByShopifyId)
 
 // Delivery Management ACHTUNG EMPLOYEE
 router.get('/user/:id/deposit', [authJwt.verifyToken, authJwt.isEmployee], depositHandler.getDepositByUserId)
