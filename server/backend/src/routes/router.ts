@@ -4,11 +4,11 @@ import verifyWebhook from '../middleware/verifyWebhook'
 import verifyBody from '../middleware/verifyBody'
 import verifySignUp from '../middleware/verifySignup'
 import authJwt from '../middleware/authJwt'
-import { signup, signin, signinWithOTP, requestOTP } from '../controller/auth.controller'
+import authHandler from '../handler/auth.handler'
 import userHandler from '../handler/user.handler'
 import deliveryHandler from '../handler/delivery.handler'
 import webhookRouter from './webhooks'
-import { getSettingsHandler, updateSettingsHandler } from '../handler/settings.handler'
+import settingsHandler from '../handler/settings.handler'
 import deliverySlotHandler from '../handler/deliverySlots.handler'
 import orderHandler from '../handler/orders.handler'
 import depositHandler from '../handler/deposit.handler'
@@ -17,8 +17,8 @@ const router = express.Router()
 router.post('*', verifyBody)
 
 // User Management
-router.post('/auth/signup', verifySignUp.checkDuplicateUsernameOrEmail, signup)
-router.post('/auth/signin', signin)
+router.post('/auth/signup', verifySignUp.checkDuplicateUsernameOrEmail, authHandler.signup)
+router.post('/auth/signin', authHandler.signin)
 router.post('/auth/updateUserRole', [authJwt.verifyToken, authJwt.isAdmin], userHandler.updateUserRole)
 router.get('/user/all', [authJwt.verifyToken, authJwt.isAdmin], userHandler.getAll)
 router.get('/user/employees', [authJwt.verifyToken, authJwt.isAdmin], userHandler.getEmployees)
@@ -28,7 +28,8 @@ router.get('/user', [authJwt.verifyToken, authJwt.isCustomer], userHandler.getSe
 // router.post('/user/update)
 
 // Open routes
-router.get('/settings', getSettingsHandler)
+router.get('/settings', settingsHandler.getSettingsHandler)
+router.get('/settings/admin', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.getSettingsAdminHandler)
 router.get('/deliveryslots', deliverySlotHandler.getAllPublic)
 router.get('/opendeposit/:shopifyUserId', depositHandler.getDepositByShopifyId)
 
@@ -50,7 +51,7 @@ router.get('/update-products', updateProducts)
 router.use('/webhooks', verifyWebhook, webhookRouter)
 
 // Admin routes
-router.post('/settings/update', [authJwt.verifyToken, authJwt.isAdmin], updateSettingsHandler)
+router.post('/settings/update', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.updateSettingsHandler)
 
 router.post('/test/webhook/new-order', orderHandler.createNewOrder)
 

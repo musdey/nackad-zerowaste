@@ -14,6 +14,9 @@ export interface IShopSettings extends Document {
   // _id let it autogenerate by mongodb
   deliveryHours: DeliveryHours
   deliveryAreas: string
+  slotsPerVehicle: number
+  extraSlots: number
+  vehicles: number
 }
 
 const ShopSettingsSchema = new Schema(
@@ -30,6 +33,18 @@ const ShopSettingsSchema = new Schema(
     },
     deliveryAreas: {
       type: [String]
+    },
+    slotsPerVehicle: {
+      type: Number,
+      default: 2
+    },
+    extraSlots: {
+      type: Number,
+      default: 1
+    },
+    vehicles: {
+      type: Number,
+      default: 2
     }
   },
   { strict: false, versionKey: false }

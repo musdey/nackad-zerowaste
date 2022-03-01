@@ -4,20 +4,34 @@ import ShopSettings from '../models/ShopSettings'
 import User from '../models/User'
 
 const getDeliverySlotsPublic = async () => {
+  const settings = await ShopSettings.findOne({})
+
   const deliverySlots = await DeliverySlotModel.find({
     deliveryDay: {
       $gt: new Date()
     }
-  }).select('-_id -lastUpdatedFrom')
+  })
+    .select('-_id -lastUpdatedFrom')
+    .populate('deliveries')
 
   let newArr: object[] = []
 
   deliverySlots.forEach((data) => {
+    let suggestion: string[] = []
+    data.deliveries?.forEach((delivery) => {
+      const zip = delivery.address.zip
+      if (zip && !suggestion.includes(zip)) {
+        suggestion.push(zip)
+      }
+    })
+
     const newObj = {
       deliveryDay: data.deliveryDay,
       slotHours: data.slotHours,
       maxSlotSize: data.maxSlotSize,
-      available: data.maxSlotSize - data.deliveries!.length
+      available: data.maxSlotSize - data.deliveries!.length,
+      suggestions:
+        settings!.extraSlots * settings!.vehicles + data.maxSlotSize - data.deliveries!.length > 0 ? suggestion : []
     }
     newArr.push(newObj)
   })
@@ -48,7 +62,6 @@ const createDeliverySlots = async () => {
   let currentDayNight = new Date()
   currentDayMorning.setHours(2, 0, 0)
   currentDayNight.setHours(22, 0, 0)
-  console.log('today  ', today)
   for (let i = 0; i < 3; i++) {
     let hoursString
     switch (today) {
@@ -93,7 +106,8 @@ const createDeliverySlots = async () => {
           const toSlot = from + 1
           new DeliverySlotModel({
             deliveryDay: new Date(currentDayMorning).setHours(from, 0, 0),
-            slotHours: `${from}:00-${toSlot}:00`
+            slotHours: `${from}:00-${toSlot}:00`,
+            maxSlotSize: settingObj.slotsPerVehicle * settingObj.vehicles
           }).save()
           from++
         }

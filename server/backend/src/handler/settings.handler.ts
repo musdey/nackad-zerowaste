@@ -13,17 +13,11 @@ const getSettingsHandler: Handler = async (req: Request, res: Response, next: Ne
   }
 }
 
-const updateSettingsHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
+const getSettingsAdminHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
   // TODO: do input validation
 
-  const body = req.body
-  if (!body || !body.deliveryAreas || !body.deliveryHours) {
-    return res.status(404).send('Missing Body')
-  }
-
-  // if (!('monday' in body.deliverHours || ))
   try {
-    const settings = await settingsController.updateSettings(body.deliveryAreas, body.deliveryHours)
+    const settings = await settingsController.getSettingsAdmin()
 
     return res.status(200).send(settings)
   } catch (err) {
@@ -31,4 +25,26 @@ const updateSettingsHandler: Handler = async (req: Request, res: Response, next:
   }
 }
 
-export { getSettingsHandler, updateSettingsHandler }
+const updateSettingsHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  const body = req.body
+  if (!body || !body.deliveryAreas || !body.deliveryHours || !body.slotsPerVehicle || !body.vehicles) {
+    return res.status(404).send('Missing Body')
+  }
+
+  try {
+    const settings = await settingsController.updateSettings(
+      body.deliveryAreas,
+      body.deliveryHours,
+      body.slotsPerVehicle,
+      body.vehicles,
+      body.extraSlots
+    )
+
+    return res.status(200).send(settings)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+const settingsHandler = { getSettingsHandler, updateSettingsHandler, getSettingsAdminHandler }
+export default settingsHandler

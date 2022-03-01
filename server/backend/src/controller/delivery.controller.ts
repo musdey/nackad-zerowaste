@@ -5,8 +5,8 @@ const getAll = async () => {
   return delivery
 }
 
-const getAllWithStatus = async (status: string) => {
-  const delivery = await DeliveryModel.find({ status }).populate('deliverySlot')
+const getAllWithStatus = async (status: 'OPEN' | 'INDELIVERY' | 'DELIVERED' | 'CANCELLED') => {
+  const delivery = await DeliveryModel.find({ status: status }).populate('deliverySlot')
   return delivery
 }
 
@@ -18,7 +18,7 @@ const getCurrent = async () => {
 }
 
 const getTodays = async () => {
-  const todayMorning = new Date()
+  const todayMorning = new Date(Date.now())
   todayMorning.setHours(0)
   todayMorning.setMinutes(0)
   const todayNight = Date.now()

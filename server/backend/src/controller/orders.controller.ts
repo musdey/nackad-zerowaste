@@ -98,7 +98,7 @@ const createNewOrder = async (newOrder: Order) => {
     slotHours: timeslot
   })
 
-  const delivery = await new DeliveryModel({ shopifyOrder: orderDatabase, address: shippingAddress })
+  const delivery = await new DeliveryModel({ user, shopifyOrder: orderDatabase, address: shippingAddress })
   deliverySlot?.deliveries?.push(delivery)
   const data = await deliverySlot?.save()
   if (data) {

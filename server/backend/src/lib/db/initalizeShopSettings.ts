@@ -23,7 +23,9 @@ const createSettings = async function () {
       friday: '15:00-20:00',
       saturday: '15:00-20:00',
       sunday: 'closed'
-    }
+    },
+    vehicles: 2,
+    slotsPerVehicle: 2
   })
   try {
     await newSetting.save()

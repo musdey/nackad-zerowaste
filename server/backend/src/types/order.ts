@@ -56,7 +56,7 @@ type Order = {
     }
   ]
   discount_codes?: []
-  note_attributes?: [{ name: string; value: string }]
+  note_attributes?: [{ name: string; value: string }, { name: string; value: string }]
   payment_gateway_names?: [string]
   processing_method?: string
   checkout_id?: string

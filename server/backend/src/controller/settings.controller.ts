@@ -1,6 +1,14 @@
 import ShopSettings, { DeliveryHours, IShopSettings } from '../models/ShopSettings'
 
 const getSettings = async () => {
+  const settings = await ShopSettings.find({}).select('-slotsPerVehicle -vehicles')
+  if (!settings || settings.length === 0) {
+    return 'empty'
+  }
+  return settings[0]
+}
+
+const getSettingsAdmin = async () => {
   const settings = await ShopSettings.find({})
   if (!settings || settings.length === 0) {
     return 'empty'
@@ -8,20 +16,29 @@ const getSettings = async () => {
   return settings[0]
 }
 
-const updateSettings = async (areas: string, hours: object) => {
+const updateSettings = async (
+  areas: string,
+  hours: object,
+  slotsPerVehicle: number,
+  vehicles: number,
+  extraSlots: number
+) => {
   const settings = await ShopSettings.find({})
   console.log(settings)
   if (!settings || settings.length === 0) {
-    return await new ShopSettings({ deliveryAreas: areas, deliveryHours: hours }).save()
+    return await new ShopSettings({ deliveryAreas: areas, deliveryHours: hours, slotsPerVehicle, vehicles }).save()
   }
   const oneSetting = settings[0]
   oneSetting.deliveryAreas = areas
   oneSetting.deliveryHours = hours as DeliveryHours
+  oneSetting.slotsPerVehicle = slotsPerVehicle
+  oneSetting.vehicles = vehicles
+  oneSetting.extraSlots = extraSlots
   const updated = await oneSetting.save()
   return updated
 }
 
-const settingsController = { getSettings, updateSettings }
+const settingsController = { getSettings, updateSettings, getSettingsAdmin }
 export default settingsController
 
 /*

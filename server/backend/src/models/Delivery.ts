@@ -2,6 +2,7 @@ import { Document, Schema, Model, model, Date } from 'mongoose'
 import Address from '../types/address'
 import Order from '../types/order'
 import { IDeliverySlot } from './DeliverySlots'
+import { IUser } from './User'
 
 export interface IDelivery extends Document {
   // _id let it autogenerate by mongodb
@@ -10,6 +11,7 @@ export interface IDelivery extends Document {
   updates: [object]
   address: Address
   deliverySlot: IDeliverySlot
+  user: IUser
 }
 
 const DeliverySchema = new Schema(
@@ -33,6 +35,10 @@ const DeliverySchema = new Schema(
     deliverySlot: {
       type: Schema.Types.ObjectId,
       ref: 'Deliveryslot'
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
     }
   },
   { strict: false, versionKey: false }
