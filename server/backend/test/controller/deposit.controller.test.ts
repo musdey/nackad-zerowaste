@@ -1,17 +1,24 @@
 // test/post.test.ts
 import { describe, it, expect, beforeAll, afterAll, afterEach } from '@jest/globals'
-import User, { IUser } from '../../src/models/User'
+import User from '../../src/models/User'
 import * as dbHandler from './db'
+import orderController from '../../src/controller/orders.controller'
+import Order from '../../src/types/order'
+import DepositModel from '../../src/models/Deposit'
+import Product from '../../src/models/Product'
+import OrderModel from '../../src/models/Order'
 
 beforeAll(async () => {
   await dbHandler.createTestDB()
   await dbHandler.connect()
-  const user: IUser = new User()
-  user.firstName = 'Test'
-  user.lastName = 'User'
-  user.email = 'test@user.at'
-  user.password = 'examplepw'
-  await user.save()
+  new Product({
+    deposit: 'Saftflasche-020',
+    shopifyId: '7470551662839'
+  }).save()
+  new Product({
+    deposit: 'Bierkiste-480',
+    shopifyId: '7530393731319'
+  }).save()
 })
 
 afterEach(async () => {
@@ -22,25 +29,41 @@ afterAll(async () => {
   await dbHandler.closeDatabase()
 })
 
-describe('Test deposit', () => {
+describe('Test creation deposit + deposititems', () => {
   it('cheks whether first order is successfully stored', async () => {
-    // Simulate Order webhook
+    const order: Order = await require('./depositcontroller.json')
+    await orderController.createNewOrder(order)
 
-    // Check if user is created successfully
+    expect.assertions(4)
 
-    // Check if Deposit is created successfully
-
-    // Check if DepositItems are created successfully
-
-    expect.assertions(2)
-
-    const userInDb = await User.findOne({ firstName: 'Test' }).populate('role').exec()
-    console.log('User document from memory-db', userInDb)
+    const userInDb = await User.findOne({ firstName: 'Mustafa' }).populate('role').exec()
     if (userInDb) {
-      // check that title is expected
-      expect(userInDb.lastName).toEqual('User')
-      // check that content is expected
+      expect(userInDb.lastName).toEqual('Cicek')
       expect(userInDb.role.name).toEqual('CUSTOMER')
     }
+
+    const deposit = await DepositModel.findOne({ customer: userInDb }).populate('depositItems')
+    expect(deposit.totalPrice).toEqual('980')
+    expect(deposit.depositItems.length).toEqual(3)
+  })
+})
+
+describe('Test multiple orders', () => {
+  it('check whether multiple orders are created', async () => {
+    const order: Order = await require('./depositcontroller.json')
+    const order2 = { ...order }
+    order2.note_attributes = [
+      { name: 'deliveryDay', value: new Date().toLocaleDateString() },
+      { name: 'timeslot', value: '15:00-16:00' }
+    ]
+    const order3 = { ...order }
+    order3.note_attributes = [
+      { name: 'deliveryDay', value: new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString() },
+      { name: 'timeslot', value: '19:00-20:00' }
+    ]
+    await orderController.createNewOrder(order)
+    await orderController.createNewOrder(order2)
+    await orderController.createNewOrder(order3)
+    const orders = await OrderModel.find({})
   })
 })
