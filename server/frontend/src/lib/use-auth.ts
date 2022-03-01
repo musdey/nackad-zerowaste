@@ -28,7 +28,24 @@ const useProvideAuth = (): AuthContextInterface => {
         .signin(email, password)
         .then(async (data) => {
           localStorage.setItem("TOKEN", data.accessToken);
-          console.log(data);
+          setUser(data);
+          setLoggedIn(true);
+          resolve({ success: true });
+        })
+        .catch((err) => {
+          resolve({ success: false, error: err });
+        });
+    });
+  };
+
+  const getUserWithToken = async (): Promise<{
+    success: boolean;
+    error?: Error;
+  }> => {
+    return new Promise(async (resolve, reject) => {
+      await api
+        .getUserData()
+        .then(async (data) => {
           setUser(data);
           setLoggedIn(true);
           resolve({ success: true });
@@ -44,6 +61,7 @@ const useProvideAuth = (): AuthContextInterface => {
     signout,
     user,
     loggedIn,
+    getUserWithToken,
   };
 };
 const AuthContext = createContext({} as AuthContextInterface);
@@ -65,7 +83,10 @@ type User = {
   address: string;
   email: string;
   phoneNumber: string;
-  id: string;
+  _id: string;
+  role: {
+    name: string;
+  };
 };
 
 interface AuthContextInterface {
@@ -74,6 +95,7 @@ interface AuthContextInterface {
     email: string,
     password: string
   ) => Promise<{ success: boolean; error?: Error }>;
+  getUserWithToken: () => Promise<{ success: boolean; error?: Error }>;
   user?: User;
   loggedIn: boolean;
 }

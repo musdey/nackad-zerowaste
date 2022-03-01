@@ -25,7 +25,7 @@ const OrderDetail: React.FC = (props) => {
     const [delivery, setDelivery] = useState({
         firstName: "No", lastName: "data", deliveryStatus: "OPEN", timeslot: "", address: {
             street: "", postal: "", city: ""
-        }, deliveryDay: ""
+        }, deliveryDay: "", userId: ""
     })
 
     useEffect(() => {
@@ -34,9 +34,8 @@ const OrderDetail: React.FC = (props) => {
             setDelivery(data!.location!.state!.state!)
         }
         const fn = async () => {
-            const data = await api.getDepositByUserId(user!.id)
-            console.log(data)
-            setDeposits(data)
+            const result = await api.getDepositByUserId(data!.location?.state?.state?.userId!)
+            setDeposits(result)
         }
         fn()
     }, [])

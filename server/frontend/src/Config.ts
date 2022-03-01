@@ -13,6 +13,10 @@ const Config = {
     ALLOPEN_URL: "http://localhost:3000/api/v1/delivery/open",
     DEPOSIT_BYID: "http://localhost:3000/api/v1/deposit/",
   },
+  Settings: {
+    GET: "http://localhost:3000/api/v1/settings/admin",
+    POST: "http://localhost:3000/api/v1/settings/update",
+  },
 };
 
 export default Config;

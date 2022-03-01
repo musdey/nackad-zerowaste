@@ -13,8 +13,6 @@ import {
     IonButtons,
     IonButton,
     IonIcon,
-    IonTitle,
-    IonItem,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
 import { Redirect, useParams } from "react-router";
@@ -22,21 +20,13 @@ import { Header } from '../components/Header'
 import DepositDetailListItem from "../components/DepositDetailListItem";
 import { personCircle } from "ionicons/icons";
 import api from '../lib/api'
-import { DepositProp } from "../lib/types";
 
-const OrderDetail: React.FC = (props) => {
+const OrderDetail: React.FC = () => {
     const params = useParams<{ depositId: string }>();
     const { signin, signout, user, loggedIn } = useAuth();
-    const [orderDate, setOrderDate] = useState("")
     const [depositItems, setDepositItems] = useState([])
-    const [isUpdating, setUpdating] = useState(false)
-    const [updatingDeposit, setUpdatingDeposit] = useState([])
 
     useEffect(() => {
-        const data: DepositProp = props
-        if (data!.location?.state?.state) {
-            setOrderDate(data.location.state.state.orderDate)
-        }
         const fn = async () => {
             const data = await api.getDepositItems(params.depositId)
             setDepositItems(data.depositItems)
@@ -47,6 +37,16 @@ const OrderDetail: React.FC = (props) => {
     if (!loggedIn) {
         const url = '/login'
         return <Redirect to={url} />
+    }
+
+    const obj = {
+        firstName: "Mustafa",
+        lastName: "Tester",
+        address: { street: "Lebinizgasse 61", postal: "1100", city: "Wien" },
+        orderId: "someid",
+        deliveryStatus: "OPEN",
+        timeslot: "16:00-17:00",
+        orderDate: "2022-02-23T15:00:00.000+00:00"
     }
 
     // TODO: sort date and sort returned
@@ -60,30 +60,22 @@ const OrderDetail: React.FC = (props) => {
 
                         </IonCardTitle>
                         <IonCardSubtitle>
-                            Hier siehst du die Übersicht des Pfandes von der Bestellung vom {new Date(orderDate).toLocaleDateString()} um {new Date(orderDate).toLocaleTimeString()}
+                            Hier siehst du die Übersicht des Pfandes von der Bestellung vom {new Date(obj.orderDate).toLocaleDateString()} um {new Date(obj.orderDate).toLocaleTimeString()}
                         </IonCardSubtitle>
                     </IonCardContent>
                 </IonCard>
-                <IonItem>
-                    <IonButton slot="end" color="secondary">
-                        Pfand eintragen
-                    </IonButton>
-                </IonItem>
-
                 <IonList>
 
-                    {depositItems.map((obj: any, i) =>
+                    {/* {depositItems.map((obj: any, i) =>
                         <DepositDetailListItem
                             amount={obj.amount}
                             pricePerItem={obj.pricePerItem}
                             productName={obj.productName}
                             returnDates={obj.returnDates}
                             returned={obj.returned}
-                            type={obj.type}
-                            returnHandler={setUpdatingDeposit}
-                        >
+                            type={obj.type}>
                         </DepositDetailListItem>
-                    )}
+                    )} */}
 
 
                     {/* <DepositDetailListItem
@@ -110,25 +102,20 @@ const OrderDetail: React.FC = (props) => {
                         returnDates={[{ date: "21.12.2021 | 17:12", type: "Bierflasche" }]}
                         returned={18}
                         type="Bierflasche">
-                    </DepositDetailListItem>
-                    <DepositDetailListItem
-                        amount={20}
-                        pricePerItem="1,80"
-                        productName="Kiste Ottakringer"
-                        returnDates={[{ date: "21.12.2021 | 17:12", type: "Bierflasche" }]}
-                        returned={18}
-                        type="Bierflasche">
                     </DepositDetailListItem> */}
+
                 </IonList>
-
             </IonContent>
-            {/* <IonFooter className="ion-no-border">
-                    <IonToolbar>
-                        <IonTitle>Footer - No Border</IonTitle>
-                    </IonToolbar>
-                </IonFooter> */}
 
-
+            <IonFooter collapse="fade">
+                <IonToolbar>
+                    <IonButtons slot="begin" >
+                        <IonButton>
+                            <IonIcon slot="icon-only" icon={personCircle} />
+                        </IonButton>
+                    </IonButtons>
+                </IonToolbar>
+            </IonFooter>
         </IonPage >
     );
 };

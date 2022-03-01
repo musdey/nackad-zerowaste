@@ -21,6 +21,19 @@ export type UserOrderProp = {
         orderId: string;
         timeslot: string;
         deliveryDay: string;
+        userId: string;
+      };
+    };
+  };
+};
+
+export type DepositProp = {
+  children?: any;
+  history?: any;
+  location?: {
+    state?: {
+      state?: {
+        orderDate: string;
       };
     };
   };

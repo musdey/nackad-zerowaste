@@ -1,6 +1,6 @@
 import Config from "../Config";
 
-const getUserData = async () => {
+const getUserData = async (): Promise<any> => {
   //   const url = `${protocol + host + port}/api/v1/test/user`;
   const url = Config.User.SELF_URL;
   try {
@@ -13,7 +13,7 @@ const getUserData = async () => {
     });
     const body = await result.json();
 
-    return { status: result.status, body: body };
+    return body;
   } catch (err) {
     console.log(err);
   }
@@ -127,6 +127,42 @@ const getDepositItems = async (depositId: string): Promise<any> => {
   }
 };
 
+const getSettings = async (): Promise<any> => {
+  const url = Config.Settings.GET;
+  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
+  try {
+    const result = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: "Token " + localStorage.getItem("TOKEN") },
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const updateSettings = async (obj: any): Promise<any> => {
+  const url = Config.Settings.POST;
+  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
+  try {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify(obj),
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
 const apiObj = {
   signin,
   signup,
@@ -135,5 +171,7 @@ const apiObj = {
   getCurrentDeliveries,
   getDepositByUserId,
   getDepositItems,
+  getSettings,
+  updateSettings,
 };
 export default apiObj;

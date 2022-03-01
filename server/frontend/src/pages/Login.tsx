@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     IonContent,
     IonPage,
@@ -20,6 +20,7 @@ import {
     IonText,
     IonRouterLink,
     useIonToast,
+    IonCheckbox,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
 import { Redirect } from "react-router";
@@ -28,13 +29,28 @@ import validator from 'validator'
 interface LoginProps { }
 
 const Login: React.FC<LoginProps> = () => {
-    const { signin, signout, user, loggedIn } = useAuth();
+    const { signin, signout, user, loggedIn, getUserWithToken } = useAuth();
     const [userData, setUserData] = useState()
     const [error, setError] = useState(false)
     const router = useIonRouter();
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [present, dismiss] = useIonToast();
+    const [checked, setChecked] = useState(false)
+
+    useEffect(() => {
+        const autoLogin = async function () {
+            const loginWasSaved = localStorage.getItem("SAVELOGIN")
+            if (loginWasSaved === "TRUE") {
+                setChecked(true)
+                const data = localStorage.getItem("TOKEN")
+                if (data && data.length > 0) {
+                    await getUserWithToken()
+                }
+            }
+        }
+        autoLogin()
+    }, [])
 
     if (loggedIn) {
         const url = '/overview'
@@ -49,6 +65,7 @@ const Login: React.FC<LoginProps> = () => {
             if (!result.success) {
                 await present(result.error!.message, 2000)
             }
+            localStorage.setItem("SAVELOGIN", checked ? "TRUE" : "FALSE")
         }
     };
 
@@ -77,6 +94,12 @@ const Login: React.FC<LoginProps> = () => {
                         </IonCardContent>
                     </IonItem>
                 </IonCard>
+                <IonItem>
+                    <IonCheckbox checked={checked} onIonChange={e => setChecked(e.detail.checked)} />
+                    &#160;
+                    <IonLabel> Login für das nächste Mal speichern?</IonLabel>
+
+                </IonItem>
                 <IonButton size="large" expand="block" className="custom-button" onClick={handleLogin}>Login</IonButton>
                 <IonRow>
                     <IonCol>

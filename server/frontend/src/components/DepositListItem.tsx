@@ -2,6 +2,7 @@ import {
     IonItem,
     IonLabel,
 } from '@ionic/react';
+import { useHistory } from 'react-router';
 import './custom.css';
 
 interface DepositListItemProps {
@@ -13,10 +14,20 @@ interface DepositListItemProps {
 }
 
 const DepositListItem: React.FC<DepositListItemProps> = (data) => {
+
+    const history = useHistory()
+
+    const handleClick = () => {
+        console.log("onclick")
+        history.push('/deposit/' + data.depositId, {
+            state: data
+        })
+    }
+
     const allReturned: boolean = Number.parseFloat(data.totalPrice) - Number.parseFloat(data.paidDeposit) === 0
 
     return (
-        <IonItem disabled={allReturned} routerLink={`/deposit/${data.depositId}`} detail={false}>
+        <IonItem disabled={allReturned} onClick={handleClick} detail={false}>
             <IonLabel className="ion-text-wrap">
                 <p> Pfand {data.depositId}</p>
                 <h2>

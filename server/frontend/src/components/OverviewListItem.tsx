@@ -3,6 +3,7 @@ import {
     IonItem,
     IonLabel,
 } from '@ionic/react';
+import { list } from 'ionicons/icons';
 import { useState } from 'react';
 import { useHistory } from 'react-router';
 import './custom.css';
@@ -20,6 +21,7 @@ interface OverviewListItemProps {
     deliveryStatus: 'OPEN' | 'INDELIVERY' | 'DELIVERED' | 'CANCELLED'
     timeslot: string
     deliveryDay: string
+    userId: string
 }
 
 const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
@@ -27,7 +29,6 @@ const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
     const history = useHistory()
 
     const handleClick = () => {
-        console.log("onclick")
         history.push('/order/' + listData.orderId, {
             state: listData
         })

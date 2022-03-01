@@ -19,7 +19,6 @@ const Overview: React.FC = () => {
     useEffect(() => {
         const fn = async () => {
             const data = await api.getCurrentDeliveries()
-            console.log(data)
             setDeliveries(data)
         }
         fn()
@@ -44,7 +43,9 @@ const Overview: React.FC = () => {
                             orderId={obj.shopifyOrder}
                             deliveryStatus={obj.status}
                             timeslot={obj.deliverySlot.slotHours}
-                            deliveryDay={obj.deliverySlot.deliveryDay}>
+                            deliveryDay={obj.deliverySlot.deliveryDay}
+                            userId={obj.user}
+                        >
                         </OverviewListItem>
                     )}
                 </IonList>

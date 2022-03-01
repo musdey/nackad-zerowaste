@@ -29,6 +29,7 @@ import OrderDetail from './pages/OrderDetail';
 import { Menu } from './components/Menu';
 import Signup from './pages/Signup';
 import User from './pages/User';
+import Settings from './pages/Settings';
 setupIonicReact();
 
 const App: React.FC = () => {
@@ -47,6 +48,7 @@ const App: React.FC = () => {
             </Route>
             <Route path="/login" component={Login} exact />
             <Route path="/user" component={User} exact />
+            <Route path="/settings" component={Settings} exact />
             <Route path="/signup" component={Signup} exact />
             <Route path="/overview" component={Overview} exact />
             <Route path="/order/:orderId" component={OrderDetail} />
