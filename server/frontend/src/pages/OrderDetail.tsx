@@ -26,7 +26,7 @@ const OrderDetail: React.FC = (props) => {
     const [delivery, setDelivery] = useState({
         firstName: "No", lastName: "data", deliveryStatus: "OPEN", timeslot: "", address: {
             street: "", postal: "", city: ""
-        }, deliveryDay: "", userId: ""
+        }, deliveryDay: "", userId: "", deliveryId: ""
     })
 
     useEffect(() => {
@@ -66,7 +66,7 @@ const OrderDetail: React.FC = (props) => {
                                     <IonText>Datum  {new Date(delivery.deliveryDay).toLocaleDateString()}</IonText>
                                 </IonRow>
                                 <IonRow>
-                                    <IonText color="secondary">Timeslot {delivery.timeslot}</IonText>
+                                    <IonText color="secondary">Zeitslot {delivery.timeslot}</IonText>
                                 </IonRow>
                                 <IonRow>
                                     <IonText>Status {delivery.deliveryStatus}</IonText>
@@ -83,7 +83,10 @@ const OrderDetail: React.FC = (props) => {
                             totalPrice={obj.totalPrice}
                             paidDeposit={obj.paidDeposit}
                             depositId={obj._id}
-                            orderDate={obj.orderDate}>
+                            orderDate={obj.orderDate}
+                            deliveryId={delivery.deliveryId}
+                            returnedDeposit={obj.returnedDeposit}
+                        >
                         </DepositListItem>
                     )}
                 </IonList>

@@ -19,6 +19,7 @@ interface OverviewListItemProps {
     timeslot: string
     deliveryDay: string
     userId: string
+    deliveryId: string
 }
 
 const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
@@ -40,14 +41,14 @@ const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
                     <IonImg class='overviewitemimg' slot='start' src='./assets/images/red-circle.png' />
             }
             <IonLabel className="ion-text-wrap">
-                <p>Id {listData.orderId}</p>
+                <p>Id {listData.orderId.substring(0, 15)}</p>
                 <h2>
                     {listData.firstName} {listData.lastName}
                 </h2>
                 <h3>{listData.address.street},{listData.address.extra} {listData.address.postal}, {listData.address.city}</h3>
             </IonLabel>
             <IonLabel slot='end'>
-                <p> Timeslot</p>
+                <p> Zeitslot</p>
                 <p>
                     {new Date(listData.deliveryDay).toLocaleDateString()}
                 </p>

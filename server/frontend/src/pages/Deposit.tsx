@@ -9,6 +9,7 @@ import {
     IonCardSubtitle,
     IonButton,
     IonItem,
+    useIonToast,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
 import { Redirect, useParams } from "react-router";
@@ -17,25 +18,28 @@ import DepositDetailListItem from "../components/DepositDetailListItem";
 import api from '../lib/api'
 import { DepositProp } from "../lib/types";
 
-const OrderDetail: React.FC = (props) => {
+const Deposit: React.FC = (props) => {
     const params = useParams<{ depositId: string }>();
     const { loggedIn } = useAuth();
-    const [orderDate, setOrderDate] = useState("")
+    const [orderInfo, setOrderInfo] = useState({ orderDate: "", deliveryId: "" })
     const [depositItems, setDepositItems] = useState([])
+    const [present] = useIonToast();
+
     // const [isUpdating, setUpdating] = useState(false)
-    const [updatedDeposit, setUpdatedDeposit] = useState<[{ id: string, amount: number }]>()
+    const [updatedDeposit, setUpdatedDeposit] = useState<[{ id: string, amount: number }] | undefined>()
+
+    const fetchDeposit = async () => {
+        const data = await api.getDepositItems(params.depositId)
+        setDepositItems(data.depositItems)
+    }
 
     useEffect(() => {
         console.log(updatedDeposit)
         const data: DepositProp = props
         if (data!.location?.state?.state) {
-            setOrderDate(data.location.state.state.orderDate)
+            setOrderInfo(data.location.state.state)
         }
-        const fn = async () => {
-            const data = await api.getDepositItems(params.depositId)
-            setDepositItems(data.depositItems)
-        }
-        fn()
+        fetchDeposit()
     }, [])
 
     useEffect(() => {
@@ -64,8 +68,22 @@ const OrderDetail: React.FC = (props) => {
             } else {
                 updatedDeposit.push({ id, amount })
             }
-
             setUpdatedDeposit([...updatedDeposit])
+        }
+    }
+
+    const updateDepositBtn = async () => {
+        if (updatedDeposit !== undefined && updatedDeposit.length > 0) {
+            const result = await api.updateDeposit(params.depositId, orderInfo.deliveryId, updatedDeposit)
+            if (result === undefined) {
+                await present("Fehler beim Eintragen.", 2000)
+            } else {
+                setUpdatedDeposit(undefined)
+                await present("Pfand erfolgreich eingetragen.", 2000)
+                await fetchDeposit()
+            }
+        } else {
+            await present("Keine Elemente ausgewählt", 2000)
         }
     }
 
@@ -77,15 +95,14 @@ const OrderDetail: React.FC = (props) => {
                 <IonCard>
                     <IonCardContent>
                         <IonCardTitle>
-
                         </IonCardTitle>
                         <IonCardSubtitle>
-                            Hier siehst du die Übersicht des Pfandes von der Bestellung vom {new Date(orderDate).toLocaleDateString()} um {new Date(orderDate).toLocaleTimeString()}
+                            Hier siehst du die Übersicht des Pfandes von der Bestellung vom {new Date(orderInfo.orderDate).toLocaleDateString()} um {new Date(orderInfo.orderDate).toLocaleTimeString()}
                         </IonCardSubtitle>
                     </IonCardContent>
                 </IonCard>
                 <IonItem>
-                    <IonButton slot="end" color="secondary">
+                    <IonButton onClick={updateDepositBtn} slot="end" color="secondary">
                         Pfand eintragen
                     </IonButton>
                 </IonItem>
@@ -114,4 +131,4 @@ const OrderDetail: React.FC = (props) => {
     );
 };
 
-export default OrderDetail;
+export default Deposit;

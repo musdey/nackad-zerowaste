@@ -53,7 +53,7 @@ const Overview: React.FC = () => {
 
     return (
         <IonPage>
-            <Header subTitle="Übersicht" />
+            <Header subTitle="Übersicht Lieferungen" />
             <IonContent fullscreen>
                 <IonRefresher color="grey" slot="fixed" pullFactor={0.5} pullMin={100} pullMax={200} onIonRefresh={doRefresh}>
                     <IonRefresherContent></IonRefresherContent>
@@ -70,6 +70,7 @@ const Overview: React.FC = () => {
                             timeslot={obj.deliverySlot.slotHours}
                             deliveryDay={obj.deliverySlot.deliveryDay}
                             userId={obj.user}
+                            deliveryId={obj._id}
                         >
                         </OverviewListItem>
                     )}

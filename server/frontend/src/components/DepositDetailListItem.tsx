@@ -23,9 +23,9 @@ interface DepositDetailListItemProps {
 
 const DepositDetailListItem: React.FC<DepositDetailListItemProps> = (data) => {
     const allReturned = data.amount - data.returned === 0
-    const [amountReturning, setAmountReturning] = useState(data.returned)
+    const [amountReturning, setAmountReturning] = useState(0)
     const increment = () => {
-        if (amountReturning < data.amount) {
+        if (amountReturning < data.amount - data.returned) {
             data.updateReturnHandler(data.id, amountReturning + 1)
             setAmountReturning(amountReturning + 1)
         }

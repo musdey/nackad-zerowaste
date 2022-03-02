@@ -239,6 +239,30 @@ const searchUser = async (data: string): Promise<any> => {
   }
 };
 
+const updateDeposit = async (
+  depositId: string,
+  deliveryId: string,
+  returnedItems: [{ amount: number; id: string }]
+): Promise<any> => {
+  const url = Config.Deposit.UPDATE;
+  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
+  try {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify({ depositId, deliveryId, returnedItems }),
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
 const apiObj = {
   signin,
   signup,
@@ -253,5 +277,6 @@ const apiObj = {
   getAdmins,
   updateUserRole,
   searchUser,
+  updateDeposit,
 };
 export default apiObj;

@@ -6,6 +6,7 @@ export interface Deposit {
   paidDeposit: string;
   _id: string;
   orderDate: string;
+  returnedDeposit: string;
 }
 
 export type UserOrderProp = {
@@ -22,6 +23,7 @@ export type UserOrderProp = {
         timeslot: string;
         deliveryDay: string;
         userId: string;
+        deliveryId: string;
       };
     };
   };
@@ -34,6 +36,7 @@ export type DepositProp = {
     state?: {
       state?: {
         orderDate: string;
+        deliveryId: string;
       };
     };
   };
