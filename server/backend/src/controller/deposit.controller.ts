@@ -33,26 +33,35 @@ const updateDeposit = async (
   returnedItems: [{ amount: number; id: string }]
 ) => {
   const delivery = await DeliveryModel.findById(deliveryId)
-  let depositStatus: DepositStatus = DepositStatus.RETURNED
-  let countReturnedDepositMoney = 0
   await Promise.all(
     returnedItems.map(async (depositItem) => {
       const item = await DepositItemModel.findById(depositItem.id)
-      if (item) {
+      if (item && item.returned < item.amount && depositItem.amount <= item.amount - item.returned) {
+        console.log(item)
         item.returned = item.returned + depositItem.amount
         item.returnDates.push({ amount: depositItem.amount, date: new Date(), delivery: delivery })
-        countReturnedDepositMoney = parseInt(item.pricePerItem) * depositItem.amount
-        if (item.returned != item.amount) {
-          depositStatus = DepositStatus.PARTIALLYRETURNED
-        }
         await item.save()
       }
     })
   )
-  const depositObj = await DepositModel.findById(depositId)
+  const depositObj = await DepositModel.findById(depositId).populate('depositItems')
   if (depositObj) {
-    depositObj.status = depositStatus
-    depositObj.returnedDeposit = depositObj.returnedDeposit + countReturnedDepositMoney
+    let allReturned = true
+    let contReturnedDepositMoney = 0
+    depositObj.depositItems.forEach((item) => {
+      contReturnedDepositMoney = contReturnedDepositMoney + parseInt(item.pricePerItem) * item.returned
+      if (item.amount !== item.returned) {
+        allReturned = false
+      }
+    })
+    allReturned ? (depositObj.status = DepositStatus.RETURNED) : (depositObj.status = DepositStatus.PARTIALLYRETURNED)
+
+    // wenn leerer string, dann setzte string
+    if (depositObj.returnedDeposit.length === 0) {
+      depositObj.returnedDeposit = contReturnedDepositMoney.toString()
+    } else {
+      depositObj.returnedDeposit = (parseFloat(depositObj.returnedDeposit) + contReturnedDepositMoney).toString()
+    }
     const result = await depositObj.save()
     return result
   }
