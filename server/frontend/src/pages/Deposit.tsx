@@ -2,37 +2,31 @@ import React, { useEffect, useState } from "react";
 import {
     IonContent,
     IonPage,
-    useIonRouter,
-    IonFooter,
     IonList,
     IonCard,
     IonCardContent,
     IonCardTitle,
     IonCardSubtitle,
-    IonToolbar,
-    IonButtons,
     IonButton,
-    IonIcon,
-    IonTitle,
     IonItem,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
 import { Redirect, useParams } from "react-router";
 import { Header } from '../components/Header'
 import DepositDetailListItem from "../components/DepositDetailListItem";
-import { personCircle } from "ionicons/icons";
 import api from '../lib/api'
 import { DepositProp } from "../lib/types";
 
 const OrderDetail: React.FC = (props) => {
     const params = useParams<{ depositId: string }>();
-    const { signin, signout, user, loggedIn } = useAuth();
+    const { loggedIn } = useAuth();
     const [orderDate, setOrderDate] = useState("")
     const [depositItems, setDepositItems] = useState([])
-    const [isUpdating, setUpdating] = useState(false)
-    const [updatingDeposit, setUpdatingDeposit] = useState([])
+    // const [isUpdating, setUpdating] = useState(false)
+    const [updatedDeposit, setUpdatedDeposit] = useState<[{ id: string, amount: number }]>()
 
     useEffect(() => {
+        console.log(updatedDeposit)
         const data: DepositProp = props
         if (data!.location?.state?.state) {
             setOrderDate(data.location.state.state.orderDate)
@@ -44,9 +38,35 @@ const OrderDetail: React.FC = (props) => {
         fn()
     }, [])
 
+    useEffect(() => {
+        console.log(updatedDeposit)
+    }, [updatedDeposit])
+
+
     if (!loggedIn) {
         const url = '/login'
         return <Redirect to={url} />
+    }
+
+
+    const updateReturnHandler = (id: string, amount: number) => {
+        console.log(id + " , amount: " + amount)
+        if (updatedDeposit === undefined) {
+            const obj = { id, amount }
+            setUpdatedDeposit([obj])
+        } else {
+            const found = updatedDeposit.findIndex((elem) =>
+                elem.id === id
+            )
+            console.log(found)
+            if (found > -1) {
+                updatedDeposit[found].amount = amount
+            } else {
+                updatedDeposit.push({ id, amount })
+            }
+
+            setUpdatedDeposit([...updatedDeposit])
+        }
     }
 
     // TODO: sort date and sort returned
@@ -74,60 +94,21 @@ const OrderDetail: React.FC = (props) => {
 
                     {depositItems.map((obj: any, i) =>
                         <DepositDetailListItem
+                            id={obj._id}
                             amount={obj.amount}
                             pricePerItem={obj.pricePerItem}
                             productName={obj.productName}
                             returnDates={obj.returnDates}
                             returned={obj.returned}
                             type={obj.type}
-                            returnHandler={setUpdatingDeposit}
+                            updateReturnHandler={updateReturnHandler}
                         >
                         </DepositDetailListItem>
                     )}
 
-
-                    {/* <DepositDetailListItem
-                        amount={7}
-                        pricePerItem="1,24"
-                        productName="Bauernmilch"
-                        returnDates={[{ date: "21.12.2021 | 17:12", type: "Milchglas" }]}
-                        returned={5}
-                        type="Milchglase">
-
-                    </DepositDetailListItem>
-                    <DepositDetailListItem
-                        amount={1}
-                        pricePerItem="3,00"
-                        productName="Kiste Ottakringer"
-                        returnDates={[{ date: "21.12.2021 | 17:12", type: "Bierkiste" }]}
-                        returned={1}
-                        type="Bierkiste">
-                    </DepositDetailListItem>
-                    <DepositDetailListItem
-                        amount={20}
-                        pricePerItem="1,80"
-                        productName="Kiste Ottakringer"
-                        returnDates={[{ date: "21.12.2021 | 17:12", type: "Bierflasche" }]}
-                        returned={18}
-                        type="Bierflasche">
-                    </DepositDetailListItem>
-                    <DepositDetailListItem
-                        amount={20}
-                        pricePerItem="1,80"
-                        productName="Kiste Ottakringer"
-                        returnDates={[{ date: "21.12.2021 | 17:12", type: "Bierflasche" }]}
-                        returned={18}
-                        type="Bierflasche">
-                    </DepositDetailListItem> */}
                 </IonList>
 
             </IonContent>
-            {/* <IonFooter className="ion-no-border">
-                    <IonToolbar>
-                        <IonTitle>Footer - No Border</IonTitle>
-                    </IonToolbar>
-                </IonFooter> */}
-
 
         </IonPage >
     );

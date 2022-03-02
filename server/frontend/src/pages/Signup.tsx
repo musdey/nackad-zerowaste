@@ -28,7 +28,7 @@ import api from '../lib/api'
 interface LoginProps { }
 
 const Signup: React.FC<LoginProps> = () => {
-    const { signin, signout, user, loggedIn } = useAuth();
+    const { signin, loggedIn } = useAuth();
     const [error, setError] = useState(false)
     const [errorText, setErrorText] = useState('false')
     const [email, setEmail] = useState('')
@@ -36,7 +36,7 @@ const Signup: React.FC<LoginProps> = () => {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [pin, setPin] = useState('')
-    const [present, dismiss] = useIonToast();
+    const [present] = useIonToast();
 
 
     useEffect(() => {
@@ -78,7 +78,7 @@ const Signup: React.FC<LoginProps> = () => {
             const result = await api.signup(firstName, lastName, email, pin, password)
             if (result.status === 200) {
                 await present(result.body.message, 2000)
-                const login = await signin(email, password)
+                await signin(email, password)
             } else {
                 await present(result.body.message, 5000)
             }

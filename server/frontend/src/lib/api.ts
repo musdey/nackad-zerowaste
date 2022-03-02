@@ -16,6 +16,7 @@ const getUserData = async (): Promise<any> => {
     return body;
   } catch (err) {
     console.log(err);
+    return undefined;
   }
 };
 
@@ -92,6 +93,7 @@ const getCurrentDeliveries = async (): Promise<any> => {
     }
   } catch (err) {
     console.log(err);
+    return undefined;
   }
 };
 
@@ -163,6 +165,80 @@ const updateSettings = async (obj: any): Promise<any> => {
   }
 };
 
+const getEmployees = async (): Promise<any> => {
+  const url = Config.User.EMPLOYEES;
+  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
+  try {
+    const result = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: "Token " + localStorage.getItem("TOKEN") },
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
+const getAdmins = async (): Promise<any> => {
+  const url = Config.User.ADMINS;
+  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
+  try {
+    const result = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: "Token " + localStorage.getItem("TOKEN") },
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
+const updateUserRole = async (userId: string, role: string): Promise<any> => {
+  const url = Config.User.UPDATE;
+  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
+  try {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify({ userId, role }),
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const searchUser = async (data: string): Promise<any> => {
+  const url = Config.User.SEARCH;
+  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
+  try {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify({ searchString: data }),
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
 const apiObj = {
   signin,
   signup,
@@ -173,5 +249,9 @@ const apiObj = {
   getDepositItems,
   getSettings,
   updateSettings,
+  getEmployees,
+  getAdmins,
+  updateUserRole,
+  searchUser,
 };
 export default apiObj;

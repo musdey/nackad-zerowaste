@@ -1,11 +1,10 @@
 import {
     IonButton,
-    IonButtons,
-    IonImg,
+    IonFab,
     IonItem,
     IonLabel,
 } from '@ionic/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './custom.css';
 
 interface DepositDetailListItemProps {
@@ -18,19 +17,25 @@ interface DepositDetailListItemProps {
         date: string
     }]
     pricePerItem: string
-    returnHandler: Function
+    updateReturnHandler: Function
+    id: string
 }
 
 const DepositDetailListItem: React.FC<DepositDetailListItemProps> = (data) => {
     const allReturned = data.amount - data.returned === 0
-    const [amountReturning, setAmountReturning] = useState(0)
+    const [amountReturning, setAmountReturning] = useState(data.returned)
     const increment = () => {
-        setAmountReturning(amountReturning + 1)
-        data.returnHandler(amountReturning)
+        if (amountReturning < data.amount) {
+            data.updateReturnHandler(data.id, amountReturning + 1)
+            setAmountReturning(amountReturning + 1)
+        }
     }
 
     const decrement = () => {
-        setAmountReturning(amountReturning - 1)
+        if (amountReturning > 0) {
+            data.updateReturnHandler(data.id, amountReturning - 1)
+            setAmountReturning(amountReturning - 1)
+        }
     }
 
     return (

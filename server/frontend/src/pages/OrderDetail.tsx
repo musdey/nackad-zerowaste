@@ -1,4 +1,5 @@
-import React, { PropsWithChildren, useContext, useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from "react";
 import {
     IonContent,
     IonPage,
@@ -12,7 +13,7 @@ import {
     IonRow,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
-import { Redirect, RouteProps, useParams } from "react-router";
+import { Redirect, useParams } from "react-router";
 import { Header } from '../components/Header'
 import DepositListItem from "../components/DepositListItem";
 import api from '../lib/api'
@@ -20,7 +21,7 @@ import { Deposit, UserOrderProp } from "../lib/types";
 
 const OrderDetail: React.FC = (props) => {
     const params = useParams<{ orderId: string }>();
-    const { signin, signout, user, loggedIn } = useAuth();
+    const { loggedIn } = useAuth();
     const [deposits, setDeposits] = useState([])
     const [delivery, setDelivery] = useState({
         firstName: "No", lastName: "data", deliveryStatus: "OPEN", timeslot: "", address: {

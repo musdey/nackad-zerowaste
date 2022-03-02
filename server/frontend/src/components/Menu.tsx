@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonRouterOutlet, IonIcon, IonLabel } from '@ionic/react';
 import { useAuth } from '../lib/use-auth';
 import { personCircle, logInOutline, logOutOutline, settingsOutline } from 'ionicons/icons';
 import { Redirect, useHistory } from 'react-router';
 
 export const Menu: React.FC = () => {
-    const { signin, signout, user, loggedIn } = useAuth();
+    const { signout, user, loggedIn } = useAuth();
     const history = useHistory()
 
     const logoutHandler = async () => {
@@ -51,7 +51,7 @@ export const Menu: React.FC = () => {
                             <IonIcon icon={personCircle} slot="start"></IonIcon>
                             <IonLabel>Userdetails anzeigen</IonLabel>
                         </IonItem>
-                        {user!.role.name === "ADMIN" &&
+                        {user?.role.name === "ADMIN" &&
                             <IonItem onClick={settignsHandler}>
                                 <IonIcon icon={settingsOutline} slot="start"></IonIcon>
                                 <IonLabel>Einstellungen anzeigen</IonLabel>

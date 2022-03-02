@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
-import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonMenuButton, IonTabButton, IonIcon, IonButton } from '@ionic/react';
+import React from 'react';
+import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonMenuButton, IonIcon, IonButton } from '@ionic/react';
 import { useAuth } from '../lib/use-auth';
-import { menuController } from '@ionic/core';
-import { personCircle, logInOutline } from 'ionicons/icons';
+import { logInOutline } from 'ionicons/icons';
 import '../components/custom.css'
 interface HeaderProps {
     subTitle: string
@@ -10,7 +9,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ subTitle }) => {
 
-    const { signin, signout, user, loggedIn } = useAuth();
+    const { loggedIn } = useAuth();
     return (
         <IonHeader id="headerId" >
 

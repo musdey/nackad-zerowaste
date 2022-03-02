@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
     IonContent,
     IonPage,
-    useIonRouter,
     IonFooter,
     IonList,
     IonCard,
@@ -17,13 +16,12 @@ import {
 import { useAuth } from "../lib/use-auth";
 import { Redirect, useParams } from "react-router";
 import { Header } from '../components/Header'
-import DepositDetailListItem from "../components/DepositDetailListItem";
 import { personCircle } from "ionicons/icons";
 import api from '../lib/api'
 
 const OrderDetail: React.FC = () => {
     const params = useParams<{ depositId: string }>();
-    const { signin, signout, user, loggedIn } = useAuth();
+    const { loggedIn } = useAuth();
     const [depositItems, setDepositItems] = useState([])
 
     useEffect(() => {

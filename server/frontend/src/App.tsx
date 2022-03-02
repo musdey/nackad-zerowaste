@@ -1,7 +1,6 @@
 import { Redirect, Route } from 'react-router-dom';
 import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import Home from './pages/Home';
 import Login from './pages/Login';
 import Deposit from './pages/Deposit';
 import Overview from './pages/Overview'
@@ -28,7 +27,7 @@ import './theme/custom.css'
 import OrderDetail from './pages/OrderDetail';
 import { Menu } from './components/Menu';
 import Signup from './pages/Signup';
-import User from './pages/User';
+import UserPage from './pages/User';
 import Settings from './pages/Settings';
 setupIonicReact();
 
@@ -43,11 +42,8 @@ const App: React.FC = () => {
             <Route path="/" exact={true}>
               <Redirect to="/overview" />
             </Route>
-            <Route path="/home" exact={true}>
-              <Home />
-            </Route>
             <Route path="/login" component={Login} exact />
-            <Route path="/user" component={User} exact />
+            <Route path="/user" component={UserPage} exact />
             <Route path="/settings" component={Settings} exact />
             <Route path="/signup" component={Signup} exact />
             <Route path="/overview" component={Overview} exact />

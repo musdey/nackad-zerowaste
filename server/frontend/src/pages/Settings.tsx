@@ -1,4 +1,4 @@
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonInput, IonItem, IonPage, IonTextarea, useIonToast } from "@ionic/react"
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonInput, IonPage, IonTextarea, useIonToast } from "@ionic/react"
 import { useEffect, useState } from "react";
 import { Header } from "../components/Header"
 import { useAuth } from "../lib/use-auth";
@@ -6,7 +6,7 @@ import api from '../lib/api'
 
 const Settings: React.FC = () => {
 
-    const { signin, signout, user, loggedIn } = useAuth();
+    const { user } = useAuth();
     const [deliveryAreas, setDeliveryAreas] = useState('')
     // const [deliveryHours, setDeliveryHours] = useState({
     //     monday: '',
@@ -21,7 +21,7 @@ const Settings: React.FC = () => {
     const [extraSlots, setExtraSlots] = useState(0)
     const [slotsPerVehicle, setSlotsPerVehicle] = useState(0)
     const [vehicles, setVehicles] = useState(0)
-    const [present, dismiss] = useIonToast();
+    const [present] = useIonToast();
 
 
     useEffect(() => {

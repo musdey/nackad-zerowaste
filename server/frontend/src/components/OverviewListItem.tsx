@@ -3,11 +3,8 @@ import {
     IonItem,
     IonLabel,
 } from '@ionic/react';
-import { list } from 'ionicons/icons';
-import { useState } from 'react';
 import { useHistory } from 'react-router';
 import './custom.css';
-
 interface OverviewListItemProps {
     firstName: string
     lastName: string
@@ -57,7 +54,7 @@ const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
                 <h2 color='primary'>
                     {listData.timeslot}
                 </h2>
-                <h3></h3>
+                <h3> </h3>
             </IonLabel>
         </IonItem >
     );

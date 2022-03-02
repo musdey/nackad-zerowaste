@@ -1,10 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect, useState } from "react";
 import {
     IonContent,
     IonPage,
     IonFooter,
     IonGrid,
     IonList,
+    useIonToast,
+    IonRefresher,
+    IonRefresherContent,
+    RefresherEventDetail,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
 import { Redirect } from "react-router";
@@ -13,15 +18,32 @@ import OverviewListItem from "../components/OverviewListItem";
 import api from '../lib/api'
 
 const Overview: React.FC = () => {
-    const { signin, signout, user, loggedIn } = useAuth();
+    const { loggedIn } = useAuth();
     const [deliveries, setDeliveries] = useState([])
+    const [present] = useIonToast();
 
-    useEffect(() => {
-        const fn = async () => {
-            const data = await api.getCurrentDeliveries()
+    const updateData = async () => {
+        const data = await api.getCurrentDeliveries()
+        console.log(data)
+        if (data === undefined) {
+            await present("Unable to get data. Are you offline?", 4000)
+        } else {
             setDeliveries(data)
         }
-        fn()
+    }
+
+    const doRefresh = async (event: CustomEvent<RefresherEventDetail>) => {
+        await updateData()
+        setTimeout(() => {
+            event.detail.complete();
+        }, 1000);
+    }
+
+    useEffect(() => {
+        async function doIt() {
+            await updateData()
+        }
+        doIt()
     }, [])
 
     if (!loggedIn) {
@@ -33,8 +55,11 @@ const Overview: React.FC = () => {
         <IonPage>
             <Header subTitle="Übersicht" />
             <IonContent fullscreen>
+                <IonRefresher color="grey" slot="fixed" pullFactor={0.5} pullMin={100} pullMax={200} onIonRefresh={doRefresh}>
+                    <IonRefresherContent></IonRefresherContent>
+                </IonRefresher>
                 <IonList>
-                    {deliveries!.map((obj: any, i) =>
+                    {deliveries?.map((obj: any, i) =>
                         <OverviewListItem
                             key={obj.shopifyOrder}
                             firstName={obj.address!.first_name}

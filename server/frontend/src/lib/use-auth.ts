@@ -46,6 +46,9 @@ const useProvideAuth = (): AuthContextInterface => {
       await api
         .getUserData()
         .then(async (data) => {
+          if (!data) {
+            resolve({ success: false });
+          }
           setUser(data);
           setLoggedIn(true);
           resolve({ success: true });
@@ -77,7 +80,7 @@ export function ProvideAuth({
 
 export const useAuth = (): AuthContextInterface => useContext(AuthContext);
 
-type User = {
+export type User = {
   firstName: string;
   lastName: string;
   address: string;

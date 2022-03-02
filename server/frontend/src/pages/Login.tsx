@@ -1,9 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import {
     IonContent,
     IonPage,
     IonButton,
-    useIonRouter,
     IonFooter,
     IonGrid,
     IonLabel,
@@ -29,13 +29,10 @@ import validator from 'validator'
 interface LoginProps { }
 
 const Login: React.FC<LoginProps> = () => {
-    const { signin, signout, user, loggedIn, getUserWithToken } = useAuth();
-    const [userData, setUserData] = useState()
-    const [error, setError] = useState(false)
-    const router = useIonRouter();
+    const { signin, loggedIn, getUserWithToken } = useAuth();
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [present, dismiss] = useIonToast();
+    const [present] = useIonToast();
     const [checked, setChecked] = useState(false)
 
     useEffect(() => {
