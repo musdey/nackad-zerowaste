@@ -14,7 +14,7 @@ const updateRole = async (userId: string, newRole: string) => {
 
 const getUserByRole = async (desiredRole: string) => {
   const role = await Role.findOne({ name: desiredRole })
-  const user = await User.find({ role: role }).select('-password -role')
+  const user = await User.find({ role: role }).select('-password').populate({ path: 'role', select: 'name -_id' })
   if (!user) {
     throw new Error('No users found.')
   }

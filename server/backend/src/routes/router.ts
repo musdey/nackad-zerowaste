@@ -25,7 +25,7 @@ router.get('/user/employees', [authJwt.verifyToken, authJwt.isAdmin], userHandle
 router.get('/user/admins', [authJwt.verifyToken, authJwt.isAdmin], userHandler.getAdmins)
 router.post('/user/search', [authJwt.verifyToken, authJwt.isEmployee], userHandler.searchUser)
 router.get('/user', [authJwt.verifyToken, authJwt.isCustomer], userHandler.getSelf)
-// router.post('/user/update)
+router.post('/user/update', [authJwt.verifyToken, authJwt.isAdmin], userHandler.updateUserRole)
 
 // Open routes
 router.get('/settings', settingsHandler.getSettingsHandler)

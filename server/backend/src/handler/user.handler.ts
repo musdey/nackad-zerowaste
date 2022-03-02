@@ -42,7 +42,7 @@ const searchUser: Handler = async (req: Request & { userId?: string }, res: Resp
   const searchString = req.body.searchString
 
   if (!searchString) {
-    return res.status(404).send({ message: 'Role not set.' })
+    return res.status(404).send({ message: 'Searchstring not set.' })
   }
   try {
     const user = await usercontroller.searchUser(searchString)
