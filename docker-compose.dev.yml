@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  backend:
+    container_name: nackad-backend
+    build:
+      context: ./server/backend
+      dockerfile: ./Dockerfile.dev
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./server/src:/app/server/src
+    env_file:
+      - env_development.env
+
+  mongodb:
+    container_name: nackad-database
+    build:
+      context: ./mongodb
+    volumes:
+      - /data/db:/data/db
+    ports:
+      - '27017:27017'
+    env_file:
+      - env_development.env

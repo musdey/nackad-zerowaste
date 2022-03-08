@@ -10,6 +10,7 @@ import initalizeRoles from './lib/db/initalizeRoles'
 import initializeSettings from './lib/db/initalizeShopSettings'
 import deliverySlotController from './controller/deliveryslot.controller'
 import rateLimit from 'express-rate-limit'
+import path from 'path'
 // import dbNotUp from './middleware/db-not-up'
 
 dotenv.config()
@@ -34,6 +35,7 @@ const limiter = rateLimit({
 
 // Apply the rate limiting middleware to all requests
 //app.use(limiter)
+
 // Setup middleware
 app.use(logger('dev'))
 // app.use(dbNotUp)
@@ -50,14 +52,14 @@ app.use(
     }
   })
 )
-// app.use(express.static(path.join(__dirname, 'public')))
 
 async function init() {
   await deliverySlotController.createDeliverySlots()
 }
 init()
-
+console.log(__dirname)
 // Setup routes
+app.use('/', express.static(path.join(__dirname, 'public')))
 app.use('/api/v1', routerV1)
 app.use(notFoundHandler())
 app.use(errorHandler())

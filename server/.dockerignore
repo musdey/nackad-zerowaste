@@ -1,0 +1,11 @@
+*/node_modules
+*/build
+yarn.lock
+.eslintrc
+.eslintignore
+.gitignore
+dist
+.vscode
+Dockerfile
+*/test
+*jest.*.js
