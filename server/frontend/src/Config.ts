@@ -1,28 +1,29 @@
+const HOST = "https://app.nackad.at/";
 const Config = {
   Auth: {
-    LOGIN_URL: "http://localhost:3000/api/v1/auth/signin",
-    SIGNIN_URL: "http://localhost:3000/api/v1/auth/signup",
+    LOGIN_URL: HOST + "api/v1/auth/signin",
+    SIGNIN_URL: HOST + "api/v1/auth/signup",
     UPDATE_ROLE_URL: "/auth/updateUserRole",
   },
   User: {
-    ALL_URL: "http://localhost:3000/api/v1/user/all",
-    SELF_URL: "http://localhost:3000/api/v1/user",
-    DEPOSIT_BYID: "http://localhost:3000/api/v1/user",
-    EMPLOYEES: "http://localhost:3000/api/v1/user/employees",
-    ADMINS: "http://localhost:3000/api/v1/user/admins",
-    UPDATE: "http://localhost:3000/api/v1/user/update",
-    SEARCH: "http://localhost:3000/api/v1/user/search",
+    ALL_URL: HOST + "api/v1/user/all",
+    SELF_URL: HOST + "api/v1/user",
+    DEPOSIT_BYID: HOST + "api/v1/user",
+    EMPLOYEES: HOST + "api/v1/user/employees",
+    ADMINS: HOST + "api/v1/user/admins",
+    UPDATE: HOST + "api/v1/user/update",
+    SEARCH: HOST + "api/v1/user/search",
   },
   Delivery: {
-    ALLOPEN_URL: "http://localhost:3000/api/v1/delivery/open",
-    DEPOSIT_BYID: "http://localhost:3000/api/v1/deposit/",
+    ALLOPEN_URL: HOST + "api/v1/delivery/open",
+    DEPOSIT_BYID: HOST + "api/v1/deposit/",
   },
   Deposit: {
-    UPDATE: "http://localhost:3000/api/v1/deposit/update",
+    UPDATE: HOST + "api/v1/deposit/update",
   },
   Settings: {
-    GET: "http://localhost:3000/api/v1/settings/admin",
-    POST: "http://localhost:3000/api/v1/settings/update",
+    GET: HOST + "api/v1/settings/admin",
+    POST: HOST + "api/v1/settings/update",
   },
 };
 
