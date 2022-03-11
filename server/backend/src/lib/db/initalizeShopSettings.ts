@@ -1,7 +1,10 @@
+import deliverySlotController from '../../controller/deliveryslot.controller'
 import ShopSettings from '../../models/ShopSettings'
 
 const initializeSettings = async function () {
   try {
+    await deliverySlotController.createDeliverySlots()
+
     const result = await ShopSettings.estimatedDocumentCount()
     if (result === 0) {
       await createSettings()

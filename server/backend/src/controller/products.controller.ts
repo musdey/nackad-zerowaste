@@ -13,22 +13,15 @@ const updateProducts: Handler = async (req: Request, res: Response, next: NextFu
   const newProductArr: any[] = []
   //await fs.writeFile(path.join(__dirname, '/updatedProducts.json'), JSON.stringify(result))
   result?.forEach((product: GraphQLProduct) => {
-    let packaging
-    let deposit
-    product.node.metafields.edges.forEach((element) => {
-      if (element.node.key == 'verpackung') {
-        packaging = element.node.value
-      }
-      if (element.node.key == 'pfand') {
-        deposit = element.node.value
-      }
-    })
+    let deposit = null
+    if (product.node.deposit !== null) {
+      deposit = product.node.deposit.value
+    }
     const idArr = product.node.id.split('/')
     const id = idArr[idArr.length - 1]
     const newProduct = new Product({
       title: product.node.title,
       shopifyId: id,
-      packaging: packaging,
       deposit: deposit
     })
     newProductArr.push(newProduct)

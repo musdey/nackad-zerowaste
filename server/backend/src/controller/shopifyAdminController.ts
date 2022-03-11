@@ -3,29 +3,30 @@ import fetch from 'node-fetch'
 import { GraphQLProduct } from '../types/GraphQLProduct'
 
 const token = Buffer.from(Config.shopifyAdmin.API_KEY + ':' + Config.shopifyAdmin.API_PASSWORD).toString('base64')
+console.log(Config.shopifyAdmin.API_KEY)
+console.log(Config.shopifyAdmin.API_PASSWORD)
+
 const URL = 'https://nomnom-market.myshopify.com/admin/api/2021-10/graphql.json'
 
 // GraphQL query to get products with metafields
 const query = (firstQuery: boolean, cursor?: string) => {
   return `
     {    
-      products(first: 50 ${firstQuery ? '' : ',after: "' + cursor + '"'}) {
+      products(first: 250 ${firstQuery ? '' : ',after: "' + cursor + '"'}) {
         pageInfo {
-            hasNextPage
+          hasNextPage
         }
         edges {
             cursor
             node {
-              	id,
+                id,
                 title,
-                metafields(first: 10) {
-                    edges {
-                        node {
-                            key
-                            value
-                        }
-                    }
-                }
+                deposit: metafield(
+                    namespace:"my_fields"
+                    key: "pfand"
+                ) {
+                    value
+              }
             }
         }
     }
@@ -60,12 +61,14 @@ class ShopifyAdmin {
       // Check if there is more than 50 products
       let hasNextPage = body.data.products.pageInfo.hasNextPage
       let productLength = body.data.products.edges.length
-
+      console.log(allProducts)
       // Iterate through pages
-      while (hasNextPage) {
+      while (hasNextPage == true || hasNextPage == 'true') {
         const cursor = body.data.products.edges[productLength - 1].cursor
         const nextResponse = await makeAPICall(false, cursor)
         const nextBody = await nextResponse.json()
+        console.log(nextBody)
+
         allProducts.push(...nextBody.data.products.edges)
         productLength = nextBody.data.products.edges.length
         hasNextPage = nextBody.data.products.pageInfo.hasNextPage

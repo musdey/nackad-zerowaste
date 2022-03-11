@@ -11,7 +11,8 @@ import initializeSettings from './lib/db/initalizeShopSettings'
 import deliverySlotController from './controller/deliveryslot.controller'
 import rateLimit from 'express-rate-limit'
 import path from 'path'
-// import dbNotUp from './middleware/db-not-up'
+import dbNotUp from './middleware/db-not-up'
+import cron from 'node-cron'
 
 dotenv.config()
 
@@ -28,13 +29,13 @@ initializeSettings()
 const app = express()
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  max: 1000, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false // Disable the `X-RateLimit-*` headers
 })
 
 // Apply the rate limiting middleware to all requests
-//app.use(limiter)
+app.use(limiter)
 
 // Setup middleware
 app.use(logger('dev'))
@@ -53,14 +54,20 @@ app.use(
   })
 )
 
-async function init() {
+cron.schedule('0 1 * * *', async () => {
   await deliverySlotController.createDeliverySlots()
-}
-init()
-console.log(__dirname)
-// Setup routes
-app.use('/', express.static(path.join(__dirname, 'public')))
+  console.log('DeliverySlots created')
+})
+
 app.use('/api/v1', routerV1)
+// Setup routes
+// app.use('/*', express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public')))
+
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'))
+})
+
 app.use(notFoundHandler())
 app.use(errorHandler())
 

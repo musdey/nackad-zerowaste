@@ -28,7 +28,7 @@ const sendMail = async (
 ): Promise<SentMessageInfo> => {
   const { subject, content } = buildEmailContent(username, data, type)
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'PRODUCTION') {
     console.log('DEVELOPMENT: Email would have been sent.')
     console.log('Subject: ', subject)
     console.log('Content: ', content)

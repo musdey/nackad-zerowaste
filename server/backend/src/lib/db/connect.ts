@@ -12,7 +12,7 @@ const connect = async (
   defaultTimeoutForQuery?: number
 ): Promise<void> => {
   let connectionString = `mongodb://${host}:${port}/${database}`
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'PRODUCTION') {
     connectionString = `mongodb://${username}:${password}@${host}:${port}/${database}`
   }
   try {

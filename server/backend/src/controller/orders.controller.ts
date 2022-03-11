@@ -25,7 +25,7 @@ const createNewOrder = async (newOrder: Order) => {
       }
       if (data.name === 'deliveryDay') {
         deliveryDayString = data.value
-        const dateParts = deliveryDayString.split('.')
+        const dateParts = deliveryDayString.split('-')
         deliveryDay = new Date(+dateParts[2], parseInt(dateParts[1]) - 1, +dateParts[0])
       }
     })

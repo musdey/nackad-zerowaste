@@ -3,15 +3,8 @@ export type GraphQLProduct = {
   node: {
     id: string
     title: string
-    metafields: {
-      edges: [
-        {
-          node: {
-            key: string
-            value: string
-          }
-        }
-      ]
+    deposit: null | {
+      value: string
     }
   }
 }

@@ -1,5 +1,5 @@
 const sendSMS = async (username: string, receiverNumber: string, content: string): Promise<string> => {
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'PRODUCTION') {
     console.log('DEVELOPMENT: SMS would have been sent.')
     console.log('Username: ', username)
     console.log('receiverNumber: ', receiverNumber)

@@ -5,7 +5,7 @@ import Role from '../models/Role'
 import UserLoginOTP from '../models/UserLoginOTP'
 import sendSMS from '../lib/smsService'
 
-const secret = process.env.JWT_SECRET || 'test'
+const secret = process.env.JWT_SECRET || 'someRandomTestString'
 const EXPIRYTIME = 10 * 60 * 1000 // 10 minutes
 
 const signup = async (email: string, password: string, firstName: string, lastName: string) => {

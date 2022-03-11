@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import User from '../models/User'
 import { NextFunction, Response } from 'express'
 
-const secret = process.env.JWT_SECRET || 'test'
+const secret = process.env.JWT_SECRET || 'someRandomTestString'
 
 const verifyToken = (req: any, res: Response, next: NextFunction) => {
   let token = req.headers.authorization

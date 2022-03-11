@@ -6,9 +6,11 @@ import User from '../models/User'
 const getDeliverySlotsPublic = async () => {
   const settings = await ShopSettings.findOne({})
 
+  let date = new Date()
+  date.setHours(date.getDate() + 1)
   const deliverySlots = await DeliverySlotModel.find({
     deliveryDay: {
-      $gt: new Date()
+      $gt: date
     }
   })
     .select('-_id -lastUpdatedFrom')
