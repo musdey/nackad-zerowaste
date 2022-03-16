@@ -26,13 +26,16 @@ const createNewOrder = async (newOrder: Order) => {
       if (data.name === 'deliveryDay') {
         deliveryDayString = data.value
         const dateParts = deliveryDayString.split('-')
-        deliveryDay = new Date(+dateParts[2], parseInt(dateParts[1]) - 1, +dateParts[0])
+        deliveryDay = new Date(+dateParts[0], parseInt(dateParts[1]) - 1, +dateParts[2])
       }
     })
   }
+  console.log('before sethours', deliveryDay)
   deliveryDay.setHours(parseInt(timeslot.split('-')[0].split(':')[0]), 0, 0)
   newOrder.timeslot = timeslot
   newOrder.deliveryDay = deliveryDay
+
+  console.log('deliveryDAy', deliveryDay)
 
   const shippingAddress = newOrder.shipping_address as Address
 

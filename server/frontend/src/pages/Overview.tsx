@@ -67,8 +67,8 @@ const Overview: React.FC = () => {
                             address={{ street: obj.address.address1, extra: obj.address.adress2 || '', postal: obj.address.zip, city: obj.address.city }}
                             orderId={obj.shopifyOrder}
                             deliveryStatus={obj.status}
-                            timeslot={obj.deliverySlot.slotHours}
-                            deliveryDay={obj.deliverySlot.deliveryDay}
+                            timeslot={obj.deliverySlot?.slotHours || 'unknown'}
+                            deliveryDay={obj.deliverySlot?.deliveryDay || 'unknown'}
                             userId={obj.user}
                             deliveryId={obj._id}
                         >
