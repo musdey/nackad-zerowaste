@@ -1,13 +1,10 @@
 // test/post.test.ts
 import { describe, it, expect, beforeAll, afterAll, afterEach } from '@jest/globals'
-import User from '../../src/models/User'
 import * as dbHandler from './db'
 import deliveryController from '../../src/controller/delivery.controller'
 import Product from '../../src/models/Product'
 import orderController from '../../src/controller/orders.controller'
 import Order from '../../src/types/order'
-import DeliveryModel from '../../src/models/Delivery'
-import deliverySlotController from '../../src/controller/deliveryslot.controller'
 
 beforeAll(async () => {
   await dbHandler.createTestDB()
@@ -23,16 +20,18 @@ beforeAll(async () => {
   const order: Order = await require('./depositcontroller.json')
   const order2 = { ...order }
   order.note_attributes = [
-    { name: 'deliveryDay', value: new Date().toLocaleDateString() },
+    { name: 'deliveryDay', value: '2023-03-11' },
     { name: 'timeslot', value: '15:00-16:00' }
   ]
   order2.note_attributes = [
-    { name: 'deliveryDay', value: new Date(new Date().setDate(new Date().getDate() + 1)).toLocaleDateString() },
+    { name: 'deliveryDay', value: '2023-03-12' },
     { name: 'timeslot', value: '17:00-18:00' }
   ]
+  order2.id = 'someotherId'
   const order3 = { ...order }
+  order3.id = 'someotherOtherId'
   order3.note_attributes = [
-    { name: 'deliveryDay', value: new Date(new Date().setDate(new Date().getDate() + 2)).toLocaleDateString() },
+    { name: 'deliveryDay', value: '2023-03-11' },
     { name: 'timeslot', value: '19:00-20:00' }
   ]
   await orderController.createNewOrder(order)
@@ -51,11 +50,9 @@ afterAll(async () => {
 describe('Test delivery.controller', () => {
   it('successfully gets deliveries per function', async () => {
     const deliveries = await deliveryController.getAll()
-    console.log(deliveries)
     expect(deliveries.length).toBe(3)
 
     const deliveries2 = await deliveryController.getAllWithStatus('OPEN')
-    console.log(deliveries2)
     expect(deliveries2.length).toBe(3)
     // const del = await DeliveryModel.findOne({ 'delilverySlot.slotHours': '19:00-20:00' })
     // if (del) {
@@ -64,8 +61,7 @@ describe('Test delivery.controller', () => {
     // }
     // const deliverUpdates = await deliveryController.getAllWithStatus('OPEN')
     // expect(deliverUpdates.length).toBe(2)
-    const deliveries3 = await deliveryController.getTodays()
-    console.log(deliveries3)
-    expect(deliveries3.length).toBe(1)
+    // const deliveries3 = await deliveryController.getAll()
+    // expect(deliveries3.length).toBe(3)
   })
 })
