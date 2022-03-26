@@ -1,6 +1,6 @@
 type DeliveryUpdate = {
   id: number
-  order_id: number
+  order_id: string
   status: string
   created_at: string
   service: string

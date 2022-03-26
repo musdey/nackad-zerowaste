@@ -30,12 +30,9 @@ const createNewOrder = async (newOrder: Order) => {
       }
     })
   }
-  console.log('before sethours', deliveryDay)
   deliveryDay.setHours(parseInt(timeslot.split('-')[0].split(':')[0]), 0, 0)
   newOrder.timeslot = timeslot
   newOrder.deliveryDay = deliveryDay
-
-  console.log('deliveryDAy', deliveryDay)
 
   const shippingAddress = newOrder.shipping_address as Address
 
@@ -50,8 +47,14 @@ const createNewOrder = async (newOrder: Order) => {
       lastName: newOrder.customer?.last_name
     }).save()
   }
+  const exists = await OrderModel.exists({ shopifyOrderId: newOrder.id })
+  console.log('exists', exists)
+  if (exists) {
+    return
+  }
   const orderDatabase = await new OrderModel(newOrder)
   orderDatabase.user = user
+  orderDatabase.shopifyOrderId = newOrder.id
   await orderDatabase.save()
 
   let depositItemArr: IDepositItem[] = []
@@ -113,6 +116,7 @@ const createNewOrder = async (newOrder: Order) => {
 // Webhook that is called if the fullfilment status of the order changes
 const orderUpdates = async (update: DeliveryUpdate) => {
   console.log('order Delivered handler called')
+  console.log(update.order_id)
   const currentDelivery = await DeliveryModel.findOne({ shopifyOrderId: update.order_id })
   if (currentDelivery) {
     currentDelivery.updates.push(update)

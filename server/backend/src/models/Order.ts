@@ -4,6 +4,7 @@ import { IUser } from './User'
 export interface IOrder extends Document {
   // _id let it autogenerate by mongodb
   user: IUser
+  shopifyOrderId?: string
   deliveryDay: Date
   timeslot: string
   created_at: Date
@@ -18,6 +19,9 @@ export interface IOrder extends Document {
 const OrderSchema = new Schema(
   {
     // _id let it autogenerate by mongodb
+    shopifyOrderId: {
+      type: String
+    },
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User'
