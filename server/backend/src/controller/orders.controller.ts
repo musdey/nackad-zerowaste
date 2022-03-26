@@ -14,6 +14,7 @@ import DeliverySlotModel from '../models/DeliverySlots'
 // Webhook that is called when a new order is created on webshop
 const createNewOrder = async (newOrder: Order) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  console.log(newOrder)
   let deliveryDayString = 'unset'
   let deliveryDay = new Date()
   let timeslot = 'unset'
@@ -25,12 +26,12 @@ const createNewOrder = async (newOrder: Order) => {
       }
       if (data.name === 'deliveryDay') {
         deliveryDayString = data.value
-        const dateParts = deliveryDayString.split('-')
-        deliveryDay = new Date(+dateParts[0], parseInt(dateParts[1]) - 1, +dateParts[2])
       }
     })
+    const dateParts = deliveryDayString.split('-')
+    deliveryDay = new Date(+dateParts[0], parseInt(dateParts[1]) - 1, +dateParts[2])
+    deliveryDay.setHours(parseInt(timeslot.split('-')[0].split(':')[0]), 0, 0)
   }
-  deliveryDay.setHours(parseInt(timeslot.split('-')[0].split(':')[0]), 0, 0)
   newOrder.timeslot = timeslot
   newOrder.deliveryDay = deliveryDay
 
@@ -104,7 +105,7 @@ const createNewOrder = async (newOrder: Order) => {
     slotHours: timeslot
   })
 
-  const delivery = await new DeliveryModel({ user, shopifyOrder: orderDatabase, address: shippingAddress })
+  const delivery = await new DeliveryModel({ user, shopifyOrder: orderDatabase, address: shippingAddress, shopifyOrderId: newOrder.id })
   deliverySlot?.deliveries?.push(delivery)
   const data = await deliverySlot?.save()
   if (data) {
@@ -135,7 +136,7 @@ const orderUpdates = async (update: DeliveryUpdate) => {
 // Order cancelled webhook
 const orderCancelled = async (cancellation: Cancellation) => {
   console.log('Cancel order handler has been calledcalled')
-
+  console.log(cancellation)
   const currentDelivery = await DeliveryModel.findOne({ shopifyOrderId: cancellation.id })
   if (currentDelivery) {
     currentDelivery.updates.push(cancellation)

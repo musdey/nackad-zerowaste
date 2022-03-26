@@ -5,7 +5,7 @@ COPY ./frontend/package.json ./
 RUN npm install
 
 COPY ./frontend .
-RUN npm install -g ionic
+RUN npm install -g @ionic/cli
 RUN ionic build --engine browser
 
 FROM node:17-alpine AS backend
