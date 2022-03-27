@@ -44,7 +44,7 @@ describe('Test creation deposit + deposititems', () => {
 
     const deposit = await DepositModel.findOne({ customer: userInDb }).populate('depositItems')
     expect(deposit.totalPrice).toEqual('980')
-    expect(deposit.depositItems.length).toEqual(3)
+    expect(deposit.depositItems.length).toEqual(2)
   })
 })
 
