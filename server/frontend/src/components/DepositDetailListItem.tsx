@@ -42,17 +42,17 @@ const DepositDetailListItem: React.FC<DepositDetailListItemProps> = (data) => {
         <IonItem disabled={allReturned} detail={false}>
             <IonLabel className="ion-text-wrap">
                 <p> Typ {data.type}</p>
-                <h2 color='primary' >{data.productName}</h2>
-                <h3> Preis/Stk: {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(parseInt(data.pricePerItem) / 100)}</h3>
+                <h2 color='primary' ><b>{data.productName}</b></h2>
+                <h3> Preis/Stk: <b>{new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(parseInt(data.pricePerItem) / 100)} </b></h3>
                 <h3> Retourniert {data.returned}/{data.amount}</h3>
             </IonLabel>
             <IonItem slot="end">
-                <IonButton onClick={increment}>
-                    +
-                </IonButton>
-                {amountReturning}
-                <IonButton onClick={decrement}>
+                <IonButton size='default' onClick={decrement}>
                     -
+                </IonButton>
+                &#160;{amountReturning}&#160;
+                <IonButton size='default' onClick={increment}>
+                    +
                 </IonButton>
 
             </IonItem>

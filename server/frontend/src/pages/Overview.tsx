@@ -10,6 +10,10 @@ import {
     IonRefresher,
     IonRefresherContent,
     RefresherEventDetail,
+    IonItem,
+    IonLabel,
+    IonButton,
+    IonCard,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
 import { Redirect } from "react-router";
@@ -39,6 +43,16 @@ const Overview: React.FC = () => {
         }, 1000);
     }
 
+    const loadOldDeliveries = async () => {
+        const data = await api.getCurrentDeliveries()
+        console.log(data)
+        if (data === undefined) {
+            await present("Unable to get data. Are you offline?", 4000)
+        } else {
+            setDeliveries(data)
+        }
+    }
+
     useEffect(() => {
         async function doIt() {
             await updateData()
@@ -59,6 +73,16 @@ const Overview: React.FC = () => {
                     <IonRefresherContent></IonRefresherContent>
                 </IonRefresher>
                 <IonList>
+                    {deliveries.length === 0 &&
+                        <IonCard>
+                            <IonLabel>
+                                Keine aktuellen Lieferungen!
+                            </IonLabel>
+                            <IonButton onClick={loadOldDeliveries}>
+                                Zeige alte Lieferungen
+                            </IonButton>
+                        </IonCard>
+                    }
                     {deliveries?.map((obj: any, i) =>
                         <OverviewListItem
                             key={obj.shopifyOrder}

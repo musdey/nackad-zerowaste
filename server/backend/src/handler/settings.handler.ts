@@ -46,5 +46,15 @@ const updateSettingsHandler: Handler = async (req: Request, res: Response, next:
   }
 }
 
-const settingsHandler = { getSettingsHandler, updateSettingsHandler, getSettingsAdminHandler }
+const getStatistics: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await settingsController.getStatistics()
+
+    return res.status(200).send(result)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+const settingsHandler = { getSettingsHandler, updateSettingsHandler, getSettingsAdminHandler, getStatistics }
 export default settingsHandler

@@ -38,6 +38,7 @@ router.get('/user/:id/deposit', [authJwt.verifyToken, authJwt.isEmployee], depos
 router.get('/deposit/:id', [authJwt.verifyToken, authJwt.isEmployee], depositHandler.getDepositById)
 router.post('/deposit/update', [authJwt.verifyToken, authJwt.isEmployee, depositHandler.updateDeposit])
 router.get('/delivery/open', [authJwt.verifyToken, authJwt.isEmployee], deliveryHandler.getCurrentOpenDeliveries)
+router.get('/delivery/all', [authJwt.verifyToken, authJwt.isEmployee], deliveryHandler.getAllDeliveries)
 router.get('/deliveryslots/detail', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.getAllManagement)
 router.post('/deliveryslot/add', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.addSlot)
 router.post('/deliveryslot/remove', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.removeSlot)
@@ -52,7 +53,7 @@ router.use('/webhooks', verifyWebhook, webhookRouter)
 
 // Admin routes
 router.post('/settings/update', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.updateSettingsHandler)
-
+router.get('/statistics', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.getStatistics)
 router.post('/test/webhook/new-order', orderHandler.createNewOrder)
 
 export default router

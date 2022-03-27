@@ -20,6 +20,26 @@ const getUserData = async (): Promise<any> => {
   }
 };
 
+const getStatistics = async (): Promise<any> => {
+  //   const url = `${protocol + host + port}/api/v1/test/user`;
+  const url = Config.Settings.STATISTICS;
+  try {
+    const result = await fetch(url, {
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+    });
+    const body = await result.json();
+
+    return body;
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
 const signup = async (
   firstName: string,
   lastName: string,
@@ -82,6 +102,23 @@ const getUser = async (shopId: string): Promise<any> => {
 
 const getCurrentDeliveries = async (): Promise<any> => {
   const url = Config.Delivery.ALLOPEN_URL;
+  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
+  try {
+    const result = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: "Token " + localStorage.getItem("TOKEN") },
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
+const getAllDeliveries = async (): Promise<any> => {
+  const url = Config.Delivery.ALL;
   //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
@@ -269,6 +306,7 @@ const apiObj = {
   getUser,
   getUserData,
   getCurrentDeliveries,
+  getAllDeliveries,
   getDepositByUserId,
   getDepositItems,
   getSettings,
@@ -278,5 +316,6 @@ const apiObj = {
   updateUserRole,
   searchUser,
   updateDeposit,
+  getStatistics,
 };
 export default apiObj;

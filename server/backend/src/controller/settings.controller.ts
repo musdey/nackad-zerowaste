@@ -1,3 +1,5 @@
+import DepositModel from '../models/Deposit'
+import DepositItemModel from '../models/DepositItem'
 import ShopSettings, { DeliveryHours, IShopSettings } from '../models/ShopSettings'
 
 const getSettings = async () => {
@@ -38,7 +40,29 @@ const updateSettings = async (
   return updated
 }
 
-const settingsController = { getSettings, updateSettings, getSettingsAdmin }
+type DepObject = {
+  name: string
+  amount: number
+}
+
+const getStatistics = async () => {
+  // total deposit out
+  // total deposit per unit
+  const data = await DepositItemModel.find({})
+  //const newArr: DepObject[] = []
+  const aggregatedData = {
+    totalDeposit: 0
+  }
+  data.forEach((item) => {
+    if (item.amount != item.returned) {
+      const amountOpen = item.amount - item.returned
+      aggregatedData.totalDeposit += amountOpen * parseInt(item.pricePerItem)
+    }
+  })
+  return aggregatedData
+}
+
+const settingsController = { getSettings, updateSettings, getSettingsAdmin, getStatistics }
 export default settingsController
 
 /*

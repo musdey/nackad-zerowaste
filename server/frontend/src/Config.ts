@@ -16,6 +16,7 @@ const Config = {
   },
   Delivery: {
     ALLOPEN_URL: HOST + "api/v1/delivery/open",
+    ALL: HOST + "api/v1/delivery/open",
     DEPOSIT_BYID: HOST + "api/v1/deposit/",
   },
   Deposit: {
@@ -23,6 +24,7 @@ const Config = {
   },
   Settings: {
     GET: HOST + "api/v1/settings/admin",
+    STATISTICS: HOST + "api/v1/statistics",
     POST: HOST + "api/v1/settings/update",
   },
 };
