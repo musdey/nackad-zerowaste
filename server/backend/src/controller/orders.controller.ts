@@ -69,16 +69,15 @@ const createNewOrder = async (newOrder: Order) => {
       if (product?.deposit) {
         depositName = product?.deposit.split('-')[0]
         depositPrice = product?.deposit.split('-')[1]
+        const depoItem = await new DepositItemModel({
+          amount: item.quantity,
+          type: depositName,
+          productName: item.title,
+          pricePerItem: depositPrice
+        }).save()
+        totalPrice += parseInt(depositPrice!) * item.quantity!
+        depositItemArr.push(depoItem._id)
       }
-
-      const depoItem = await new DepositItemModel({
-        amount: item.quantity,
-        type: depositName,
-        productName: item.title,
-        pricePerItem: depositPrice
-      }).save()
-      totalPrice += parseInt(depositPrice!) * item.quantity!
-      depositItemArr.push(depoItem._id)
     })
   )
 
@@ -105,7 +104,12 @@ const createNewOrder = async (newOrder: Order) => {
     slotHours: timeslot
   })
 
-  const delivery = await new DeliveryModel({ user, shopifyOrder: orderDatabase, address: shippingAddress, shopifyOrderId: newOrder.id })
+  const delivery = await new DeliveryModel({
+    user,
+    shopifyOrder: orderDatabase,
+    address: shippingAddress,
+    shopifyOrderId: newOrder.id
+  })
   deliverySlot?.deliveries?.push(delivery)
   const data = await deliverySlot?.save()
   if (data) {
