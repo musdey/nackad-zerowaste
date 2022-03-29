@@ -1,4 +1,9 @@
-const HOST = "https://app.nackad.at/";
+let HOST;
+if (process.env.NODE_ENV === "development") {
+  HOST = "http://localhost:3001/";
+} else {
+  HOST = "https://app.nackad.at/";
+}
 const Config = {
   Auth: {
     LOGIN_URL: HOST + "api/v1/auth/signin",

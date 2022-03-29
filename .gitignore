@@ -7,3 +7,5 @@ node_modules
 build/
 backend/yarn-error.log
 .eslintcache
+/data/db
+/data/certbot

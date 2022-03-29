@@ -10,7 +10,7 @@
 FROM node:17-alpine
 
 #WORKDIR /app/backend/build/public
-WORKDIR /backend
+WORKDIR /app/backend
 COPY ./package.json ./
 RUN npm install
 

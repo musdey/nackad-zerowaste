@@ -1,3 +1,5 @@
+*/node_modules
+*/build
 yarn.lock
 .eslintrc
 .eslintignore
@@ -7,5 +9,3 @@ dist
 Dockerfile
 */test
 *jest.*.js
-build
-node_modules
