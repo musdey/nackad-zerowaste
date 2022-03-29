@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonFooter, IonInput, IonItem, IonLabel, IonList, IonModal, IonPage, useIonToast } from "@ionic/react"
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonInput, IonLabel, IonList, IonModal, IonPage, useIonToast } from "@ionic/react"
 import { useEffect, useState } from "react";
 import { Header } from "../components/Header"
 import { useAuth, User } from "../lib/use-auth";
@@ -6,7 +6,7 @@ import api from '../lib/api'
 
 const UserPage: React.FC = () => {
 
-    const { signin, signout, user, loggedIn } = useAuth();
+    const { user } = useAuth();
     const [modalOpen, setModalState] = useState(false)
     const [employees, setEmployees] = useState([])
     const [admins, setAdmins] = useState([])

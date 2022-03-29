@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import {
     IonContent,
@@ -34,7 +35,6 @@ const Deposit: React.FC = (props) => {
     }
 
     useEffect(() => {
-        console.log(updatedDeposit)
         const data: DepositProp = props
         if (data!.location?.state?.state) {
             setOrderInfo(data.location.state.state)
@@ -42,9 +42,8 @@ const Deposit: React.FC = (props) => {
         fetchDeposit()
     }, [])
 
-    useEffect(() => {
-        console.log(updatedDeposit)
-    }, [updatedDeposit])
+    // useEffect(() => {
+    // }, [updatedDeposit])
 
 
     if (!loggedIn) {
@@ -54,7 +53,6 @@ const Deposit: React.FC = (props) => {
 
 
     const updateReturnHandler = (id: string, amount: number) => {
-        console.log(id + " , amount: " + amount)
         if (updatedDeposit === undefined) {
             const obj = { id, amount }
             setUpdatedDeposit([obj])
@@ -62,7 +60,6 @@ const Deposit: React.FC = (props) => {
             const found = updatedDeposit.findIndex((elem) =>
                 elem.id === id
             )
-            console.log(found)
             if (found > -1) {
                 updatedDeposit[found].amount = amount
             } else {
@@ -111,6 +108,7 @@ const Deposit: React.FC = (props) => {
 
                     {depositItems.map((obj: any, i) =>
                         <DepositDetailListItem
+                            key={"id" + obj._id}
                             id={obj._id}
                             amount={obj.amount}
                             pricePerItem={obj.pricePerItem}

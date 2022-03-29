@@ -2,14 +2,6 @@ import React, { useContext, createContext, useState } from "react";
 import api from "./api";
 
 const useProvideAuth = (): AuthContextInterface => {
-  const auser = {
-    firstName: "Mustafa",
-    lastName: "Test",
-    address: "wien",
-    email: "mustafa@nackad.at",
-    phoneNumber: "123456789",
-    userId: "someid",
-  };
   const [user, setUser] = useState<User | undefined>();
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
 

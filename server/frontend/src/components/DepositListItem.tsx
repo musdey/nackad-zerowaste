@@ -20,13 +20,12 @@ const DepositListItem: React.FC<DepositListItemProps> = (data) => {
     const history = useHistory()
 
     const handleClick = () => {
-        console.log("onclick")
         history.push('/deposit/' + data.depositId, {
             state: data
         })
     }
 
-    const allReturned: boolean = Number.parseFloat(data.totalPrice) - Number.parseFloat(data.paidDeposit) === 0
+    //const allReturned: boolean = Number.parseFloat(data.totalPrice) - Number.parseFloat(data.paidDeposit) === 0
 
     return (
         <IonItem disabled={data.status === "RETURNED"} onClick={handleClick} detail={false}>
@@ -42,7 +41,6 @@ const DepositListItem: React.FC<DepositListItemProps> = (data) => {
                 <h2>
                     {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format((parseInt(data.returnedDeposit) || 0) / 100)} /{new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(parseInt(data.totalPrice) / 100)}
                 </h2>
-                <h3></h3>
             </IonLabel>
         </IonItem >
     );
