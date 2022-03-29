@@ -10,7 +10,6 @@ import {
     IonRefresher,
     IonRefresherContent,
     RefresherEventDetail,
-    IonItem,
     IonLabel,
     IonButton,
     IonCard,
@@ -28,7 +27,6 @@ const Overview: React.FC = () => {
 
     const updateData = async () => {
         const data = await api.getCurrentDeliveries()
-        console.log(data)
         if (data === undefined) {
             await present("Unable to get data. Are you offline?", 4000)
         } else {
@@ -45,7 +43,6 @@ const Overview: React.FC = () => {
 
     const loadOldDeliveries = async () => {
         const data = await api.getCurrentDeliveries()
-        console.log(data)
         if (data === undefined) {
             await present("Unable to get data. Are you offline?", 4000)
         } else {
@@ -83,18 +80,30 @@ const Overview: React.FC = () => {
                             </IonButton>
                         </IonCard>
                     }
-                    {deliveries?.map((obj: any, i) =>
+                    {deliveries?.sort((a: any, b: any) => {
+                        if (!a.deliverySlot) {
+                            return -1
+                        }
+                        if (!b.deliverySlot) {
+                            return 1
+                        }
+                        if (new Date(a.deliverySlot.deliveryDay).getTime() > new Date(b.deliverySlot.deliveryDay).getTime()) {
+                            return 1
+                        } else {
+                            return -1
+                        }
+                    }).map((obj: any, i) =>
                         <OverviewListItem
-                            key={obj.shopifyOrder}
-                            firstName={obj.address!.first_name}
-                            lastName={obj.address.last_name}
-                            address={{ street: obj.address.address1, extra: obj.address.adress2 || '', postal: obj.address.zip, city: obj.address.city }}
-                            orderId={obj.shopifyOrder}
-                            deliveryStatus={obj.status}
+                            key={obj.shopifyOrder || ""}
+                            firstName={obj.address?.first_name || "First Name"}
+                            lastName={obj.address?.last_name || "Last Name"}
+                            address={{ street: obj.address?.address1 || "", extra: obj.address?.adress2 || "", postal: obj.address?.zip || "", city: obj.address?.city || "" }}
+                            orderId={obj.shopifyOrder || ""}
+                            deliveryStatus={obj.status || "OPEN"}
                             timeslot={obj.deliverySlot?.slotHours || 'unknown'}
                             deliveryDay={obj.deliverySlot?.deliveryDay || 'unknown'}
-                            userId={obj.user}
-                            deliveryId={obj._id}
+                            userId={obj.user || ""}
+                            deliveryId={obj._id || ""}
                         >
                         </OverviewListItem>
                     )}

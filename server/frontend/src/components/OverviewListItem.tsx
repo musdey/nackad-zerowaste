@@ -26,6 +26,31 @@ const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
 
     const history = useHistory()
 
+    const isToday = (someDate: Date) => {
+        const today = new Date()
+        return someDate.getDate() === today.getDate() &&
+            someDate.getMonth() === today.getMonth() &&
+            someDate.getFullYear() === today.getFullYear()
+    }
+
+    const isTomorrow = (someDate: Date) => {
+        const today = new Date()
+        let tomorrow = new Date()
+        tomorrow.setDate(today.getDate() + 1)
+        return someDate.getDate() === tomorrow.getDate() &&
+            someDate.getMonth() === tomorrow.getMonth() &&
+            someDate.getFullYear() === tomorrow.getFullYear()
+    }
+
+    const isDayAfterTomorrow = (someDate: Date) => {
+        const today = new Date()
+        let tomorrow = new Date()
+        tomorrow.setDate(today.getDate() + 2)
+        return someDate.getDate() === tomorrow.getDate() &&
+            someDate.getMonth() === tomorrow.getMonth() &&
+            someDate.getFullYear() === tomorrow.getFullYear()
+    }
+
     const handleClick = () => {
         history.push('/order/' + listData.orderId, {
             state: listData
@@ -48,7 +73,18 @@ const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
                 <h3>{listData.address.street},{listData.address.extra} {listData.address.postal}, {listData.address.city}</h3>
             </IonLabel>
             <IonLabel slot='end'>
-                <p> Zeitslot</p>
+                {isToday(new Date(listData.deliveryDay)) &&
+                    <p style={{ color: "green" }}>  <b> Heute </b></p>
+                }
+
+                {isTomorrow(new Date(listData.deliveryDay)) &&
+                    <p style={{ color: "red" }}>  <b> Morgen </b></p>
+                }
+
+                {isDayAfterTomorrow(new Date(listData.deliveryDay)) &&
+                    <p style={{ color: "red" }}>  <b> Übermorgen </b></p>
+                }
+
                 <p>
                     {new Date(listData.deliveryDay).toLocaleDateString()}
                 </p>
