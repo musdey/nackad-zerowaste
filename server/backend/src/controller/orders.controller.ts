@@ -60,6 +60,12 @@ const createNewOrder = async (newOrder: Order) => {
 
   let depositItemArr: IDepositItem[] = []
   let totalPrice = 0
+
+  // async function dingser() {
+  //   const dings = await Product.find().distinct('deposit')
+  //   console.log(dings)
+  // }
+  // dingser()
   await Promise.all(
     newOrder.line_items!.map(async (item) => {
       // Get DepositTypes for each ordered product
@@ -72,14 +78,30 @@ const createNewOrder = async (newOrder: Order) => {
         const depoItem = await new DepositItemModel({
           amount: item.quantity,
           type: depositName,
-          productName: item.title,
           pricePerItem: depositPrice
-        }).save()
+        })
         totalPrice += parseInt(depositPrice!) * item.quantity!
-        depositItemArr.push(depoItem._id)
+        depositItemArr.push(depoItem)
       }
     })
   )
+
+  let output: IDepositItem[] = []
+  depositItemArr.forEach(function (item) {
+    const existing = output.filter(function (v, i) {
+      return v.type == item.type
+    })
+    if (existing.length) {
+      const existingIndex = output.indexOf(existing[0])
+      output[existingIndex].amount += item.amount
+    } else {
+      output.push(item)
+    }
+  })
+
+  output.forEach(async (item) => {
+    await item.save()
+  })
 
   // const totalPriceString = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(
   //   totalPrice / 100
@@ -89,7 +111,7 @@ const createNewOrder = async (newOrder: Order) => {
   await new DepositModel({
     customer: user._id,
     order: orderDatabase,
-    depositItems: depositItemArr!,
+    depositItems: output!,
     totalPrice: totalPriceString,
     orderDate: deliveryDay
   }).save()
