@@ -1,4 +1,6 @@
 import deliverySlotController from '../../controller/deliveryslot.controller'
+import productsController from '../../controller/products.controller'
+import Product from '../../models/Product'
 import ShopSettings from '../../models/ShopSettings'
 
 const initializeSettings = async function () {
@@ -15,9 +17,21 @@ const initializeSettings = async function () {
   }
 }
 
+const initProducts = async function () {
+  try {
+    const productCount = await Product.find({}).count()
+    if (productCount === 0) {
+      await productsController.updateProducts()
+      console.log('Products fetched initially')
+    }
+  } catch (error) {
+    console.log('Error ,' + error)
+  }
+}
+
 const createSettings = async function () {
   const newSetting = new ShopSettings({
-    deliveryAreas: '1020;1030;1040;1050;1060;1070;1080;1090;1120;1130;1140;1150;1160;1170;1180',
+    deliveryAreas: '1020;1030;1040;1050;1060;1070;1080;1090;1100;1110;1120;1130;1140;1150;1160;1170;1180;1190;1200',
     deliveryHours: {
       monday: '15:00-20:00',
       tuesday: '15:00-20:00',
@@ -37,4 +51,4 @@ const createSettings = async function () {
   }
 }
 
-export default initializeSettings
+export default { initializeSettings, initProducts }

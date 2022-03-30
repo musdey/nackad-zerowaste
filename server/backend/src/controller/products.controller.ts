@@ -5,14 +5,25 @@ import Product from '../models/Product'
 import fs from 'fs/promises'
 import path from 'path'
 
-const updateProducts: Handler = async (req: Request, res: Response, next: NextFunction) => {
+const updateProductsHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
   console.log('updateProducts handler called')
+
+  const result = await updateProducts()
+  if (result) {
+    console.log('Successfully updated the products')
+    return res.status(200).send('Public Content.')
+  } else {
+    res.status(200).send('200 but failed to fetch products.')
+  }
+}
+
+const updateProducts = async () => {
   const shopifyAdmin = new ShopifyAdmin()
   const result = await shopifyAdmin.getAllProducts()
 
   if (!result) {
     console.log('There was an error fetching the products. No update here.')
-    return res.status(200).send('200 but failed to fetch products.')
+    return false
   }
 
   const newProductArr: any[] = []
@@ -34,9 +45,9 @@ const updateProducts: Handler = async (req: Request, res: Response, next: NextFu
 
   //update mit einem upsert
   await Product.deleteMany({})
-  const answer = await Product.insertMany(newProductArr)
-  console.log('Successfully updated the products')
-  return res.status(200).send('Public Content.')
+  await Product.insertMany(newProductArr)
+  return true
 }
 
-export { updateProducts }
+const productController = { updateProducts, updateProductsHandler }
+export default productController

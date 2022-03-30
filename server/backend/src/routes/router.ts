@@ -1,5 +1,5 @@
 import express from 'express'
-import { updateProducts } from '../controller/products.controller'
+import productsController from '../controller/products.controller'
 import verifyWebhook from '../middleware/verifyWebhook'
 import verifyBody from '../middleware/verifyBody'
 import verifySignUp from '../middleware/verifySignup'
@@ -48,7 +48,7 @@ router.get('/orders/all', [authJwt.verifyToken, authJwt.isEmployee], orderHandle
 router.get('/orders/current', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getCurrent)
 
 // Shopify Webhooks & Product Database
-router.get('/update-products', updateProducts)
+router.get('/update-products', productsController.updateProductsHandler)
 router.use('/webhooks', verifyWebhook, webhookRouter)
 
 // Admin routes

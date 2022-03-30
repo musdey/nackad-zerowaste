@@ -7,7 +7,7 @@ import notFoundHandler from './middleware/not-found-handler'
 import errorHandler from './middleware/error-handler'
 import connectDB from './lib/db/connect'
 import initalizeRoles from './lib/db/initalizeRoles'
-import initializeSettings from './lib/db/initalizeShopSettings'
+import settings from './lib/db/initalizeShopSettings'
 import deliverySlotController from './controller/deliveryslot.controller'
 import rateLimit from 'express-rate-limit'
 import path from 'path'
@@ -24,7 +24,8 @@ const mongodbDBName = process.env.MONGO_INITDB_DATABASE || 'nackad-database'
 // Connect mongoose
 connectDB(mongodbHost, 27017, mongodbUser, mongodbPw, mongodbDBName, 10000)
 initalizeRoles()
-initializeSettings()
+settings.initializeSettings()
+settings.initProducts()
 
 const app = express()
 const limiter = rateLimit({
