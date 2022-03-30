@@ -71,6 +71,7 @@ class ShopifyAdmin {
       return allProducts
     } catch (error) {
       console.error(error)
+      return undefined
     }
   }
 }

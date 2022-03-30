@@ -10,6 +10,11 @@ const updateProducts: Handler = async (req: Request, res: Response, next: NextFu
   const shopifyAdmin = new ShopifyAdmin()
   const result = await shopifyAdmin.getAllProducts()
 
+  if (!result) {
+    console.log('There was an error fetching the products. No update here.')
+    return res.status(200).send('200 but failed to fetch products.')
+  }
+
   const newProductArr: any[] = []
   //await fs.writeFile(path.join(__dirname, '/updatedProducts.json'), JSON.stringify(result))
   result?.forEach((product: GraphQLProduct) => {
@@ -26,10 +31,11 @@ const updateProducts: Handler = async (req: Request, res: Response, next: NextFu
     })
     newProductArr.push(newProduct)
   })
+
   //update mit einem upsert
   await Product.deleteMany({})
   const answer = await Product.insertMany(newProductArr)
-  console.log('successfully added')
+  console.log('Successfully updated the products')
   return res.status(200).send('Public Content.')
 }
 
