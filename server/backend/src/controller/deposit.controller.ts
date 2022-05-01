@@ -46,7 +46,12 @@ const getAggregatedDepositByUserId = async (userId: string) => {
 
   deposits.forEach((deposit) => {
     deposit.depositItems.forEach((item) => {
-      const existing = result.filter((v) => v?.depositType?._id === item.depositType._id || v?.type === item.type)
+      let existing
+      if(item.depositType){
+        existing = result.filter((v) => v?.depositType?._id === item?.depositType?._id) 
+      }else{
+        existing = result.filter((v) => v?.type === item.type)
+      }
       if (existing.length > 0) {
         const existingIndex = result.indexOf(existing[0])
         result[existingIndex].amount = parseInt(result[existingIndex].amount) + item.amount
