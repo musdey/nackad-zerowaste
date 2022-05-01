@@ -27,7 +27,6 @@ const Settings: React.FC = () => {
     useEffect(() => {
         const fn = async () => {
             const data = await api.getSettings()
-            console.log(data)
             setDeliveryAreas(data.deliveryAreas.toString())
             setDeliveryHours(JSON.stringify(data.deliveryHours))
             setExtraSlots(data.extraSlots)

@@ -17,7 +17,7 @@ import {
     useIonPicker,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
-import { Redirect, useHistory, useParams } from "react-router";
+import { Redirect, useParams } from "react-router";
 import { Header } from '../components/Header'
 import api from '../lib/api'
 import { IDeposit, UserOrderProp } from "../lib/types";
@@ -26,7 +26,6 @@ import DepositItemListItem from "../components/DepositItemListItem";
 
 const Deposit: React.FC = (props) => {
     const [presentPicker] = useIonPicker();
-    const history = useHistory()
     const [ionPickerColums, setPickercolums] = useState<any[]>([])
     const params = useParams<{ userId: string }>();
     const { loggedIn } = useAuth();
@@ -101,7 +100,7 @@ const Deposit: React.FC = (props) => {
         })
         setTotalDeposit(total)
 
-        if (data.deposits.length == 0) {
+        if (data.deposits.length === 0) {
             const data = await api.getDepositTypes()
             let pickerData: any[] = []
             data.forEach((element: any) => {

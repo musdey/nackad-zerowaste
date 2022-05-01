@@ -13,13 +13,14 @@ import {
     IonButton,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
-import { Redirect, useParams } from "react-router";
+import { Redirect, useHistory, useParams } from "react-router";
 import { Header } from '../components/Header'
 import api from '../lib/api'
 import { DepositProp } from "../lib/types";
 import DepositItemListItem from "../components/DepositItemListItem";
 
 const DepositDetail: React.FC = (props) => {
+    const history = useHistory()
     const params = useParams<{ depositId: string }>();
     const [presentPicker] = useIonPicker();
     const { loggedIn } = useAuth();
@@ -81,6 +82,7 @@ const DepositDetail: React.FC = (props) => {
         const result = await api.addNewDeposit(orderInfo.userId, depositType.name, amount + "", depositType._id, params.depositId)
         if (result) {
             await fetchDeposit()
+            await present("Erfolgreich hinzugefügt!", 2000)
         }
     }
 

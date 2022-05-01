@@ -25,7 +25,6 @@ const updateSettings = async (
   extraSlots: number
 ) => {
   const settings = await ShopSettings.find({})
-  console.log(settings)
   if (!settings || settings.length === 0) {
     return await new ShopSettings({ deliveryAreas: areas, deliveryHours: hours, slotsPerVehicle, vehicles }).save()
   }
@@ -39,30 +38,17 @@ const updateSettings = async (
   return updated
 }
 
-type DepObject = {
-  name: string
-  amount: number
-}
-
 const getStatistics = async () => {
   const deposits = await DepositModel.find({ status: { $ne: 'RETURNED' } }).populate('depositItems')
-
-  console.log(deposits)
 
   let totalDeposit = 0
   const result: any[] = []
   deposits.forEach((deposit) => {
-    // if (item.amount != item.returned) {
-    //   const amountOpen = item.amount - item.returned
-    //   aggregatedData.totalDeposit += amountOpen * parseInt(item.pricePerItem)
-    // }
     const returnedDep = parseInt(deposit.returnedDeposit)
     const paidDep = parseInt(deposit.paidDeposit)
     totalDeposit = totalDeposit + parseInt(deposit.totalPrice) - (returnedDep || 0) - (paidDep || 0)
     deposit.depositItems.forEach((item) => {
-      // x depositItems
       const existing = result.filter((v) => v?.depositType?._id === item.depositType._id || v?.type === item.type)
-      console.log(existing)
       if (existing.length > 0) {
         const existingIndex = result.indexOf(existing[0])
         result[existingIndex].amount = parseInt(result[existingIndex].amount) + item.amount

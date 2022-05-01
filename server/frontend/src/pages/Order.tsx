@@ -40,6 +40,11 @@ const Order: React.FC = (props) => {
         const data: UserOrderProp = props
         if (data?.location?.state?.state) {
             setOrder(data!.location!.state!.state!)
+        } else {
+            const cachedOrder = localStorage.getItem("order")
+            if (cachedOrder) {
+                setOrder(JSON.parse(cachedOrder))
+            }
         }
 
     }, [])
@@ -50,15 +55,19 @@ const Order: React.FC = (props) => {
     }
 
     const handleOrderDetail = () => {
-        history.push('/orderdetail/' + params.orderId)
+        history.push('/orderdetail/' + params.orderId, {
+            state: order
+        })
     }
 
     const handleCustomerDetail = () => {
-        history.push('/customerdetail/' + params.orderId)
+        history.push('/customerdetail/' + params.orderId, {
+            state: order
+        })
     }
 
     const handleDepositDetail = () => {
-        console.log(order.user._id)
+        localStorage.setItem("order", JSON.stringify(order))
         history.push('/deposit/' + order.user._id, {
             state: order
         })

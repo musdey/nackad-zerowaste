@@ -1,12 +1,13 @@
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonGrid, IonInput, IonItem, IonLabel, IonPage, IonRow, IonText, IonTextarea, useIonToast } from "@ionic/react"
+import { IonButton, IonCard, IonContent, IonItem, IonLabel, IonPage, useIonToast } from "@ionic/react"
 import { useEffect, useState } from "react";
 import { Header } from "../components/Header"
 import { useAuth } from "../lib/use-auth";
 import api from '../lib/api'
+import { Redirect } from "react-router";
 
 const DeliverySlots: React.FC = () => {
 
-    const { user } = useAuth();
+    const { loggedIn } = useAuth();
     const [deliverySlots, setDeliverySlots] = useState([])
     const [present] = useIonToast();
 
@@ -18,6 +19,11 @@ const DeliverySlots: React.FC = () => {
     useEffect(() => {
         fetchDeliverySlots()
     }, [])
+
+    if (!loggedIn) {
+        const url = '/login'
+        return <Redirect to={url} />
+    }
 
     const handleButton = async (event: any) => {
         const actionString = event.target.id
@@ -42,7 +48,7 @@ const DeliverySlots: React.FC = () => {
                         return -1
                     }
                 }).map((slot: any) =>
-                    <IonCard>
+                    <IonCard key={"slotid+" + slot._id}>
                         <IonItem>
 
                             <IonItem>

@@ -52,6 +52,7 @@ const Overview: React.FC = () => {
     }
 
     useEffect(() => {
+        localStorage.removeItem("order")
         async function doIt() {
             await updateData()
         }

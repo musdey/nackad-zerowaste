@@ -2,7 +2,6 @@ import Config from "../Config";
 import { ShopifyOrder } from "./types";
 
 const getUserData = async (): Promise<any> => {
-  //   const url = `${protocol + host + port}/api/v1/test/user`;
   const url = Config.User.SELF_URL;
   try {
     const result = await fetch(url, {
@@ -24,7 +23,6 @@ const getUserData = async (): Promise<any> => {
 const getShopifyOrder = async (
   id: string
 ): Promise<ShopifyOrder | undefined> => {
-  //   const url = `${protocol + host + port}/api/v1/test/user`;
   const url = Config.Order.GET;
   try {
     const result = await fetch(url + id, {
@@ -44,7 +42,6 @@ const getShopifyOrder = async (
 };
 
 const getStatistics = async (): Promise<any> => {
-  //   const url = `${protocol + host + port}/api/v1/test/user`;
   const url = Config.Settings.STATISTICS;
   try {
     const result = await fetch(url, {
@@ -71,7 +68,6 @@ const signup = async (
   password: string
 ): Promise<any> => {
   const obj = { firstName, lastName, email, pin, password };
-  //const url = `${protocol + host + port}/api/v1/auth/signup`;
   const url = Config.Auth.SIGNIN_URL;
   try {
     const result = await fetch(url, {
@@ -88,7 +84,6 @@ const signup = async (
 
 const signin = async (email: string, password: string): Promise<any> => {
   const obj = { email, password };
-  //const url = `${protocol + host + port}/api/v1/auth/signin`;
   const url = Config.Auth.LOGIN_URL;
   const result = await fetch(url, {
     method: "post",
@@ -112,7 +107,6 @@ const signin = async (email: string, password: string): Promise<any> => {
 
 const getUser = async (shopId: string): Promise<any> => {
   const url = Config.User.SELF_URL;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, { method: "GET" });
     if (result.ok) {
@@ -125,7 +119,6 @@ const getUser = async (shopId: string): Promise<any> => {
 
 const getCurrentDeliveries = async (): Promise<any> => {
   const url = Config.Delivery.ALLOPEN_URL;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
       method: "GET",
@@ -142,7 +135,6 @@ const getCurrentDeliveries = async (): Promise<any> => {
 
 const getAllDeliveries = async (): Promise<any> => {
   const url = Config.Delivery.ALL;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
       method: "GET",
@@ -159,7 +151,6 @@ const getAllDeliveries = async (): Promise<any> => {
 
 const getDepositByUserId = async (userId: string): Promise<any> => {
   const url = Config.User.DEPOSIT_BYID;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url + "/" + userId + "/deposit", {
       method: "GET",
@@ -175,7 +166,6 @@ const getDepositByUserId = async (userId: string): Promise<any> => {
 
 const getDepositItems = async (depositId: string): Promise<any> => {
   const url = Config.Delivery.DEPOSIT_BYID;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url + depositId, {
       method: "GET",
@@ -191,7 +181,6 @@ const getDepositItems = async (depositId: string): Promise<any> => {
 
 const getSettings = async (): Promise<any> => {
   const url = Config.Settings.GET;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
       method: "GET",
@@ -207,7 +196,6 @@ const getSettings = async (): Promise<any> => {
 
 const updateSettings = async (obj: any): Promise<any> => {
   const url = Config.Settings.POST;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
       method: "POST",
@@ -227,7 +215,6 @@ const updateSettings = async (obj: any): Promise<any> => {
 
 const getEmployees = async (): Promise<any> => {
   const url = Config.User.EMPLOYEES;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
       method: "GET",
@@ -244,7 +231,6 @@ const getEmployees = async (): Promise<any> => {
 
 const getAdmins = async (): Promise<any> => {
   const url = Config.User.ADMINS;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
       method: "GET",
@@ -261,7 +247,6 @@ const getAdmins = async (): Promise<any> => {
 
 const updateUserRole = async (userId: string, role: string): Promise<any> => {
   const url = Config.User.UPDATE;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
       method: "POST",
@@ -281,7 +266,6 @@ const updateUserRole = async (userId: string, role: string): Promise<any> => {
 
 const searchUser = async (data: string): Promise<any> => {
   const url = Config.User.SEARCH;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
       method: "POST",
@@ -307,7 +291,6 @@ const returnDeposit = async (
   ]
 ): Promise<any> => {
   const url = Config.Deposit.RETURN;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
       method: "POST",
@@ -333,7 +316,6 @@ const addNewDeposit = async (
   depositId?: string
 ): Promise<any> => {
   const url = Config.Deposit.ADDNEW;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
       method: "POST",
@@ -353,7 +335,6 @@ const addNewDeposit = async (
 
 const getAggregatedDeposit = async (userId: string): Promise<any> => {
   const url = Config.Deposit.GETAGGREGATED + "/" + userId;
-  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
       method: "GET",

@@ -129,7 +129,6 @@ const createNewOrder = async (newOrder: Order) => {
     dueDate: new Date(tod.setDate(deliveryDay.getDate() + 21)),
     lastDueDate: new Date(tod.setDate(deliveryDay.getDate() + 90))
   }).save()
-  console.log(output)
 
   // const dateParts = deliveryDay.split('.')
   // const day = new Date(+dateParts[2], parseInt(dateParts[1]) - 1, +dateParts[0])

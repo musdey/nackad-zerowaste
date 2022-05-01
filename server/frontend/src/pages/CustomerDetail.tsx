@@ -14,10 +14,10 @@ import {
     IonButton,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
-import { Redirect, useHistory, useParams } from "react-router";
+import { Redirect, useParams } from "react-router";
 import { Header } from '../components/Header'
 import api from '../lib/api'
-import { IDeposit, ShopifyOrder, UserOrderProp } from "../lib/types";
+import { ShopifyOrder } from "../lib/types";
 
 const CustomerDetail: React.FC = (props) => {
     const { loggedIn } = useAuth();
@@ -25,7 +25,6 @@ const CustomerDetail: React.FC = (props) => {
     const [order, setOrder] = useState<ShopifyOrder | undefined>(undefined)
 
     useEffect(() => {
-        const data: UserOrderProp = props
         const fn = async () => {
             const result = await api.getShopifyOrder(params.shopifyOrderId)
             setOrder(result)

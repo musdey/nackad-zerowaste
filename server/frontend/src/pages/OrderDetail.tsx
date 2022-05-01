@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { Children, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     IonContent,
     IonPage,

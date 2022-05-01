@@ -45,11 +45,8 @@ const getAggregatedDepositByUserId = async (userId: string) => {
   const result: any[] = []
 
   deposits.forEach((deposit) => {
-    // 2
     deposit.depositItems.forEach((item) => {
-      // x depositItems
       const existing = result.filter((v) => v?.depositType?._id === item.depositType._id || v?.type === item.type)
-      console.log(existing)
       if (existing.length > 0) {
         const existingIndex = result.indexOf(existing[0])
         result[existingIndex].amount = parseInt(result[existingIndex].amount) + item.amount
@@ -68,7 +65,7 @@ const getAggregatedDepositByUserId = async (userId: string) => {
     })
   })
 
-  console.log(util.inspect(deposits, { showHidden: false, depth: null, colors: true }))
+  // console.log(util.inspect(deposits, { showHidden: false, depth: null, colors: true }))
 
   const output = result.filter((depositItem) => depositItem.amount != depositItem.returned)
   return { output, deposits }
@@ -161,13 +158,13 @@ const returnDeposit = async (
       // Iterate through all returned items
       returnedItems.forEach(async (returnedItem) => {
         // Iterate through all existing open deposit objects
-        let amountToBeReturned = returnedItem.amount // 2
+        let amountToBeReturned = returnedItem.amount
         if (amountToBeReturned > 0) {
           if (depositItem.depositType.id === returnedItem.depositType || depositItem.type == returnedItem.type) {
-            const totalThatCanBeReturned = depositItem.amount - depositItem.returned // 3
+            const totalThatCanBeReturned = depositItem.amount - depositItem.returned
             let returning
             if (amountToBeReturned > totalThatCanBeReturned) {
-              returning = depositItem.amount - depositItem.returned // 5 - 2 = 3
+              returning = depositItem.amount - depositItem.returned
               depositItem.returned = depositItem.amount
               amountToBeReturned = amountToBeReturned - returning
             } else {
@@ -187,7 +184,12 @@ const returnDeposit = async (
       await depositItem.save()
     })
 
-    // wenn leerer string, dann setzte string
+    if (countReturnedDepositMoney > 0) {
+      const today = new Date()
+      deposit.dueDate = new Date(today.setDate(today.getDate() + 21)).toString()
+    }
+
+    // If string empty, set it
     if (deposit.returnedDeposit.length === 0) {
       deposit.returnedDeposit = countReturnedDepositMoney.toString()
     } else {

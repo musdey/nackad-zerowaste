@@ -41,7 +41,6 @@ const getTodays = async () => {
 
 const search = async (query: string) => {
   const regex = new RegExp(query, 'gm')
-  console.log(regex)
   const user = await User.find({
     $or: [
       { firstName: { $regex: regex } },
@@ -50,7 +49,7 @@ const search = async (query: string) => {
       { email: { $regex: regex } }
     ]
   })
-  console.log(user)
+  // TODO: limit delivery results
   const delivery = await DeliveryModel.find({
     user
   }).populate('deliverySlot user')
