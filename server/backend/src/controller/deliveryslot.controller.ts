@@ -8,7 +8,7 @@ const getDeliverySlotsPublic = async () => {
 
   // Show deliverySlots ealierst 1h and 15minutes before
   let date = new Date()
-  date.setHours(date.getHours() + 1)
+  date.setHours(date.getHours() + 2)
   date.setMinutes(date.getHours() + 15)
 
   const deliverySlots = await DeliverySlotModel.find({
@@ -23,12 +23,12 @@ const getDeliverySlotsPublic = async () => {
 
   deliverySlots.forEach((data) => {
     let suggestion: string[] = []
-    data.deliveries?.forEach((delivery) => {
-      const zip = delivery.address.zip
-      if (zip && !suggestion.includes(zip)) {
-        suggestion.push(zip)
-      }
-    })
+    // data.deliveries?.forEach((delivery) => {
+    //   const zip = delivery.address.zip
+    //   if (zip && !suggestion.includes(zip)) {
+    //     suggestion.push(zip)
+    //   }
+    // })
 
     const newObj = {
       deliveryDay: data.deliveryDay,

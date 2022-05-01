@@ -1,8 +1,7 @@
 FROM node:17-alpine AS frontend
 
 WORKDIR /frontend/
-COPY ./frontend/package.json ./
-COPY ./frontend/package-lock.json ./
+COPY ./frontend/package*.json ./
 RUN npm ci
 
 COPY ./frontend .
@@ -13,8 +12,9 @@ FROM node:17-alpine AS backend
 
 WORKDIR /app/backend/build/public
 WORKDIR /app/backend
-COPY ./backend/package.json ./
-COPY ./backend/package-lock.json ./
+
+COPY ./backend/package*.json ./
+
 RUN npm ci
 
 COPY ./backend .
