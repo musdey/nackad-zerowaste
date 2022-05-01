@@ -1,7 +1,8 @@
 import DeliveryModel from '../models/Delivery'
+import User from '../models/User'
 
 const getAll = async () => {
-  const delivery = await DeliveryModel.find({}).populate('deliverySlot')
+  const delivery = await DeliveryModel.find({}).populate('deliverySlot user')
   return delivery
 }
 
@@ -11,9 +12,14 @@ const getAllWithStatus = async (status: 'OPEN' | 'INDELIVERY' | 'DELIVERED' | 'C
 }
 
 const getCurrent = async () => {
-  const delivery = await DeliveryModel.find({ $or: [{ status: 'OPEN' }, { status: 'INDELIVERY' }] }).populate(
-    'deliverySlot'
-  )
+  const todayMorning = new Date(Date.now())
+  todayMorning.setHours(0)
+  todayMorning.setMinutes(0)
+  const delivery = await DeliveryModel.find({
+    deliveryDay: {
+      $gte: todayMorning
+    }
+  }).populate('deliverySlot user')
   return delivery
 }
 
@@ -33,6 +39,24 @@ const getTodays = async () => {
   return delivery
 }
 
-const deliveryController = { getAll, getAllWithStatus, getCurrent, getTodays }
+const search = async (query: string) => {
+  const regex = new RegExp(query, 'gm')
+  console.log(regex)
+  const user = await User.find({
+    $or: [
+      { firstName: { $regex: regex } },
+      { lastName: { $regex: regex } },
+      { 'address.address1': { $regex: regex } },
+      { email: { $regex: regex } }
+    ]
+  })
+  console.log(user)
+  const delivery = await DeliveryModel.find({
+    user
+  }).populate('deliverySlot user')
+  return delivery
+}
+
+const deliveryController = { search, getAll, getAllWithStatus, getCurrent, getTodays }
 
 export default deliveryController

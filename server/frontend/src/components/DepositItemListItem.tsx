@@ -3,10 +3,11 @@ import {
     IonItem,
     IonLabel,
 } from '@ionic/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './custom.css';
 
-interface DepositDetailListItemProps {
+interface DepositItemListItemProps {
+    withButtons: boolean
     type: string
     productName: string
     amount: number
@@ -18,34 +19,42 @@ interface DepositDetailListItemProps {
     pricePerItem: string
     updateReturnHandler: Function
     id: string
+    depositTypeId: string
 }
 
-const DepositDetailListItem: React.FC<DepositDetailListItemProps> = (data) => {
+const DepositItemListItem: React.FC<DepositItemListItemProps> = (data) => {
     const allReturned = data.amount - data.returned === 0
+
     const [amountReturning, setAmountReturning] = useState(0)
     const increment = () => {
         if (amountReturning < data.amount - data.returned) {
-            data.updateReturnHandler(data.id, amountReturning + 1)
+            data.updateReturnHandler(data.id, amountReturning + 1, data.depositTypeId, data.type)
             setAmountReturning(amountReturning + 1)
         }
     }
 
     const decrement = () => {
         if (amountReturning > 0) {
-            data.updateReturnHandler(data.id, amountReturning - 1)
+            data.updateReturnHandler(data.id, amountReturning - 1, data.depositTypeId, data.type)
             setAmountReturning(amountReturning - 1)
         }
     }
 
+    useEffect(() => {
+        setAmountReturning(0)
+    }, [data.amount, data.returned])
     return (
         <IonItem disabled={allReturned} detail={false}>
+            <IonItem lines='none'>
+                <b>{data.amount - data.returned}</b>&#160;
+            </IonItem>
             <IonLabel className="ion-text-wrap">
                 <h2 style={{ color: '#519e8b', fontWeight: 'bold' }}> {data.type}</h2>
                 <h2 color='primary' ><b>{data.productName}</b></h2>
                 <h3> Preis/Stk: <b>{new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(parseInt(data.pricePerItem) / 100)} </b></h3>
-                <h3> Retourniert {data.returned}/{data.amount}</h3>
             </IonLabel>
-            <IonItem slot="end">
+
+            <IonItem hidden={!data.withButtons} slot="end" style={{ marginLeft: "unset" }}>
                 <IonButton size='default' onClick={decrement}>
                     -
                 </IonButton>
@@ -53,20 +62,9 @@ const DepositDetailListItem: React.FC<DepositDetailListItemProps> = (data) => {
                 <IonButton size='default' onClick={increment}>
                     +
                 </IonButton>
-
             </IonItem>
-
-
-            {/* <IonLabel slot='end'>
-                <p> Returned:</p>
-                <h2>
-                    {data.returnDates.map((value, index) => {
-                        return <li key={index}>{value.date}</li>
-                    })}
-                </h2>
-            </IonLabel> */}
         </IonItem >
     );
 };
 
-export default DepositDetailListItem;
+export default DepositItemListItem;

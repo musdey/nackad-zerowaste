@@ -11,39 +11,118 @@ import {
     IonButton,
     IonItem,
     useIonToast,
+    IonAccordion,
+    IonAccordionGroup,
+    IonText,
+    useIonPicker,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
-import { Redirect, useParams } from "react-router";
+import { Redirect, useHistory, useParams } from "react-router";
 import { Header } from '../components/Header'
-import DepositDetailListItem from "../components/DepositDetailListItem";
 import api from '../lib/api'
-import { DepositProp } from "../lib/types";
+import { IDeposit, UserOrderProp } from "../lib/types";
+import DepositListItem from "../components/DepositListItem";
+import DepositItemListItem from "../components/DepositItemListItem";
 
 const Deposit: React.FC = (props) => {
-    const params = useParams<{ depositId: string }>();
+    const [presentPicker] = useIonPicker();
+    const history = useHistory()
+    const [ionPickerColums, setPickercolums] = useState<any[]>([])
+    const params = useParams<{ userId: string }>();
     const { loggedIn } = useAuth();
     const [orderInfo, setOrderInfo] = useState({ orderDate: "", deliveryId: "" })
     const [depositItems, setDepositItems] = useState([])
+    const [deposits, setDeposits] = useState([])
+    const [totalDeposit, setTotalDeposit] = useState(0)
     const [present] = useIonToast();
+    const [order, setOrder] = useState({
+        firstName: "No", lastName: "data", deliveryStatus: "OPEN", timeslot: "", address: {
+            street: "", postal: "", city: ""
+        }, deliveryDay: "", userId: { _id: "" }, orderId: "", type: "", deliveryId: "", user: {
+            _id: "",
+            address: {
+                address1: '', address2: '', city: '', zip: '', province: '', email: "", emailIsVerified: false, firstName: "", lastName: ""
+                , phoneNumber: "", shopifyUserId: "", _id: ""
+            }
+        }
+    })
+
+    const addDeposit = async (depositType: { _id: string, name: string }, amount: number) => {
+        const result = await api.addNewDeposit(params.userId, depositType.name, amount + "", depositType._id)
+        if (result) {
+            await fetchDeposit()
+        }
+    }
+
+    const createNewDeposit = async () => {
+        presentPicker(
+            [
+                {
+                    name: 'deposit',
+                    options: ionPickerColums,
+                },
+                {
+                    name: 'amount',
+                    options: [
+                        { text: '1', value: '1' },
+                        { text: '2', value: '2' },
+                        { text: '3', value: '3' },
+                        { text: '4', value: '4' },
+                        { text: '5', value: '5' },
+                        { text: '6', value: '6' },
+                        { text: '7', value: '7' },
+                        { text: '8', value: '8' },
+                    ],
+                },
+            ],
+            [
+                {
+                    text: 'Hinzufügen',
+                    handler: (selected) => {
+                        const depositType = selected.deposit.value
+                        const amount = selected.amount.value
+                        addDeposit(depositType, amount)
+                    },
+                },
+            ]
+        )
+    }
 
     // const [isUpdating, setUpdating] = useState(false)
-    const [updatedDeposit, setUpdatedDeposit] = useState<[{ id: string, amount: number }] | undefined>()
+    const [updatedDeposit, setUpdatedDeposit] = useState<[{ id: string, amount: number, depositTypeId?: string, type?: string }] | undefined>()
 
     const fetchDeposit = async () => {
-        const data = await api.getDepositItems(params.depositId)
-        setDepositItems(data.depositItems)
+        const data = await api.getAggregatedDeposit(params.userId)
+        setDepositItems(data.output)
+        setDeposits(data.deposits)
+        let total = 0
+        data.output.forEach((elem: any) => {
+            total += parseInt(elem.pricePerItem) * (elem.amount - elem.returned)
+        })
+        setTotalDeposit(total)
+
+        if (data.deposits.length == 0) {
+            const data = await api.getDepositTypes()
+            let pickerData: any[] = []
+            data.forEach((element: any) => {
+                let pickObj = { text: element.name, value: element }
+                pickerData.push(pickObj)
+            });
+            setPickercolums(pickerData)
+        }
     }
 
     useEffect(() => {
-        const data: DepositProp = props
-        if (data!.location?.state?.state) {
-            setOrderInfo(data.location.state.state)
+
+        const data: UserOrderProp = props
+        if (data?.location?.state?.state) {
+            setOrder(data!.location!.state!.state!)
         }
         fetchDeposit()
     }, [])
 
-    // useEffect(() => {
-    // }, [updatedDeposit])
+    useEffect(() => {
+    }, [updatedDeposit])
 
 
     if (!loggedIn) {
@@ -51,10 +130,9 @@ const Deposit: React.FC = (props) => {
         return <Redirect to={url} />
     }
 
-
-    const updateReturnHandler = (id: string, amount: number) => {
+    const updateReturnHandler = (id: string, amount: number, depositTypeId?: string, type?: string,) => {
         if (updatedDeposit === undefined) {
-            const obj = { id, amount }
+            const obj = { id, amount, depositTypeId, type }
             setUpdatedDeposit([obj])
         } else {
             const found = updatedDeposit.findIndex((elem) =>
@@ -63,7 +141,7 @@ const Deposit: React.FC = (props) => {
             if (found > -1) {
                 updatedDeposit[found].amount = amount
             } else {
-                updatedDeposit.push({ id, amount })
+                updatedDeposit.push({ id, amount, depositTypeId, type })
             }
             setUpdatedDeposit([...updatedDeposit])
         }
@@ -71,7 +149,7 @@ const Deposit: React.FC = (props) => {
 
     const updateDepositBtn = async () => {
         if (updatedDeposit !== undefined && updatedDeposit.length > 0) {
-            const result = await api.updateDeposit(params.depositId, orderInfo.deliveryId, updatedDeposit)
+            const result = await api.returnDeposit(params.userId, orderInfo.deliveryId, updatedDeposit)
             if (result === undefined) {
                 await present("Fehler beim Eintragen.", 2000)
             } else {
@@ -84,44 +162,92 @@ const Deposit: React.FC = (props) => {
         }
     }
 
-    // TODO: sort date and sort returned
     return (
         <IonPage>
-            <Header subTitle={"Pfand " + params.depositId} />
+            <Header subTitle={"Pfand " + params.userId} />
             <IonContent fullscreen>
                 <IonCard>
                     <IonCardContent>
-                        <IonCardTitle>
-                        </IonCardTitle>
+
                         <IonCardSubtitle>
-                            Hier siehst du die Übersicht des Pfandes von der Bestellung vom {new Date(orderInfo.orderDate).toLocaleDateString()} um {new Date(orderInfo.orderDate).toLocaleTimeString()}
+                            Hier siehst du die Übersicht des Pfandes von Kund:in
                         </IonCardSubtitle>
+                        <IonCardTitle>
+                            {order.firstName} {order.lastName}
+                        </IonCardTitle>
+                        <IonText>
+                            Insgesamt Pfand offen: {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(totalDeposit / 100)}
+                        </IonText>
                     </IonCardContent>
                 </IonCard>
-                <IonItem>
-                    <IonButton onClick={updateDepositBtn} slot="end" color="secondary">
-                        Pfand eintragen
-                    </IonButton>
-                </IonItem>
+                <IonCard hidden={deposits.length === 0}>
+                    <IonAccordionGroup>
+                        <IonAccordion>
+                            <IonItem slot="header">Einzelne Positionen</IonItem>
+                            <IonList slot="content">
+                                {deposits!.map((obj: IDeposit, i) =>
+                                    <DepositListItem key={"key" + obj._id}
+                                        userId={params.userId}
+                                        status={obj.status}
+                                        totalPrice={obj.totalPrice}
+                                        paidDeposit={obj.paidDeposit}
+                                        depositId={obj._id}
+                                        orderDate={obj.orderDate}
+                                        deliveryId={""}
+                                        dueDate={obj.dueDate}
+                                        returnedDeposit={obj.returnedDeposit}
+                                    >
+                                    </DepositListItem>
+                                )}
+                            </IonList>
 
-                <IonList>
+                        </IonAccordion>
+                    </IonAccordionGroup>
+                </IonCard>
 
-                    {depositItems.map((obj: any, i) =>
-                        <DepositDetailListItem
-                            key={"id" + obj._id}
-                            id={obj._id}
-                            amount={obj.amount}
-                            pricePerItem={obj.pricePerItem}
-                            productName={obj.productName}
-                            returnDates={obj.returnDates}
-                            returned={obj.returned}
-                            type={obj.type}
-                            updateReturnHandler={updateReturnHandler}
-                        >
-                        </DepositDetailListItem>
-                    )}
+                {depositItems.length === 0 ?
 
-                </IonList>
+                    <IonCard>
+                        <IonCardContent>
+                            <IonCardSubtitle>
+                                Aktuell kein Pfand offen!
+                            </IonCardSubtitle>
+                            <IonButton onClick={createNewDeposit} slot="end" color="secondary">
+                                Pfand erstellen
+                            </IonButton>
+                        </IonCardContent>
+                    </IonCard>
+                    :
+                    <IonItem>
+                        <IonButton onClick={updateDepositBtn} slot="end" color="secondary">
+                            Pfand eintragen
+                        </IonButton>
+                    </IonItem>
+                }
+                {depositItems?.sort((a: any, b: any) => {
+                    if (a?.pricePerItem > b?.pricePerItem) {
+                        return -1
+                    } else {
+                        return 1
+                    }
+                }).map((obj: any, i) =>
+                    < DepositItemListItem
+                        withButtons={true}
+                        key={"id" + obj._id}
+                        id={obj._id}
+                        amount={obj.amount}
+                        pricePerItem={obj.pricePerItem}
+                        productName={obj.productName}
+                        returnDates={obj.returnDates}
+                        returned={obj.returned}
+                        type={obj.type}
+                        updateReturnHandler={updateReturnHandler}
+                        depositTypeId={obj.depositType}
+                    >
+                    </DepositItemListItem>
+                )}
+
+
 
             </IonContent>
 

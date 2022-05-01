@@ -13,6 +13,8 @@ interface DepositListItemProps {
     orderDate: string
     deliveryId: string
     returnedDeposit: string
+    dueDate: string
+    userId: string
 }
 
 const DepositListItem: React.FC<DepositListItemProps> = (data) => {
@@ -20,7 +22,7 @@ const DepositListItem: React.FC<DepositListItemProps> = (data) => {
     const history = useHistory()
 
     const handleClick = () => {
-        history.push('/deposit/' + data.depositId, {
+        history.push('/depositdetail/' + data.depositId, {
             state: data
         })
     }
@@ -35,9 +37,10 @@ const DepositListItem: React.FC<DepositListItemProps> = (data) => {
                     Status: {data.status === "OPEN" ? "Offen" : (data.status === "PARTIALLYRETURNED" ? "Teilweise retourniert" : "Alles Retourniert")}
                 </h2>
                 <h3>Erstellt am {new Date(data.orderDate).toLocaleDateString()}</h3>
+                <h3>Gratis bis  {data.dueDate && new Date(data.dueDate).toLocaleDateString()}</h3>
             </IonLabel>
-            <IonLabel slot='end'>
-                <p slot="end"> Retourniert/Bez.</p>
+            <IonLabel slot='end' style={{ marginLeft: "0px" }}>
+                <p slot="end" > Retourniert/Bez.</p>
                 <h2>
                     {new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format((parseInt(data.returnedDeposit) || 0) / 100)} /{new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(parseInt(data.totalPrice) / 100)}
                 </h2>

@@ -23,14 +23,24 @@ const Config = {
     ALLOPEN_URL: HOST + "api/v1/delivery/open",
     ALL: HOST + "api/v1/delivery/open",
     DEPOSIT_BYID: HOST + "api/v1/deposit/",
+    SEARCH: HOST + "api/v1/delivery/search",
+    GETSLOTS: HOST + "api/v1/deliveryslots/detail",
+    SLOTADD: HOST + "api/v1/deliveryslot/add",
+    SLOTREMOVE: HOST + "api/v1/deliveryslot/remove",
   },
   Deposit: {
-    UPDATE: HOST + "api/v1/deposit/update",
+    RETURN: HOST + "api/v1/deposit/return",
+    ADDNEW: HOST + "api/v1/deposit/add",
+    GETAGGREGATED: HOST + "api/v1/deposit/aggregated",
+    GETTYPES: HOST + "api/v1/deposit-types",
   },
   Settings: {
     GET: HOST + "api/v1/settings/admin",
     STATISTICS: HOST + "api/v1/statistics",
     POST: HOST + "api/v1/settings/update",
+  },
+  Order: {
+    GET: HOST + "api/v1/order/",
   },
 };
 

@@ -27,9 +27,9 @@ beforeAll(async () => {
     { name: 'deliveryDay', value: '2023-03-12' },
     { name: 'timeslot', value: '17:00-18:00' }
   ]
-  order2.id = 'someotherId'
+  order2.id = 12341234
   const order3 = { ...order }
-  order3.id = 'someotherOtherId'
+  order3.id = 123412341234
   order3.note_attributes = [
     { name: 'deliveryDay', value: '2023-03-11' },
     { name: 'timeslot', value: '19:00-20:00' }

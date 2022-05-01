@@ -39,10 +39,21 @@ const getTodaysDeliveries: Handler = async (req: Request, res: Response, next: N
   }
 }
 
+const searchDelivery: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const query = req.body.query
+    const users = await deliverycontroller.search(query)
+    return res.status(200).send(users)
+  } catch (err) {
+    return next(err)
+  }
+}
+
 const deliveryHandler = {
   getAllDeliveries,
   getAllDeliveriesWithGivenStatus,
   getCurrentOpenDeliveries,
-  getTodaysDeliveries
+  getTodaysDeliveries,
+  searchDelivery
 }
 export default deliveryHandler

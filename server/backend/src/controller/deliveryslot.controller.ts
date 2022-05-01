@@ -6,8 +6,11 @@ import User from '../models/User'
 const getDeliverySlotsPublic = async () => {
   const settings = await ShopSettings.findOne({})
 
+  // Show deliverySlots ealierst 1h and 15minutes before
   let date = new Date()
-  date.setHours(date.getHours()+1)
+  date.setHours(date.getHours() + 1)
+  date.setMinutes(date.getHours() + 15)
+
   const deliverySlots = await DeliverySlotModel.find({
     deliveryDay: {
       $gt: date
@@ -139,7 +142,7 @@ const updateSlot = async (deliverySlotId: string, userId: string, type: 'ADD' | 
     if (type == 'ADD') {
       slot.maxSlotSize = slot.maxSlotSize + 1
     } else {
-      if (slot.maxSlotSize <= slot.deliveries!.length || slot.maxSlotSize <= 2) {
+      if (slot.maxSlotSize <= slot.deliveries!.length) {
         throw new Error('No open slots to remove.')
       } else {
         slot.maxSlotSize = slot.maxSlotSize - 1

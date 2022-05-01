@@ -1,6 +1,5 @@
 import DepositModel from '../models/Deposit'
-import DepositItemModel from '../models/DepositItem'
-import ShopSettings, { DeliveryHours, IShopSettings } from '../models/ShopSettings'
+import ShopSettings, { DeliveryHours } from '../models/ShopSettings'
 
 const getSettings = async () => {
   const settings = await ShopSettings.find({}).select('-slotsPerVehicle -vehicles')
@@ -46,19 +45,44 @@ type DepObject = {
 }
 
 const getStatistics = async () => {
-  // total deposit out
-  // total deposit per unit
-  const data = await DepositItemModel.find({})
-  //const newArr: DepObject[] = []
-  const aggregatedData = {
-    totalDeposit: 0
-  }
-  data.forEach((item) => {
-    if (item.amount != item.returned) {
-      const amountOpen = item.amount - item.returned
-      aggregatedData.totalDeposit += amountOpen * parseInt(item.pricePerItem)
-    }
+  const deposits = await DepositModel.find({ status: { $ne: 'RETURNED' } }).populate('depositItems')
+
+  console.log(deposits)
+
+  let totalDeposit = 0
+  const result: any[] = []
+  deposits.forEach((deposit) => {
+    // if (item.amount != item.returned) {
+    //   const amountOpen = item.amount - item.returned
+    //   aggregatedData.totalDeposit += amountOpen * parseInt(item.pricePerItem)
+    // }
+    const returnedDep = parseInt(deposit.returnedDeposit)
+    const paidDep = parseInt(deposit.paidDeposit)
+    totalDeposit = totalDeposit + parseInt(deposit.totalPrice) - (returnedDep || 0) - (paidDep || 0)
+    deposit.depositItems.forEach((item) => {
+      // x depositItems
+      const existing = result.filter((v) => v?.depositType?._id === item.depositType._id || v?.type === item.type)
+      console.log(existing)
+      if (existing.length > 0) {
+        const existingIndex = result.indexOf(existing[0])
+        result[existingIndex].amount = parseInt(result[existingIndex].amount) + item.amount
+        result[existingIndex].returned = parseInt(result[existingIndex].returned) + item.returned
+      } else {
+        const copiedItem = {
+          _id: item._id,
+          type: item.type,
+          amount: item.amount,
+          returned: item.returned,
+          depositType: item.depositType,
+          pricePerItem: item.pricePerItem
+        }
+        result.push(copiedItem)
+      }
+    })
   })
+
+  const totalDepositItems = result
+  const aggregatedData = { totalDeposit, totalDepositItems }
   return aggregatedData
 }
 

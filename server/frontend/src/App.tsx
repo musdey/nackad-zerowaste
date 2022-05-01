@@ -24,12 +24,16 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 import './theme/custom.css'
-import OrderDetail from './pages/OrderDetail';
+import Order from './pages/Order';
 import { Menu } from './components/Menu';
 import Signup from './pages/Signup';
 import UserPage from './pages/User';
 import Settings from './pages/Settings';
 import Statistics from './pages/Statistics';
+import OrderDetail from './pages/OrderDetail'
+import CustomerDetail from './pages/CustomerDetail';
+import DepositDetail from './pages/DepositDetail';
+import DeliverySlots from './pages/DeliverySlots';
 setupIonicReact();
 
 const App: React.FC = () => {
@@ -47,10 +51,14 @@ const App: React.FC = () => {
             <Route path="/user" component={UserPage} exact />
             <Route path="/settings" component={Settings} exact />
             <Route path="/statistics" component={Statistics} exact />
+            <Route path="/deliveryslots" component={DeliverySlots} exact />
             <Route path="/signup" component={Signup} exact />
             <Route path="/overview" component={Overview} exact />
-            <Route path="/order/:orderId" component={OrderDetail} />
-            <Route path="/deposit/:depositId" component={Deposit} exact />
+            <Route path="/order/:orderId" component={Order} exact />
+            <Route path="/deposit/:userId" component={Deposit} exact />
+            <Route path="/depositdetail/:depositId" component={DepositDetail} exact />
+            <Route path="/orderdetail/:shopifyOrderId" component={OrderDetail} exact />
+            <Route path="/customerdetail/:shopifyOrderId" component={CustomerDetail} exact />
 
           </ProvideAuth>
         </IonRouterOutlet>

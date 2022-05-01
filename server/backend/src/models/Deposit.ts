@@ -14,6 +14,8 @@ export interface IDeposit extends Document {
   paidDeposit: string
   returnedDeposit: string
   orderDate: string
+  dueDate: string
+  lastDueDate: string
 }
 
 const DepositSchema = new Schema(
@@ -50,6 +52,12 @@ const DepositSchema = new Schema(
       }
     ],
     orderDate: {
+      type: String
+    },
+    dueDate: {
+      type: String
+    },
+    lastDueDate: {
       type: String
     }
   },

@@ -1,10 +1,13 @@
 import {
+    IonIcon,
     IonImg,
     IonItem,
     IonLabel,
 } from '@ionic/react';
 import { useHistory } from 'react-router';
 import './custom.css';
+import { carOutline, homeOutline } from 'ionicons/icons';
+
 interface OverviewListItemProps {
     firstName: string
     lastName: string
@@ -18,8 +21,15 @@ interface OverviewListItemProps {
     deliveryStatus: 'OPEN' | 'INDELIVERY' | 'DELIVERED' | 'CANCELLED'
     timeslot: string
     deliveryDay: string
-    userId: string
+    user: {
+        address: {
+            address1: string, address2: string, city: string, zip: string, province: string, email: string, emailIsVerified: boolean, firstName: string, lastName: string
+            , phoneNumber: string, shopifyUserId: string, _id: string
+        }
+        _id: string
+    }
     deliveryId: string
+    type: string
 }
 
 const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
@@ -59,18 +69,28 @@ const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
 
     return (
         <IonItem onClick={handleClick} detail={false}>
-            {listData.deliveryStatus === 'OPEN' ? <IonImg class='overviewitemimg' slot='start' src='./assets/images/green-circle.png' />
+            {listData.deliveryStatus === 'OPEN' ? <IonImg class='overviewitemimg' src='./assets/images/green-circle.png' />
                 :
-                listData.deliveryStatus === 'INDELIVERY' ? <IonImg class='overviewitemimg' slot='start' src='./assets/images/orange-circle.png' />
+                listData.deliveryStatus === 'INDELIVERY' ? <IonImg class='overviewitemimg' src='./assets/images/orange-circle.png' />
                     :
-                    <IonImg class='overviewitemimg' slot='start' src='./assets/images/red-circle.png' />
+                    <IonImg class='overviewitemimg' src='./assets/images/violet-circle.png' />
             }
+            <p style={{ width: "5px" }}> </p>
+            {listData.type === "DELIVERY" ? <IonIcon icon={carOutline} ></IonIcon>
+                :
+                <IonIcon icon={homeOutline} ></IonIcon>
+            }
+            <div style={{ width: '20px' }}></div>
             <IonLabel className="ion-text-wrap">
                 <p>Id {listData.orderId.substring(0, 15)}</p>
                 <h2>
                     {listData.firstName} {listData.lastName}
                 </h2>
-                <h3>{listData.address.street},{listData.address.extra} {listData.address.postal}, {listData.address.city}</h3>
+                {listData.type === "DELIVERY" ?
+                    <h3>{listData.address.street},{listData.address.extra} {listData.address.postal}, {listData.address.city}</h3>
+                    :
+                    <h3>Abholung im Lager</h3>
+                }
             </IonLabel>
             <IonLabel slot='end'>
                 {isToday(new Date(listData.deliveryDay)) &&

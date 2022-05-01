@@ -1,4 +1,5 @@
 import Config from "../Config";
+import { ShopifyOrder } from "./types";
 
 const getUserData = async (): Promise<any> => {
   //   const url = `${protocol + host + port}/api/v1/test/user`;
@@ -14,6 +15,28 @@ const getUserData = async (): Promise<any> => {
     const body = await result.json();
 
     return body;
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
+const getShopifyOrder = async (
+  id: string
+): Promise<ShopifyOrder | undefined> => {
+  //   const url = `${protocol + host + port}/api/v1/test/user`;
+  const url = Config.Order.GET;
+  try {
+    const result = await fetch(url + id, {
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+    });
+    const body = await result.json();
+
+    return body as ShopifyOrder;
   } catch (err) {
     console.log(err);
     return undefined;
@@ -276,12 +299,14 @@ const searchUser = async (data: string): Promise<any> => {
   }
 };
 
-const updateDeposit = async (
-  depositId: string,
+const returnDeposit = async (
+  userId: string,
   deliveryId: string,
-  returnedItems: [{ amount: number; id: string }]
+  returnedItems: [
+    { amount: number; id: string; depositTypeId?: string; depositName?: string }
+  ]
 ): Promise<any> => {
-  const url = Config.Deposit.UPDATE;
+  const url = Config.Deposit.RETURN;
   //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
   try {
     const result = await fetch(url, {
@@ -290,7 +315,131 @@ const updateDeposit = async (
         "Content-Type": "application/json",
         Authorization: "Token " + localStorage.getItem("TOKEN"),
       },
-      body: JSON.stringify({ depositId, deliveryId, returnedItems }),
+      body: JSON.stringify({ userId, deliveryId, returnedItems }),
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const addNewDeposit = async (
+  userId: string,
+  type: string,
+  amount: string,
+  depositTypeId?: string,
+  depositId?: string
+): Promise<any> => {
+  const url = Config.Deposit.ADDNEW;
+  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
+  try {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify({ userId, type, amount, depositTypeId, depositId }),
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const getAggregatedDeposit = async (userId: string): Promise<any> => {
+  const url = Config.Deposit.GETAGGREGATED + "/" + userId;
+  //const url = `${protocol + host + port}/api/v1/user/${shopId}`;
+  try {
+    const result = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const searchDelivery = async (query: string): Promise<any> => {
+  const url = Config.Delivery.SEARCH;
+  try {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify({ query }),
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const getDepositTypes = async (): Promise<any> => {
+  const url = Config.Deposit.GETTYPES;
+  try {
+    const result = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const getDeliverySlots = async (): Promise<any> => {
+  const url = Config.Delivery.GETSLOTS;
+  try {
+    const result = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const updateDeliverySlots = async (
+  deliverySlotId: string,
+  action: string
+): Promise<any> => {
+  const addUrl = Config.Delivery.SLOTADD;
+  const removeUrl = Config.Delivery.SLOTREMOVE;
+  const url = action === "ADD" ? addUrl : removeUrl;
+  try {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify({ deliverySlotId }),
     });
     if (result.ok) {
       return result.json();
@@ -315,7 +464,14 @@ const apiObj = {
   getAdmins,
   updateUserRole,
   searchUser,
-  updateDeposit,
+  returnDeposit,
+  addNewDeposit,
   getStatistics,
+  getShopifyOrder,
+  getAggregatedDeposit,
+  searchDelivery,
+  getDepositTypes,
+  getDeliverySlots,
+  updateDeliverySlots,
 };
 export default apiObj;
