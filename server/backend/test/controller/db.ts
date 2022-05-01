@@ -4,6 +4,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server'
 import Role from '../../src/models/Role'
 import deliverySlotController from '../../src/controller/deliveryslot.controller'
 import ShopSettings from '../../src/models/ShopSettings'
+import DeliverySlotModel from '../../src/models/DeliverySlots'
 
 let mongod: MongoMemoryServer
 export const createTestDB = async () => {
@@ -33,7 +34,11 @@ export const connect = async () => {
     }
   })
   await newSetting.save()
-  await deliverySlotController.createDeliverySlots()
+  await new DeliverySlotModel({
+    deliveryDay: new Date('Thu Apr 14 2022 10:02:02 GMT+0200'),
+    slotHours: '15:00-16:00',
+    maxSlotSize: 4
+  }).save()
 }
 
 /**

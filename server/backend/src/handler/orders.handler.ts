@@ -61,5 +61,19 @@ const getCurrent: Handler = async (req: Request, res: Response, next: NextFuncti
   return res.status(200).send(order)
 }
 
-const orderHandler = { orderUpdates, createNewOrder, orderCancelled, getAll, getCurrent, getFuture, getToday }
+const getShopifyOrderById: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  const shopifyOrder = await orderController.getById(req.params.id)
+  return res.status(200).send(shopifyOrder)
+}
+
+const orderHandler = {
+  getShopifyOrderById,
+  orderUpdates,
+  createNewOrder,
+  orderCancelled,
+  getAll,
+  getCurrent,
+  getFuture,
+  getToday
+}
 export default orderHandler

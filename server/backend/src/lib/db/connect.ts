@@ -11,7 +11,12 @@ const connect = async (
   database?: string,
   defaultTimeoutForQuery?: number
 ): Promise<void> => {
-  const connectionString = `mongodb://${username}:${password}@${host}:${port}/${database}`
+  let connectionString
+  if (username) {
+    connectionString = `mongodb://${username}:${password}@${host}:${port}/${database}`
+  } else {
+    connectionString = `mongodb://${host}:${port}/${database}`
+  }
   try {
     await mongoose.connect(connectionString, {
       connectTimeoutMS: defaultTimeoutForQuery

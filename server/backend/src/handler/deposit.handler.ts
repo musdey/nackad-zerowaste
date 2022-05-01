@@ -15,6 +15,29 @@ const getDepositById: Handler = async (req: Request, res: Response, next: NextFu
   }
 }
 
+const getDepositTypes: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const depositTypes = await depositcontroller.getDepositTypes()
+    return res.status(200).send(depositTypes)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+const getAggregatedDeposit: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.params.id
+  if (!userId) {
+    return res.status(404).send('UserId missing')
+  }
+
+  try {
+    const deposit = await depositcontroller.getAggregatedDepositByUserId(userId)
+    return res.status(200).send(deposit)
+  } catch (err) {
+    return next(err)
+  }
+}
+
 const getDepositByUserId: Handler = async (req: Request, res: Response, next: NextFunction) => {
   // TODO: Do input validation
 
@@ -47,22 +70,60 @@ const getDepositByShopifyId: Handler = async (req: Request, res: Response, next:
   }
 }
 
-const updateDeposit: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  const depositId = req.body.depositId
+const returnDeposit: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.body.userId
   const deliveryId = req.body.deliveryId
   const returnedItems = req.body.returnedItems
 
-  if (!depositId || !deliveryId || !returnedItems) {
-    return res.status(404).send('One of the params depositId, deliveryId, [returnedItems] is missing.')
+  if (!returnedItems) {
+    return res.status(404).send('[returnedItems] missing')
   }
 
+  if (!userId && !deliveryId) {
+    return res.status(404).send('One of the params userId or deliveryId must be provided.')
+  }
   try {
-    const result = await depositcontroller.updateDeposit(depositId, deliveryId, returnedItems)
+    const result = await depositcontroller.returnDeposit(userId, deliveryId, returnedItems)
     return res.status(200).send(result)
   } catch (err) {
     return next(err)
   }
 }
 
-const depositHandler = { getDepositByUserId, getDepositById, getDepositByShopifyId, updateDeposit }
+const addNewDeposit: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.body.userId
+  const type = req.body.type
+  const amount = req.body.amount
+  const depositTypeId = req.body.depositTypeId
+  const depositId = req.body.depositId
+
+  if (!amount) {
+    return res.status(404).send('Amount missing')
+  }
+
+  if (!userId && !depositId) {
+    return res.status(404).send('One of the params depositId or userId must be provided')
+  }
+
+  if (!depositTypeId && !type) {
+    return res.status(404).send('One of the params userId or deliveryId must be provided.')
+  }
+  console.log('depositId' + depositId)
+  try {
+    const result = await depositcontroller.addNewDeposit(userId, type, amount, depositTypeId, depositId)
+    return res.status(200).send(result)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+const depositHandler = {
+  getAggregatedDeposit,
+  getDepositByUserId,
+  getDepositById,
+  getDepositByShopifyId,
+  returnDeposit,
+  addNewDeposit,
+  getDepositTypes
+}
 export default depositHandler

@@ -1,9 +1,11 @@
 import { Document, Schema, Model, model } from 'mongoose'
 import { IDelivery } from './Delivery'
+import { IDepositType } from './DepositType'
 
 export interface IDepositItem extends Document {
   // _id let it autogenerate by mongodb
   type: string // Glas/Kiste etc..
+  depositType: IDepositType
   productName: string
   amount: number
   returned: number
@@ -11,7 +13,7 @@ export interface IDepositItem extends Document {
     {
       amount: number
       date: Date
-      delivery: IDelivery | null
+      delivery?: IDelivery | null
     }
   ]
   pricePerItem: string
@@ -23,6 +25,10 @@ const DepositItemSchema = new Schema(
     deposit: {
       type: Schema.Types.ObjectId,
       ref: 'Deposit'
+    },
+    depositType: {
+      type: Schema.Types.ObjectId,
+      ref: 'DepositType'
     },
     type: {
       type: String

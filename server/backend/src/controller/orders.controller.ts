@@ -10,6 +10,7 @@ import DeliveryModel from '../models/Delivery'
 import DeliveryUpdate from '../types/deliveryupdate'
 import Cancellation from '../types/cancellation'
 import DeliverySlotModel from '../models/DeliverySlots'
+import DepositTypeModel from '../models/DepositType'
 
 // Webhook that is called when a new order is created on webshop
 const createNewOrder = async (newOrder: Order) => {
@@ -36,13 +37,14 @@ const createNewOrder = async (newOrder: Order) => {
   newOrder.deliveryDay = deliveryDay
 
   const shippingAddress = newOrder.shipping_address as Address
+  const billingAddress = newOrder.billing_address as Address
 
   let user = await UserModel.findOne({ shopifyUserId: newOrder.customer?.id })
   if (!user) {
     user = await new UserModel({
       shopifyUserId: newOrder.customer?.id,
       email: newOrder.customer?.email,
-      address: shippingAddress,
+      address: billingAddress,
       phoneNumber: newOrder.phone || newOrder.billing_address?.phone || newOrder.customer?.default_address?.phone || '',
       firstName: newOrder.customer?.first_name,
       lastName: newOrder.customer?.last_name
@@ -53,10 +55,6 @@ const createNewOrder = async (newOrder: Order) => {
   if (exists) {
     return
   }
-  const orderDatabase = await new OrderModel(newOrder)
-  orderDatabase.user = user
-  orderDatabase.shopifyOrderId = newOrder.id
-  await orderDatabase.save()
 
   let depositItemArr: IDepositItem[] = []
   let totalPrice = 0
@@ -80,14 +78,23 @@ const createNewOrder = async (newOrder: Order) => {
           type: depositName,
           pricePerItem: depositPrice
         })
+        item.deposit = {
+          depositName,
+          pricePerItem: depositPrice
+        }
         totalPrice += parseInt(depositPrice!) * item.quantity!
         depositItemArr.push(depoItem)
       }
     })
   )
 
+  const orderDatabase = await new OrderModel(newOrder)
+  orderDatabase.user = user
+  orderDatabase.shopifyOrderId = newOrder.id?.toString()
+  await orderDatabase.save()
+
   let output: IDepositItem[] = []
-  depositItemArr.forEach(function (item) {
+  depositItemArr.map(async (item) => {
     const existing = output.filter(function (v, i) {
       return v.type == item.type
     })
@@ -100,6 +107,10 @@ const createNewOrder = async (newOrder: Order) => {
   })
 
   output.forEach(async (item) => {
+    const depositType = await DepositTypeModel.findOne({ name: item.type })
+    if (depositType) {
+      item.depositType = depositType
+    }
     await item.save()
   })
 
@@ -108,12 +119,15 @@ const createNewOrder = async (newOrder: Order) => {
   // )
   const totalPriceString = totalPrice.toString()
   // Create deposit object and fill with all data
+  const tod = new Date()
   await new DepositModel({
     customer: user._id,
     order: orderDatabase,
-    depositItems: output!,
+    depositItems: output,
     totalPrice: totalPriceString,
-    orderDate: deliveryDay
+    orderDate: deliveryDay,
+    dueDate: new Date(tod.setDate(deliveryDay.getDate() + 21)),
+    lastDueDate: new Date(tod.setDate(deliveryDay.getDate() + 90))
   }).save()
 
   // const dateParts = deliveryDay.split('.')
@@ -126,17 +140,30 @@ const createNewOrder = async (newOrder: Order) => {
     slotHours: timeslot
   })
 
-  const delivery = await new DeliveryModel({
-    user,
-    shopifyOrder: orderDatabase,
-    address: shippingAddress,
-    shopifyOrderId: newOrder.id
-  })
+  let delivery
+  if (shippingAddress) {
+    delivery = await new DeliveryModel({
+      user,
+      shopifyOrder: orderDatabase,
+      address: shippingAddress,
+      shopifyOrderId: newOrder.id
+    })
+  } else {
+    delivery = await new DeliveryModel({
+      user,
+      type: 'PICKUP',
+      shopifyOrder: orderDatabase,
+      shopifyOrderId: newOrder.id
+    })
+  }
+
   deliverySlot?.deliveries?.push(delivery)
   const data = await deliverySlot?.save()
   if (data) {
     delivery.deliverySlot = data
   }
+  delivery.slotHours = timeslot
+  delivery.deliveryDay = deliveryDay!
   await delivery.save()
 }
 
@@ -208,5 +235,19 @@ const getCurrent = async () => {
   return order
 }
 
-const orderController = { createNewOrder, orderUpdates, orderCancelled, getAll, getToday, getFuture, getCurrent }
+const getById = async (id: string) => {
+  const shopifyOrder = await OrderModel.findOne({ _id: id })
+  return shopifyOrder
+}
+
+const orderController = {
+  getById,
+  createNewOrder,
+  orderUpdates,
+  orderCancelled,
+  getAll,
+  getToday,
+  getFuture,
+  getCurrent
+}
 export default orderController

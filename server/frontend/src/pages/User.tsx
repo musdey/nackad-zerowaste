@@ -19,14 +19,12 @@ const UserPage: React.FC = () => {
     const getEmployees = async function () {
         const employees = await api.getEmployees()
         if (employees !== undefined) {
-            console.log(employees)
             setEmployees(employees)
         }
     }
     const getAdmins = async function () {
         const admins = await api.getAdmins()
         if (admins !== undefined) {
-            console.log(admins)
             setAdmins(admins)
         }
     }
@@ -45,7 +43,6 @@ const UserPage: React.FC = () => {
         if (currentEmployee && currentEmployee.role.name === "EMPLOYEE") {
             const admin = await api.updateUserRole(currentEmployee._id, 'ADMIN')
             if (admin !== undefined) {
-                console.log(employees)
                 await getEmployees()
                 await present("Erfolgreich!", 2000)
                 setModalState(false)
@@ -57,7 +54,6 @@ const UserPage: React.FC = () => {
         if (currentEmployee && currentEmployee.role.name !== "EMPLOYEE") {
             const admin = await api.updateUserRole(currentEmployee._id, 'EMPLOYEE')
             if (admin !== undefined) {
-                console.log(employees)
                 await getEmployees()
                 await present("Erfolgreich!", 2000)
                 setModalState(false)
@@ -177,7 +173,7 @@ const UserPage: React.FC = () => {
                         </IonInput>
                         <IonList>
                             {searchResults?.map((obj: any, i) =>
-                                <div>
+                                <div id={"listid" + obj.shopifyUserId}>
                                     <IonLabel id={obj.shopifyUserId}>{obj.firstName} {obj.lastName} </IonLabel>
                                     <IonButton onClick={(e) => {
                                         handleClick(obj)

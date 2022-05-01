@@ -14,7 +14,6 @@ export const Header: React.FC<HeaderProps> = ({ subTitle }) => {
         <IonHeader id="headerId" >
 
             <IonToolbar color="primary">
-                {/* <IonTitle slot='start'>{loggedIn ? 'Hi, ' + user?.firstName : 'Login to continue..'}</IonTitle> */}
                 <IonTitle slot=''> {subTitle}</IonTitle>
                 <IonButtons slot="start">
                     <IonBackButton />
@@ -25,9 +24,6 @@ export const Header: React.FC<HeaderProps> = ({ subTitle }) => {
                         <IonMenuButton>
 
                         </IonMenuButton>
-                        {/* <IonButton>
-                            <IonIcon slot="icon-only" icon={personCircle} />
-                        </IonButton> */}
                     </IonButtons>
                     :
                     <IonButtons slot="end">
@@ -36,9 +32,7 @@ export const Header: React.FC<HeaderProps> = ({ subTitle }) => {
                         </IonButton>
                     </IonButtons>
                 }
-
             </IonToolbar>
-
         </IonHeader >
     )
 }

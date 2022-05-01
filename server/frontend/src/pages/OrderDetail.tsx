@@ -11,32 +11,26 @@ import {
     IonItem,
     IonText,
     IonRow,
+    IonLabel,
+    IonCheckbox,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
-import { Redirect, useParams } from "react-router";
+import { Redirect, useHistory, useParams } from "react-router";
 import { Header } from '../components/Header'
-import DepositListItem from "../components/DepositListItem";
 import api from '../lib/api'
-import { Deposit, UserOrderProp } from "../lib/types";
+import { ShopifyOrder, UserOrderProp } from "../lib/types";
 
 const OrderDetail: React.FC = (props) => {
-    const params = useParams<{ orderId: string }>();
     const { loggedIn } = useAuth();
-    const [deposits, setDeposits] = useState([])
-    const [delivery, setDelivery] = useState({
-        firstName: "No", lastName: "data", deliveryStatus: "OPEN", timeslot: "", address: {
-            street: "", postal: "", city: ""
-        }, deliveryDay: "", userId: "", deliveryId: ""
-    })
+    const history = useHistory()
+    const params = useParams<{ shopifyOrderId: string }>();
+    const [order, setOrder] = useState<ShopifyOrder | undefined>(undefined)
 
     useEffect(() => {
         const data: UserOrderProp = props
-        if (data!.location?.state?.state) {
-            setDelivery(data!.location!.state!.state!)
-        }
         const fn = async () => {
-            const result = await api.getDepositByUserId(data!.location?.state?.state?.userId!)
-            setDeposits(result)
+            const result = await api.getShopifyOrder(params.shopifyOrderId)
+            setOrder(result)
         }
         fn()
     }, [])
@@ -45,31 +39,21 @@ const OrderDetail: React.FC = (props) => {
         const url = '/login'
         return <Redirect to={url} />
     }
+
     return (
         <IonPage>
-            <Header subTitle={"Bestellung " + params.orderId} />
+            <Header subTitle={"Bestelldetails " + order?._id} />
             <IonContent fullscreen>
                 <IonCard>
                     <IonCardContent>
                         <IonItem>
                             <IonGrid>
                                 <IonRow>
-                                    <IonText><b>{delivery.firstName} {delivery.lastName}</b></IonText>
+                                    <IonText><b>Bestellung {order?.name}</b></IonText>
                                 </IonRow>
+
                                 <IonRow>
-                                    <IonText>{delivery.address.street}</IonText>
-                                </IonRow>
-                                <IonRow>
-                                    <IonText>{delivery.address.postal} {delivery.address.city}</IonText>
-                                </IonRow>
-                                <IonRow>
-                                    <IonText>Datum  {new Date(delivery.deliveryDay).toLocaleDateString()}</IonText>
-                                </IonRow>
-                                <IonRow>
-                                    <IonText color="secondary">Zeitslot {delivery.timeslot}</IonText>
-                                </IonRow>
-                                <IonRow>
-                                    <IonText>Status {delivery.deliveryStatus}</IonText>
+                                    <IonText><b>{order?.customer?.first_name} {order?.customer?.last_name}</b></IonText>
                                 </IonRow>
 
                             </IonGrid>
@@ -77,17 +61,34 @@ const OrderDetail: React.FC = (props) => {
                     </IonCardContent>
                 </IonCard>
                 <IonList>
-                    {deposits!.map((obj: Deposit, i) =>
-                        <DepositListItem key={"key" + obj._id}
-                            status={obj.status}
-                            totalPrice={obj.totalPrice}
-                            paidDeposit={obj.paidDeposit}
-                            depositId={obj._id}
-                            orderDate={obj.orderDate}
-                            deliveryId={delivery.deliveryId}
-                            returnedDeposit={obj.returnedDeposit}
-                        >
-                        </DepositListItem>
+                    {order?.line_items?.sort((a: any, b: any) => {
+                        if (!a?.deposit) {
+                            return 1
+                        }
+                        if (isNaN(parseInt(a?.deposit?.pricePerItem))) {
+                            return 1
+                        }
+                        if (parseInt(a?.deposit?.pricePerItem) < parseInt(b?.deposit?.pricePerItem)) {
+                            return 1
+                        } else {
+                            return -1
+                        }
+                    }).map((obj: any, i) =>
+                        <IonItem key={"item" + obj.id}>
+                            <IonLabel className="ion-text-wrap" id={"label" + obj.id}>
+                                <h2><b>{obj.quantity}</b> - {obj.name}</h2>
+                                {obj.deposit?.depositName && <p slot="end">{obj.deposit?.depositName}</p>}
+                            </IonLabel>
+                            <IonCheckbox id={"checkbox" + obj.id} style={{ marginLeft: "0px" }} slot="end" onIonChange={(event: any) => {
+                                console.log(event.target.checked)
+                                if (event.target.checked) {
+                                    event.target.parentElement!.disabled = true
+                                    event.target.parentElement!.style.pointerEvents = 'auto'
+                                } else {
+                                    event.target.parentElement!.disabled = false
+                                }
+                            }}></IonCheckbox>
+                        </IonItem>
                     )}
                 </IonList>
 
@@ -100,6 +101,7 @@ const OrderDetail: React.FC = (props) => {
             </IonFooter>
         </IonPage >
     );
-};
 
-export default OrderDetail;
+}
+
+export default OrderDetail

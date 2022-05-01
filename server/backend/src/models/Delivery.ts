@@ -1,4 +1,4 @@
-import { Document, Schema, Model, model, Date } from 'mongoose'
+import { Document, Schema, Model, model } from 'mongoose'
 import Address from '../types/address'
 import Order from '../types/order'
 import { IDeliverySlot } from './DeliverySlots'
@@ -13,6 +13,9 @@ export interface IDelivery extends Document {
   address: Address
   deliverySlot: IDeliverySlot
   user: IUser
+  slotHours: string
+  deliveryDay: Date
+  type: 'PICKUP' | 'DELIVERY'
 }
 
 const DeliverySchema = new Schema(
@@ -21,6 +24,10 @@ const DeliverySchema = new Schema(
     shopifyOrder: {
       type: Schema.Types.ObjectId,
       ref: 'Order'
+    },
+    type: {
+      type: String,
+      default: 'DELIVERY'
     },
     shopifyOrderId: {
       type: String
@@ -43,6 +50,12 @@ const DeliverySchema = new Schema(
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User'
+    },
+    deliveryDay: {
+      type: Date
+    },
+    slotHours: {
+      type: String
     }
   },
   { strict: false, versionKey: false }

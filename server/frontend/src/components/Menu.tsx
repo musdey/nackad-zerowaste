@@ -1,7 +1,7 @@
 import React from 'react';
 import { IonMenu, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonRouterOutlet, IonIcon, IonLabel } from '@ionic/react';
 import { useAuth } from '../lib/use-auth';
-import { personCircle, logInOutline, logOutOutline, settingsOutline, barChartSharp } from 'ionicons/icons';
+import { personCircle, logInOutline, logOutOutline, settingsOutline, barChartSharp, trailSignOutline } from 'ionicons/icons';
 import { Redirect, useHistory } from 'react-router';
 
 export const Menu: React.FC = () => {
@@ -40,6 +40,12 @@ export const Menu: React.FC = () => {
         await history.push('/statistics')
     }
 
+    const deliverySlotHandler = async () => {
+        const menu: HTMLElement & { toggle?: Function } = document.getElementById('first')!
+        await menu.toggle!()
+        await history.push('/deliveryslots')
+    }
+
     return (<>
         <IonMenu menuId="first" contentId='content1' side="start" id='first'>
             <IonHeader>
@@ -67,6 +73,12 @@ export const Menu: React.FC = () => {
                             <IonItem onClick={statisticsHandler}>
                                 <IonIcon icon={barChartSharp} slot="start"></IonIcon>
                                 <IonLabel>Statistiken anzeigen</IonLabel>
+                            </IonItem>
+                        }
+                        {user?.role.name === "ADMIN" &&
+                            <IonItem onClick={deliverySlotHandler}>
+                                <IonIcon icon={trailSignOutline} slot="start"></IonIcon>
+                                <IonLabel>Lieferslots bearbeiten</IonLabel>
                             </IonItem>
                         }
                         <IonItem onClick={logoutHandler}>

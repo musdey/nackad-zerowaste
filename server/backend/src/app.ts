@@ -18,7 +18,7 @@ dotenv.config()
 
 const mongodbHost = process.env.MONGODB_HOST || 'localhost'
 const mongodbUser = process.env.MONGO_NON_ROOT_USERNAME || ''
-const mongodbPw = process.env.MONGO_NON_ROOT_PASSWORD || 'user'
+const mongodbPw = process.env.MONGO_NON_ROOT_PASSWORD || ''
 const mongodbDBName = process.env.MONGO_INITDB_DATABASE || 'nackad-database'
 
 // Connect mongoose

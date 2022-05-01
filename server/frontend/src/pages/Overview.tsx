@@ -11,8 +11,8 @@ import {
     IonRefresherContent,
     RefresherEventDetail,
     IonLabel,
-    IonButton,
     IonCard,
+    IonSearchbar,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
 import { Redirect } from "react-router";
@@ -23,6 +23,7 @@ import api from '../lib/api'
 const Overview: React.FC = () => {
     const { loggedIn } = useAuth();
     const [deliveries, setDeliveries] = useState([])
+    const [isSearch, setSearch] = useState(false)
     const [present] = useIonToast();
 
     const updateData = async () => {
@@ -51,6 +52,7 @@ const Overview: React.FC = () => {
     }
 
     useEffect(() => {
+        localStorage.removeItem("order")
         async function doIt() {
             await updateData()
         }
@@ -62,47 +64,61 @@ const Overview: React.FC = () => {
         return <Redirect to={url} />
     }
 
+    const searchChanged = async function (event: any) {
+        if (event.target.value === "") {
+            setSearch(false)
+            await updateData()
+        } else {
+            const result = await api.searchDelivery(event.target.value)
+            setSearch(true)
+            setDeliveries(result)
+        }
+    }
+
     return (
         <IonPage>
-            <Header subTitle="Übersicht Lieferungen" />
+            <Header subTitle="Übersicht Lieferung/Abholung" />
             <IonContent fullscreen>
                 <IonRefresher color="grey" slot="fixed" pullFactor={0.5} pullMin={100} pullMax={200} onIonRefresh={doRefresh}>
                     <IonRefresherContent></IonRefresherContent>
                 </IonRefresher>
+                <IonSearchbar animated debounce={700} onIonChange={searchChanged}></IonSearchbar>
                 <IonList>
                     {deliveries.length === 0 &&
                         <IonCard>
                             <IonLabel>
                                 Keine aktuellen Lieferungen!
                             </IonLabel>
-                            <IonButton onClick={loadOldDeliveries}>
-                                Zeige alte Lieferungen
-                            </IonButton>
                         </IonCard>
                     }
                     {deliveries?.sort((a: any, b: any) => {
                         if (!a.deliverySlot) {
-                            return -1
+                            let value = isSearch === true ? 1 : -1
+                            return value
                         }
                         if (!b.deliverySlot) {
-                            return 1
+                            let value = isSearch === true ? -1 : 1
+                            return value
                         }
                         if (new Date(a.deliverySlot.deliveryDay).getTime() > new Date(b.deliverySlot.deliveryDay).getTime()) {
-                            return 1
+                            let value = isSearch === true ? -1 : 1
+                            return value
                         } else {
-                            return -1
+                            let value = isSearch === true ? 1 : -1
+                            return value
                         }
                     }).map((obj: any, i) =>
                         <OverviewListItem
+                            type={obj.type}
                             key={obj.shopifyOrder || ""}
-                            firstName={obj.address?.first_name || "First Name"}
-                            lastName={obj.address?.last_name || "Last Name"}
+                            firstName={(obj.type === 'DELIVERY' ? obj.address?.first_name : obj.user.firstName) || "First Name"}
+                            lastName={(obj.type === 'DELIVERY' ? obj.address?.last_name : obj.user.lastName) || "Last Name"}
                             address={{ street: obj.address?.address1 || "", extra: obj.address?.adress2 || "", postal: obj.address?.zip || "", city: obj.address?.city || "" }}
                             orderId={obj.shopifyOrder || ""}
                             deliveryStatus={obj.status || "OPEN"}
-                            timeslot={obj.deliverySlot?.slotHours || 'unknown'}
-                            deliveryDay={obj.deliverySlot?.deliveryDay || 'unknown'}
-                            userId={obj.user || ""}
+                            timeslot={obj.deliverySlot?.slotHours || obj.slotHours || 'unknown'}
+                            deliveryDay={obj.deliverySlot?.deliveryDay || obj.deliveryDay || 'unknown'}
+                            user={obj.user || {}}
                             deliveryId={obj._id || ""}
                         >
                         </OverviewListItem>

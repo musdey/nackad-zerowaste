@@ -36,7 +36,11 @@ router.get('/opendeposit/:shopifyUserId', depositHandler.getDepositByShopifyId)
 // Delivery Management ACHTUNG EMPLOYEE
 router.get('/user/:id/deposit', [authJwt.verifyToken, authJwt.isEmployee], depositHandler.getDepositByUserId)
 router.get('/deposit/:id', [authJwt.verifyToken, authJwt.isEmployee], depositHandler.getDepositById)
-router.post('/deposit/update', [authJwt.verifyToken, authJwt.isEmployee, depositHandler.updateDeposit])
+router.get('/deposit-types', [authJwt.verifyToken, authJwt.isEmployee], depositHandler.getDepositTypes)
+router.get('/deposit/aggregated/:id', [authJwt.verifyToken, authJwt.isEmployee], depositHandler.getAggregatedDeposit)
+router.post('/deposit/return', [authJwt.verifyToken, authJwt.isEmployee, depositHandler.returnDeposit])
+router.post('/deposit/add', [authJwt.verifyToken, authJwt.isEmployee, depositHandler.addNewDeposit])
+router.post('/delivery/search', [authJwt.verifyToken, authJwt.isEmployee, deliveryHandler.searchDelivery])
 router.get('/delivery/open', [authJwt.verifyToken, authJwt.isEmployee], deliveryHandler.getCurrentOpenDeliveries)
 router.get('/delivery/all', [authJwt.verifyToken, authJwt.isEmployee], deliveryHandler.getAllDeliveries)
 router.get('/deliveryslots/detail', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.getAllManagement)
@@ -46,6 +50,7 @@ router.get('/orders/today', [authJwt.verifyToken, authJwt.isEmployee], orderHand
 router.get('/orders/future', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getFuture)
 router.get('/orders/all', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getAll)
 router.get('/orders/current', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getCurrent)
+router.get('/order/:id', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getShopifyOrderById)
 
 // Shopify Webhooks & Product Database
 router.get('/update-products', productsController.updateProductsHandler)

@@ -1,36 +1,46 @@
 let HOST;
 if (process.env.NODE_ENV === "development") {
-  HOST = "http://localhost:3001/";
+  HOST = "http://localhost:3000/api/v1/";
 } else {
-  HOST = "https://app.nackad.at/";
+  HOST = "https://app.nackad.at/api/v1/";
 }
 const Config = {
   Auth: {
-    LOGIN_URL: HOST + "api/v1/auth/signin",
-    SIGNIN_URL: HOST + "api/v1/auth/signup",
-    UPDATE_ROLE_URL: "/auth/updateUserRole",
+    LOGIN_URL: HOST + "auth/signin",
+    SIGNIN_URL: HOST + "auth/signup",
+    UPDATE_ROLE_URL: "auth/updateUserRole",
   },
   User: {
-    ALL_URL: HOST + "api/v1/user/all",
-    SELF_URL: HOST + "api/v1/user",
-    DEPOSIT_BYID: HOST + "api/v1/user",
-    EMPLOYEES: HOST + "api/v1/user/employees",
-    ADMINS: HOST + "api/v1/user/admins",
-    UPDATE: HOST + "api/v1/user/update",
-    SEARCH: HOST + "api/v1/user/search",
+    ALL_URL: HOST + "user/all",
+    SELF_URL: HOST + "user",
+    DEPOSIT_BYID: HOST + "user",
+    EMPLOYEES: HOST + "user/employees",
+    ADMINS: HOST + "user/admins",
+    UPDATE: HOST + "user/update",
+    SEARCH: HOST + "user/search",
   },
   Delivery: {
-    ALLOPEN_URL: HOST + "api/v1/delivery/open",
-    ALL: HOST + "api/v1/delivery/open",
-    DEPOSIT_BYID: HOST + "api/v1/deposit/",
+    ALLOPEN_URL: HOST + "delivery/open",
+    ALL: HOST + "delivery/open",
+    DEPOSIT_BYID: HOST + "deposit/",
+    SEARCH: HOST + "delivery/search",
+    GETSLOTS: HOST + "deliveryslots/detail",
+    SLOTADD: HOST + "deliveryslot/add",
+    SLOTREMOVE: HOST + "deliveryslot/remove",
   },
   Deposit: {
-    UPDATE: HOST + "api/v1/deposit/update",
+    RETURN: HOST + "deposit/return",
+    ADDNEW: HOST + "deposit/add",
+    GETAGGREGATED: HOST + "deposit/aggregated",
+    GETTYPES: HOST + "deposit-types",
   },
   Settings: {
-    GET: HOST + "api/v1/settings/admin",
-    STATISTICS: HOST + "api/v1/statistics",
-    POST: HOST + "api/v1/settings/update",
+    GET: HOST + "settings/admin",
+    STATISTICS: HOST + "statistics",
+    POST: HOST + "settings/update",
+  },
+  Order: {
+    GET: HOST + "order/",
   },
 };
 

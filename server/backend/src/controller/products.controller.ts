@@ -2,8 +2,7 @@ import { Handler, NextFunction, Request, Response } from 'express'
 import ShopifyAdmin from './shopifyAdminController'
 import { GraphQLProduct } from '../types/GraphQLProduct'
 import Product from '../models/Product'
-import fs from 'fs/promises'
-import path from 'path'
+import DepositTypeModel from '../models/DepositType'
 
 const updateProductsHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
   console.log('updateProducts handler called')
@@ -27,11 +26,15 @@ const updateProducts = async () => {
   }
 
   const newProductArr: any[] = []
+  const depositType: string[] = []
   //await fs.writeFile(path.join(__dirname, '/updatedProducts.json'), JSON.stringify(result))
   result?.forEach((product: GraphQLProduct) => {
     let deposit = null
     if (product.node.deposit !== null) {
       deposit = product.node.deposit.value
+      if (!depositType.includes(deposit)) {
+        depositType.push(deposit)
+      }
     }
     const idArr = product.node.id.split('/')
     const id = idArr[idArr.length - 1]
@@ -41,6 +44,14 @@ const updateProducts = async () => {
       deposit: deposit
     })
     newProductArr.push(newProduct)
+  })
+  depositType.forEach(async (elem) => {
+    const name = elem.split('-')[0]
+    const price = elem.split('-')[1]
+    const found = await DepositTypeModel.findOne({ name }).exec()
+    if (!found) {
+      await new DepositTypeModel({ name, price }).save()
+    }
   })
 
   //update mit einem upsert
