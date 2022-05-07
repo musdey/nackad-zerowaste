@@ -118,7 +118,7 @@
     "tags": "",
     "tax_lines": [],
     "taxes_included": true,
-    "test": true,
+    "test": false,
     "token": "69483064ab95d28ad2d4a8311147e02e",
     "total_discounts": "0.00",
     "total_discounts_set": {

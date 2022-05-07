@@ -79,7 +79,7 @@ type Cancellation = {
   tags: string
   tax_lines: []
   taxes_included: true
-  test: true
+  test: boolean
   token: string
   total_discounts: string
   total_discounts_set: {
