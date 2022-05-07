@@ -1,5 +1,5 @@
 import DepositModel from '../models/Deposit'
-import DepositItemModel from '../models/DepositItem'
+import DepositItemModel, { IDepositItem } from '../models/DepositItem'
 import DepositTypeModel from '../models/DepositType'
 import util from 'util'
 
@@ -86,7 +86,13 @@ const addNewDeposit = async (
   if (depositId) {
     const deposit = await getDepositById(depositId)
     if (deposit) {
-      const index = deposit.depositItems.findIndex((item) => item.depositType.id === depositTypeId || item.type == type)
+      const index = deposit.depositItems.findIndex((item) => {
+        if(item.depositType){
+          if(item.depositType.valueOf() === depositTypeId) return true
+        }
+        if(item.type === type) return true
+        return false
+      })
       if (index >= 0) {
         deposit.depositItems[index].amount = deposit.depositItems[index].amount + parseInt(amount)
         const newTotalPrice =
@@ -140,7 +146,7 @@ const addNewDeposit = async (
 const returnDeposit = async (
   userId: string,
   deliveryId: string,
-  returnedItems: [{ amount: number; id: string; depositType: string; type: string }]
+  returnedItems: [{ amount: number; id: string; depositTypeId: string; type: string }]
 ) => {
   // Get all open deposits by user
   const deposits = await getDepositByUserId(userId)
@@ -159,13 +165,23 @@ const returnDeposit = async (
     const depositItems = deposit.depositItems
     // Iterate through all depositItems
 
-    depositItems.forEach(async (depositItem) => {
+    depositItems.forEach(async (depositItem:IDepositItem) => {
       // Iterate through all returned items
       returnedItems.forEach(async (returnedItem) => {
         // Iterate through all existing open deposit objects
         let amountToBeReturned = returnedItem.amount
         if (amountToBeReturned > 0) {
-          if (depositItem.depositType.id === returnedItem.depositType || depositItem.type == returnedItem.type) {
+          let matching = false
+          if(depositItem.depositType){
+            if(depositItem.depositType.valueOf() === returnedItem?.depositTypeId){
+              matching = true
+            }
+          }else{
+            if(depositItem.type === returnedItem.type){
+              matching = true
+            }
+          }
+          if (matching) {
             const totalThatCanBeReturned = depositItem.amount - depositItem.returned
             let returning
             if (amountToBeReturned > totalThatCanBeReturned) {

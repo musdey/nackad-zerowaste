@@ -19,7 +19,7 @@ services:
     env_file: 
       - env_production.env
     volumes:
-      - /mnt/data/db:/data/db
+      - /mnt/HC_Volume_17527705/data/db:/data/db
     ports:
       - '27017:27017'
 

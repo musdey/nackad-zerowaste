@@ -2,6 +2,7 @@ import { Document, Schema, Model, model } from 'mongoose'
 
 export interface IDepositType extends Document {
   // _id let it autogenerate by mongodb
+  _id: string
   name: string
   price: string
   shape: string

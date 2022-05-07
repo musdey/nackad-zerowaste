@@ -15,6 +15,10 @@ import DepositTypeModel from '../models/DepositType'
 // Webhook that is called when a new order is created on webshop
 const createNewOrder = async (newOrder: Order) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  if(newOrder.test){
+    console.log("This was a test order! Returning ...")
+    return
+  }
   console.log(newOrder)
   let deliveryDayString = 'unset'
   let deliveryDay = new Date()
