@@ -1,11 +1,11 @@
-import DepositModel from '../models/Deposit'
+import DepositModel, { IDeposit } from '../models/Deposit'
 import DepositItemModel, { IDepositItem } from '../models/DepositItem'
 import DepositTypeModel from '../models/DepositType'
-import util from 'util'
 
-import User from '../models/User'
+import User, { IUser } from '../models/User'
 import { DepositStatus } from '../types'
 import usercontroller from './user.controller'
+import rechargeController from './recharge.controller'
 
 const getDepositByUserId = async (userId: string) => {
   const customer = await User.findOne({ _id: userId })
@@ -14,6 +14,25 @@ const getDepositByUserId = async (userId: string) => {
   }
   const deposits = await DepositModel.find({ customer: customer, status: { $ne: 'RETURNED' } }).populate('depositItems')
   return deposits
+}
+
+const getDepositByRechargeUserId = async (rechargeUserId: number) => {
+  const customer = await User.findOne({ rechargeCustomerId: rechargeUserId })
+  if (!customer) {
+    throw new Error('User not found.')
+  }
+  const deposits = await DepositModel.find({ customer: customer, status: { $ne: 'RETURNED' } }).populate('depositItems')
+  return deposits
+}
+
+const getTotalOpenDepositByUserObj = async (user: IUser) => {
+  const deposits = await DepositModel.find({ customer: user })
+  let total = 0
+  deposits.forEach((deposit: IDeposit) => {
+    total += parseInt(deposit.totalPrice) - parseInt(deposit.returnedDeposit) + parseInt(deposit.paidDeposit)
+  })
+
+  return total
 }
 
 const getDepositByShopifyId = async (userId: string) => {
@@ -47,9 +66,9 @@ const getAggregatedDepositByUserId = async (userId: string) => {
   deposits.forEach((deposit) => {
     deposit.depositItems.forEach((item) => {
       let existing
-      if(item.depositType){
-        existing = result.filter((v) => v?.depositType?._id === item?.depositType?._id) 
-      }else{
+      if (item.depositType) {
+        existing = result.filter((v) => v?.depositType?._id === item?.depositType?._id)
+      } else {
         existing = result.filter((v) => v?.type === item.type)
       }
       if (existing.length > 0) {
@@ -87,10 +106,10 @@ const addNewDeposit = async (
     const deposit = await getDepositById(depositId)
     if (deposit) {
       const index = deposit.depositItems.findIndex((item) => {
-        if(item.depositType){
-          if(item.depositType.valueOf() === depositTypeId) return true
+        if (item.depositType) {
+          if (item.depositType.valueOf() === depositTypeId) return true
         }
-        if(item.type === type) return true
+        if (item.type === type) return true
         return false
       })
       if (index >= 0) {
@@ -151,11 +170,11 @@ const returnDeposit = async (
   // Get all open deposits by user
   const deposits = await getDepositByUserId(userId)
   // sort by oldest
-  const sorted = deposits.sort((a: any, b: any) => {
-    if (a.orderDate < b.orderDate) {
-      return a
+  const sorted = deposits.sort((a: IDeposit, b: IDeposit) => {
+    if (new Date(a.orderDate) < new Date(b.orderDate)) {
+      return -1
     } else {
-      return b
+      return 1
     }
   })
 
@@ -165,19 +184,19 @@ const returnDeposit = async (
     const depositItems = deposit.depositItems
     // Iterate through all depositItems
 
-    depositItems.forEach(async (depositItem:IDepositItem) => {
+    depositItems.forEach(async (depositItem: IDepositItem) => {
       // Iterate through all returned items
       returnedItems.forEach(async (returnedItem) => {
         // Iterate through all existing open deposit objects
         let amountToBeReturned = returnedItem.amount
         if (amountToBeReturned > 0) {
           let matching = false
-          if(depositItem.depositType){
-            if(depositItem.depositType.valueOf() === returnedItem?.depositTypeId){
+          if (depositItem.depositType) {
+            if (depositItem.depositType.valueOf() === returnedItem?.depositTypeId) {
               matching = true
             }
-          }else{
-            if(depositItem.type === returnedItem.type){
+          } else {
+            if (depositItem.type === returnedItem.type) {
               matching = true
             }
           }
@@ -226,6 +245,8 @@ const returnDeposit = async (
     await deposit.save()
   })
 
+  await rechargeController.updateDepositPrice(userId)
+
   return { result: 'ok' }
 }
 
@@ -236,6 +257,8 @@ const depositcontroller = {
   getDepositByShopifyId,
   returnDeposit,
   addNewDeposit,
-  getDepositTypes
+  getDepositTypes,
+  getTotalOpenDepositByUserObj,
+  getDepositByRechargeUserId
 }
 export default depositcontroller

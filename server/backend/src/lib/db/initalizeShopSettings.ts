@@ -1,5 +1,6 @@
 import deliverySlotController from '../../controller/deliveryslot.controller'
 import productsController from '../../controller/products.controller'
+import rechargeController from '../../controller/recharge.controller'
 import Product from '../../models/Product'
 import ShopSettings from '../../models/ShopSettings'
 
@@ -51,4 +52,9 @@ const createSettings = async function () {
   }
 }
 
-export default { initializeSettings, initProducts }
+const registerRechargeWebhooks = async function () {
+  const result = await rechargeController.registerWebhooks()
+  return
+}
+
+export default { initializeSettings, initProducts, registerRechargeWebhooks }

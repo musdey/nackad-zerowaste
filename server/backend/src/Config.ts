@@ -11,7 +11,8 @@ const Config = {
   },
   webHooks: {
     key: process.env.WEBHOOKKEY,
-    newOrder: process.env.NEW_ORDER || 'key'
+    newOrder: process.env.NEW_ORDER || 'key',
+    rechargeKey: process.env.RECHARGE_WEBHOOK_KEY || 'key'
   }
 }
 

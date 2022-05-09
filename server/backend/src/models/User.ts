@@ -15,6 +15,8 @@ export interface IUser extends Document {
   phoneNumber?: string
   emailIsVerified?: boolean
   otpActivated?: boolean
+  rechargeSubscriptionId?: number
+  rechargeCustomerId?: number
 }
 
 const UserSchema = new Schema(
@@ -64,6 +66,12 @@ const UserSchema = new Schema(
     otpActivated: {
       type: Boolean,
       default: false
+    },
+    rechargeSubscriptionId: {
+      type: Number
+    },
+    rechargeCustomerId: {
+      type: Number
     }
   },
   { strict: false, versionKey: false }

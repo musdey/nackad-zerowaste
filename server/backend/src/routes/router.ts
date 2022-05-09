@@ -12,6 +12,8 @@ import settingsHandler from '../handler/settings.handler'
 import deliverySlotHandler from '../handler/deliverySlots.handler'
 import orderHandler from '../handler/orders.handler'
 import depositHandler from '../handler/deposit.handler'
+import rechargeWebhookRouter from './rechargeWebhooks'
+import verifyRechargeWebhook from '../middleware/verifyRechargeWebhook'
 const router = express.Router()
 
 router.post('*', verifyBody)
@@ -55,6 +57,7 @@ router.get('/order/:id', [authJwt.verifyToken, authJwt.isEmployee], orderHandler
 // Shopify Webhooks & Product Database
 router.get('/update-products', productsController.updateProductsHandler)
 router.use('/webhooks', verifyWebhook, webhookRouter)
+router.use('/recharge-webhooks', verifyRechargeWebhook, rechargeWebhookRouter)
 
 // Admin routes
 router.post('/settings/update', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.updateSettingsHandler)

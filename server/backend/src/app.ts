@@ -26,6 +26,7 @@ connectDB(mongodbHost, 27017, mongodbUser, mongodbPw, mongodbDBName, 10000)
 initalizeRoles()
 settings.initializeSettings()
 settings.initProducts()
+settings.registerRechargeWebhooks()
 
 const app = express()
 const limiter = rateLimit({

@@ -9,5 +9,7 @@ export const enum MailType {
 export const enum DepositStatus {
   OPEN = 'OPEN',
   PARTIALLYRETURNED = 'PARTIALLYRETURNED',
-  RETURNED = 'RETURNED'
+  RETURNED = 'RETURNED',
+  PAID = 'PAID',
+  PARTIALLYPAID = 'PARTIALLYPAID'
 }
