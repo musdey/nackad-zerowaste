@@ -164,7 +164,7 @@ export type Charge = {
       title: 'Standard Shipping'
     }
   ]
-  status: 'queued'
+  status: 'success' | 'error' | 'queued'|'skipped'|'refunded'|'partially_refunded'| 'pending_manual_payment' | 'pending',
   subtotal_price: '12.00'
   tags: 'Subscription'
   tax_lines: [
@@ -185,7 +185,7 @@ export type Charge = {
   total_refunds: null
   total_tax: '0.00'
   total_weight_grams: 4536
-  type: 'recurring'
+  type: 'recurring' | 'checkout'
   updated_at: '2018-11-14T09:45:44'
 }
 
