@@ -56,7 +56,7 @@ const registerWebhooks = async () => {
 
 const chargeCreated: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const data: Charge = await req.body()
+    const data: Charge = await req.body
     console.log('charge webhook received')
     console.log(data)
 
@@ -97,8 +97,8 @@ const updateDepositPrice = async (userId: string) => {
 }
 
 const subscriptionCreated: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  const data: Subscription = await req.body()
-  console.log('charge webhook received')
+  const data: Subscription = await req.body
+  console.log('subscription webhook received')
   console.log(data)
 
   const user = await User.findOne({ email: data.email })
