@@ -11,7 +11,7 @@ const API_TOKEN = process.env.RECHARGE_API_TOKEN || ''
 
 const necessaryWebhooks = [
   { topic: 'subscription/created', address: 'https://app.nackad.at/api/v1/recharge-webhooks/subscription-created' },
-  { topic: 'charge/created', address: 'https://app.nackad.at/api/v1/recharge-webhooks/charge-created' }
+  { topic: 'charge/paid', address: 'https://app.nackad.at/api/v1/recharge-webhooks/charge-paid' }
 ]
 
 const webhookCall = async (method: 'GET' | 'POST', body?: string) => {
@@ -54,7 +54,7 @@ const registerWebhooks = async () => {
   }
 }
 
-const chargeCreated: Handler = async (req: Request, res: Response, next: NextFunction) => {
+const chargePaid: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data: Charge = await req.body
     console.log('charge webhook received')
@@ -116,27 +116,28 @@ const subscriptionCreated: Handler = async (req: Request, res: Response, next: N
     console.log(result.status)
     console.log('Subscription from ' + data.email + ' has been set to EUR ' + price)
 
-    // Remove old subscription
+    // Cancel old subscription
     const allSubscriptionsByUserId = await fetch(MAIN_URL + 'subscriptions?customer_id=' + data.customer_id)
     const allSubscriptions: Subscription[] = await allSubscriptionsByUserId.json()
-    let subscriptionToRemove: Subscription | undefined
+    let subscriptionToCancel: Subscription | undefined
     allSubscriptions.forEach((subscription) => {
-      if (!subscriptionToRemove) {
-        subscriptionToRemove = subscription
+      if (!subscriptionToCancel) {
+        subscriptionToCancel = subscription
       } else {
-        if (new Date(subscriptionToRemove.created_at) > new Date(subscription.created_at)) {
-          subscriptionToRemove = subscription
+        if (new Date(subscriptionToCancel.created_at) > new Date(subscription.created_at)) {
+          subscriptionToCancel = subscription
         }
       }
     })
-    const removedResult = await fetch(MAIN_URL + 'subscriptions/' + subscriptionToRemove?.id, {
-      method: 'DELETE',
+    const removedResult = await fetch(MAIN_URL + 'subscriptions/' + subscriptionToCancel?.id + '/cancel', {
+      method: 'POST',
       headers: {
         'X-Recharge-Access-Token': API_TOKEN,
         'Content-Type': 'application/json'
-      }
+      },
+      body: JSON.stringify({ cancellation_reason: 'New Subscription created', send_email: false })
     })
-    console.log('Removed subscription with id ' + subscriptionToRemove?.id + '. Result:' + removedResult.status)
+    console.log('Cancel subscription with id ' + subscriptionToCancel?.id + '. Result:' + removedResult.status)
     user.rechargeSubscriptionId = data.id
     user.rechargeCustomerId = data.customer_id
     await user.save()
@@ -151,7 +152,7 @@ const subscriptionCreated: Handler = async (req: Request, res: Response, next: N
 
 const rechargeController = {
   registerWebhooks,
-  chargeCreated,
+  chargePaid,
   subscriptionCreated,
   updateDepositPrice
 }
