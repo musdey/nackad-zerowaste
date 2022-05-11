@@ -22,7 +22,10 @@ const verifyRechargeWebhook = async (req: any, res: Response, next: NextFunction
   console.log('--------------------')
   console.log(JSON.stringify(body, null, 4))
   console.log('--------------------')
-  const verified = checkVerification(JSON.stringify(body), hmac!)
+  console.log('Req.rawbody')
+  console.log(req.rawBody)
+  console.log('--------------------')
+  const verified = checkVerification(req.rawBody, hmac!)
   console.log('--------------------')
   console.log('verficiation was ', verified)
   // TODO: Fix validation of webhook
