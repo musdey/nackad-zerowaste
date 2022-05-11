@@ -148,19 +148,22 @@ const subscriptionCreated: Handler = async (req: Request, res: Response, next: N
           }
         }
       })
-      const removedResult = await fetch(MAIN_URL + 'subscriptions/' + subscriptionToCancel?.id + '/cancel', {
-        method: 'POST',
-        headers: {
-          'X-Recharge-Access-Token': API_TOKEN,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ cancellation_reason: 'New Subscription created', send_email: false })
-      })
-      if (removedResult.ok) {
-        console.log('Cancel subscription with id ' + subscriptionToCancel?.id + '. Result:' + removedResult.status)
-      } else {
-        console.log('Error occured cancelling old subscription')
+      if (subscriptionToCancel && subscriptionToCancel.id !== data.id) {
+        const removedResult = await fetch(MAIN_URL + 'subscriptions/' + subscriptionToCancel?.id + '/cancel', {
+          method: 'POST',
+          headers: {
+            'X-Recharge-Access-Token': API_TOKEN,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ cancellation_reason: 'New Subscription created', send_email: false })
+        })
+        if (removedResult.ok) {
+          console.log('Cancel subscription with id ' + subscriptionToCancel?.id + '. Result:' + removedResult.status)
+        } else {
+          console.log('Error occured cancelling old subscription')
+        }
       }
+
       user.rechargeSubscriptionId = data.id
       user.rechargeCustomerId = data.customer_id
       await user.save()
