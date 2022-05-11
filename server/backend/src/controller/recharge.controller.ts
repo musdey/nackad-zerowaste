@@ -58,9 +58,9 @@ const chargePaid: Handler = async (req: Request, res: Response, next: NextFuncti
   try {
     const data: Charge = await req.body
     console.log('chargePaid webhook received')
-    console.log(JSON.stringify(data, null, 4));
+    //console.log(JSON.stringify(data, null, 4));
 
-    if(data.type ==="checkout"){
+    if (data.type === 'checkout') {
       return res.status(200).end
     }
 
@@ -103,7 +103,7 @@ const updateDepositPrice = async (userId: string) => {
 const subscriptionCreated: Handler = async (req: Request, res: Response, next: NextFunction) => {
   const data: Subscription = await req.body
   console.log('subscription webhook received')
-  console.log(JSON.stringify(data, null, 4));
+  //console.log(JSON.stringify(data, null, 4))
 
   const user = await User.findOne({ email: data.email })
   if (user) {

@@ -3,22 +3,27 @@ import crypto from 'crypto'
 import Config from '../Config'
 
 // Verify incoming webhook.
-const checkVerification = (payload: Buffer, hmac: string) => {
-  const genHash = crypto.createHmac('sha256', Config.webHooks.rechargeKey).update(payload).digest('base64')
+const checkVerification = (payload: string, hmac: string) => {
+  const genHash = crypto
+    .createHash('sha256')
+    .update(Config.webHooks.rechargeKey, 'utf-8')
+    .update(payload, 'utf-8')
+    .digest('hex')
+
   console.log(genHash)
   return genHash === hmac
 }
 
 const verifyRechargeWebhook = async (req: any, res: Response, next: NextFunction) => {
   const hmac = req.get('X-Recharge-Hmac-Sha256')
-  console.log('HMAC :' + hmac)
+  console.log('HMAC: ' + hmac)
 
   const body = req.body
-  console.log('reg.body :', body)
-
-  const data = req.body.toString()
-  console.log('req.body.string :', data)
-  const verified = checkVerification(req.rawBody, hmac!)
+  console.log('--------------------')
+  console.log(JSON.stringify(body, null, 4))
+  console.log('--------------------')
+  const verified = checkVerification(JSON.stringify(body), hmac!)
+  console.log('--------------------')
   console.log('verficiation was ', verified)
   // TODO: Fix validation of webhook
   // if (!verified) {
@@ -26,9 +31,6 @@ const verifyRechargeWebhook = async (req: any, res: Response, next: NextFunction
   //   res.status(403).send('Could not verify request.')
   //   return
   // }
-
-  console.log(`Verified webhook request. Shop`)
-
   next()
 }
 export default verifyRechargeWebhook
