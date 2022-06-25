@@ -19,9 +19,9 @@ export type UserOrderProp = {
         firstName: string;
         lastName: string;
         address: {
-          street: string;
-          extra: string;
-          postal: string;
+          address1: string;
+          address2: string;
+          zip: string;
           city: string;
         };
         deliveryStatus: string;

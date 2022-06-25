@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { IonHeader, IonToolbar, IonButtons, IonBackButton, IonTitle, IonMenuButton, IonIcon, IonButton } from '@ionic/react';
 import { useAuth } from '../lib/use-auth';
 import { logInOutline } from 'ionicons/icons';
@@ -14,10 +14,10 @@ export const Header: React.FC<HeaderProps> = ({ subTitle }) => {
         <IonHeader id="headerId" >
 
             <IonToolbar color="primary">
-                <IonTitle slot=''> {subTitle}</IonTitle>
                 <IonButtons slot="start">
-                    <IonBackButton />
+                    <IonBackButton disabled={window.location.pathname === "/login" || window.location.pathname === "/overview"} defaultHref='login' />
                 </IonButtons>
+                <IonTitle> {subTitle}</IonTitle>
                 {loggedIn === true ?
 
                     <IonButtons slot="end">

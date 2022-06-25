@@ -26,11 +26,22 @@ const OrderDetail: React.FC = (props) => {
     const params = useParams<{ shopifyOrderId: string }>();
     const [order, setOrder] = useState<ShopifyOrder | undefined>(undefined)
 
+    const cleanUpShopifyOrder = (data: ShopifyOrder | undefined) => {
+        if (!data) {
+            return undefined
+        }
+        let newShopifyOrder = data
+        const items = data.line_items?.filter(item => item.name !== "Pfand" && item.name !== "Tip")
+        newShopifyOrder.line_items = items
+        return newShopifyOrder
+    }
+
     useEffect(() => {
         const data: UserOrderProp = props
         const fn = async () => {
             const result = await api.getShopifyOrder(params.shopifyOrderId)
-            setOrder(result)
+            const orderWithoutTipAndDepositObj = cleanUpShopifyOrder(result)
+            setOrder(orderWithoutTipAndDepositObj)
         }
         fn()
     }, [])

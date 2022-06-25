@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import {
+    IonButton,
     IonContent,
     IonPage,
     IonFooter,
@@ -26,7 +27,7 @@ const Order: React.FC = (props) => {
     const { loggedIn } = useAuth();
     const [order, setOrder] = useState({
         firstName: "No", lastName: "data", deliveryStatus: "OPEN", timeslot: "", address: {
-            street: "", postal: "", city: ""
+            address1: "", address2: "", zip: "", city: ""
         }, deliveryDay: "", userId: { _id: "" }, orderId: "", type: "", deliveryId: "", user: {
             _id: "",
             address: {
@@ -73,11 +74,6 @@ const Order: React.FC = (props) => {
         })
     }
 
-    if (!loggedIn) {
-        const url = '/login'
-        return <Redirect to={url} />
-    }
-
     return (
         <IonPage>
             <Header subTitle={"Bestellung " + order.orderId} />
@@ -92,12 +88,7 @@ const Order: React.FC = (props) => {
                                 <IonRow>
                                     <IonText> {order.type === "PICKUP" ? "ABHOLUNG" : "ZUSTELLUNG"}</IonText>
                                 </IonRow>
-                                <IonRow>
-                                    <IonText>{order.address?.street}</IonText>
-                                </IonRow>
-                                <IonRow>
-                                    <IonText>{order.address?.postal} {order.address?.city}</IonText>
-                                </IonRow>
+                                <br></br>
                                 <IonRow>
                                     <IonText>Datum  {new Date(order.deliveryDay).toLocaleDateString()}</IonText>
                                 </IonRow>
@@ -107,6 +98,25 @@ const Order: React.FC = (props) => {
                                 </IonRow>
                                 <IonRow>
                                     <IonText>Status {order.deliveryStatus}</IonText>
+                                </IonRow>
+                                <br></br>
+                                <IonRow>
+                                    <IonText>{order.address?.address1}</IonText>
+                                </IonRow>
+
+                                {order.address?.address2 ??
+                                    <IonRow>
+                                        <IonText>{order.address?.address2}</IonText>
+                                    </IonRow>
+                                }
+
+                                <IonRow>
+                                    <IonText>{order.address?.zip} {order.address?.city}</IonText>
+                                </IonRow>
+                                <IonRow>
+                                    <IonButton onClick={() => {
+                                        window.open("google.navigation:q=" + (order.address.address1))
+                                    }}> Navigiere </IonButton>
                                 </IonRow>
 
                             </IonGrid>

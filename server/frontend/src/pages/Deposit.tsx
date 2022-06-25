@@ -36,7 +36,7 @@ const Deposit: React.FC = (props) => {
     const [present] = useIonToast();
     const [order, setOrder] = useState({
         firstName: "No", lastName: "data", deliveryStatus: "OPEN", timeslot: "", address: {
-            street: "", postal: "", city: ""
+            address1: "", address2: "", zip: "", city: ""
         }, deliveryDay: "", userId: { _id: "" }, orderId: "", type: "", deliveryId: "", user: {
             _id: "",
             address: {

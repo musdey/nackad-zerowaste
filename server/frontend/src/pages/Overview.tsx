@@ -113,7 +113,7 @@ const Overview: React.FC = () => {
                             key={obj.shopifyOrder || ""}
                             firstName={(obj.type === 'DELIVERY' ? obj.address?.first_name : obj.user.firstName) || "First Name"}
                             lastName={(obj.type === 'DELIVERY' ? obj.address?.last_name : obj.user.lastName) || "Last Name"}
-                            address={{ street: obj.address?.address1 || "", extra: obj.address?.adress2 || "", postal: obj.address?.zip || "", city: obj.address?.city || "" }}
+                            address={{ address1: obj.address?.address1 || "", address2: obj.address?.address2 || "", zip: obj.address?.zip || "", city: obj.address?.city || "" }}
                             orderId={obj.shopifyOrder || ""}
                             deliveryStatus={obj.status || "OPEN"}
                             timeslot={obj.deliverySlot?.slotHours || obj.slotHours || 'unknown'}

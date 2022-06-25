@@ -41,27 +41,27 @@ const App: React.FC = () => {
   return (
     <IonApp>
       <IonReactRouter>
-        <IonRouterOutlet>
-          <ProvideAuth>
-            <Menu />
-            <Route path="/" exact={true}>
-              <Redirect to="/overview" />
-            </Route>
-            <Route path="/login" component={Login} exact />
-            <Route path="/user" component={UserPage} exact />
-            <Route path="/settings" component={Settings} exact />
-            <Route path="/statistics" component={Statistics} exact />
-            <Route path="/deliveryslots" component={DeliverySlots} exact />
-            <Route path="/signup" component={Signup} exact />
-            <Route path="/overview" component={Overview} exact />
-            <Route path="/order/:orderId" component={Order} exact />
-            <Route path="/deposit/:userId" component={Deposit} exact />
-            <Route path="/depositdetail/:depositId" component={DepositDetail} exact />
-            <Route path="/orderdetail/:shopifyOrderId" component={OrderDetail} exact />
-            <Route path="/customerdetail/:shopifyOrderId" component={CustomerDetail} exact />
+        {/* <IonRouterOutlet animated={false} animation={undefined}> */}
+        <ProvideAuth>
+          <Menu />
+          <Route path="/" exact={true}>
+            <Redirect to="/overview" />
+          </Route>
+          <Route path="/login" component={Login} exact />
+          <Route path="/user" component={UserPage} exact />
+          <Route path="/settings" component={Settings} exact />
+          <Route path="/statistics" component={Statistics} exact />
+          <Route path="/deliveryslots" component={DeliverySlots} exact />
+          <Route path="/signup" component={Signup} exact />
+          <Route path="/overview" component={Overview} exact />
+          <Route path="/order/:orderId" component={Order} exact />
+          <Route path="/deposit/:userId" component={Deposit} exact />
+          <Route path="/depositdetail/:depositId" component={DepositDetail} exact />
+          <Route path="/orderdetail/:shopifyOrderId" component={OrderDetail} exact />
+          <Route path="/customerdetail/:shopifyOrderId" component={CustomerDetail} exact />
 
-          </ProvideAuth>
-        </IonRouterOutlet>
+        </ProvideAuth>
+        {/* </IonRouterOutlet> */}
       </IonReactRouter>
     </IonApp>
 

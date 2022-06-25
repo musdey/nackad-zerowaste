@@ -12,9 +12,9 @@ interface OverviewListItemProps {
     firstName: string
     lastName: string
     address: {
-        street: string
-        postal: string
-        extra?: string
+        address1: string
+        address2?: string
+        zip: string
         city: string
     }
     orderId: string
@@ -87,7 +87,11 @@ const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
                     {listData.firstName} {listData.lastName}
                 </h2>
                 {listData.type === "DELIVERY" ?
-                    <h3>{listData.address.street},{listData.address.extra} {listData.address.postal}, {listData.address.city}</h3>
+                    <div>
+                        <h3>{listData.address.address1}</h3>
+                        <h3>{listData.address.address2}</h3>
+                        <h3>{listData.address.zip}, {listData.address.city}</h3>
+                    </div>
                     :
                     <h3>Abholung im Lager</h3>
                 }
