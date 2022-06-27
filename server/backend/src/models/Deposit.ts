@@ -38,7 +38,7 @@ const DepositSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['OPEN', 'PARTIALLYRETURNED', 'RETURNED'],
+      enum: ['OPEN', 'PARTIALLYRETURNED', 'RETURNED', 'PAID', 'PARTIALLYPAID'],
       default: 'OPEN'
     },
     order: {
