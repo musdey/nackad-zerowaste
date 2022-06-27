@@ -56,7 +56,7 @@ const registerWebhooks = async () => {
 
 const chargePaid: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const data: Charge = await req.body
+    const data: Charge = await req.body.charge
     console.log('chargePaid webhook received')
     console.log(JSON.stringify(data, null, 4))
 
@@ -64,7 +64,7 @@ const chargePaid: Handler = async (req: Request, res: Response, next: NextFuncti
       return res.status(200).end
     }
 
-    const deposits = await depositcontroller.getDepositByRechargeUserId(data.customer_id.id)
+    const deposits = await depositcontroller.getDepositByRechargeUserId(data.customer_id)
     deposits.forEach(async (deposit) => {
       if (deposit.status === DepositStatus.OPEN) {
         deposit.status = DepositStatus.PAID

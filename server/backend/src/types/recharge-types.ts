@@ -72,14 +72,15 @@ export type Charge = {
   }
   created_at: '2018-11-14T09:45:44'
   currency: 'USD'
-  customer_id: {
-    id: number
-    email: 'test@test.com'
-    external_customer_id: {
-      ecommerce: '2879413682227'
-    }
-    hash: '7e706455cbd13e40'
-  }
+  // customer_id: {
+  //   id: number
+  //   email: 'test@test.com'
+  //   external_customer_id: {
+  //     ecommerce: '2879413682227'
+  //   }
+  //   hash: '7e706455cbd13e40'
+  // }
+  customer_id: number
   discounts: [
     {
       id: 12345
@@ -164,7 +165,15 @@ export type Charge = {
       title: 'Standard Shipping'
     }
   ]
-  status: 'success' | 'error' | 'queued'|'skipped'|'refunded'|'partially_refunded'| 'pending_manual_payment' | 'pending',
+  status:
+    | 'success'
+    | 'error'
+    | 'queued'
+    | 'skipped'
+    | 'refunded'
+    | 'partially_refunded'
+    | 'pending_manual_payment'
+    | 'pending'
   subtotal_price: '12.00'
   tags: 'Subscription'
   tax_lines: [
