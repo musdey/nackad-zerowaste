@@ -34,6 +34,8 @@ import OrderDetail from './pages/OrderDetail'
 import CustomerDetail from './pages/CustomerDetail';
 import DepositDetail from './pages/DepositDetail';
 import DeliverySlots from './pages/DeliverySlots';
+import ResetPWRequest from './pages/ResetPWRequest';
+import ResetPWSet from './pages/ResetPWSet';
 setupIonicReact();
 
 const App: React.FC = () => {
@@ -48,6 +50,8 @@ const App: React.FC = () => {
             <Redirect to="/overview" />
           </Route>
           <Route path="/login" component={Login} exact />
+          <Route path="/requestpw" component={ResetPWRequest} exact />
+          <Route path="/resetpw/:token" component={ResetPWSet} exact />
           <Route path="/user" component={UserPage} exact />
           <Route path="/settings" component={Settings} exact />
           <Route path="/statistics" component={Statistics} exact />

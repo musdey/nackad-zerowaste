@@ -14,6 +14,7 @@ import orderHandler from '../handler/orders.handler'
 import depositHandler from '../handler/deposit.handler'
 import rechargeWebhookRouter from './rechargeWebhooks'
 import verifyRechargeWebhook from '../middleware/verifyRechargeWebhook'
+import passwordController from '../controller/pw.controller'
 const router = express.Router()
 
 router.post('*', verifyBody)
@@ -28,6 +29,10 @@ router.get('/user/admins', [authJwt.verifyToken, authJwt.isAdmin], userHandler.g
 router.post('/user/search', [authJwt.verifyToken, authJwt.isEmployee], userHandler.searchUser)
 router.get('/user', [authJwt.verifyToken, authJwt.isCustomer], userHandler.getSelf)
 router.post('/user/update', [authJwt.verifyToken, authJwt.isAdmin], userHandler.updateUserRole)
+
+router.post('/pw/reset-pw-request', passwordController.passwordResetRequest)
+router.get('/pw/reset-pw-check/:token', passwordController.passwordResetCheckToken)
+router.post('/pw/reset-pw', passwordController.passwordReset)
 
 // Open routes
 router.get('/settings', settingsHandler.getSettingsHandler)

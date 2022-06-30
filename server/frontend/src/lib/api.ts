@@ -105,6 +105,51 @@ const signin = async (email: string, password: string): Promise<any> => {
   throw new Error(data.message);
 };
 
+const requestPW = async (email: string): Promise<boolean> => {
+  const obj = { email };
+  const url = Config.Auth.REQEUST_PW;
+  const result = await fetch(url, {
+    method: "post",
+    body: JSON.stringify(obj),
+    headers: { "Content-Type": "application/json" },
+  });
+  // Status 200
+  if (result.ok) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+const chekPWToken = async (token: string): Promise<boolean> => {
+  const url = Config.Auth.CHECK_PW_TOKEN;
+  const result = await fetch(url + "/" + token, {
+    method: "get",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (result.ok) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+const resetPW = async (token: string, pass: string): Promise<any> => {
+  const obj = { token, pass };
+  const url = Config.Auth.RESET_PW;
+  const result = await fetch(url, {
+    method: "post",
+    body: JSON.stringify(obj),
+    headers: { "Content-Type": "application/json" },
+  });
+  // Status 200
+  if (result.ok) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 const getUser = async (shopId: string): Promise<any> => {
   const url = Config.User.SELF_URL;
   try {
@@ -454,5 +499,8 @@ const apiObj = {
   getDepositTypes,
   getDeliverySlots,
   updateDeliverySlots,
+  resetPW,
+  requestPW,
+  chekPWToken,
 };
 export default apiObj;

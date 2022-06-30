@@ -1,6 +1,6 @@
 let HOST;
 if (process.env.NODE_ENV === "development") {
-  HOST = "http://localhost:3000/api/v1/";
+  HOST = "http://192.168.0.4:3000/api/v1/";
 } else {
   HOST = "https://app.nackad.at/api/v1/";
 }
@@ -8,7 +8,10 @@ const Config = {
   Auth: {
     LOGIN_URL: HOST + "auth/signin",
     SIGNIN_URL: HOST + "auth/signup",
-    UPDATE_ROLE_URL: "auth/updateUserRole",
+    UPDATE_ROLE_URL: HOST + "auth/updateUserRole",
+    REQEUST_PW: HOST + "pw/reset-pw-request",
+    CHECK_PW_TOKEN: HOST + "pw/reset-pw-check",
+    RESET_PW: HOST + "pw/reset-pw",
   },
   User: {
     ALL_URL: HOST + "user/all",

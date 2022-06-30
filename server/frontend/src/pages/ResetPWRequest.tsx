@@ -20,34 +20,19 @@ import {
     IonText,
     IonRouterLink,
     useIonToast,
-    IonCheckbox,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
 import { Redirect } from "react-router";
 import { Header } from '../components/Header'
 import validator from 'validator'
-interface LoginProps { }
+import api from '../lib/api'
 
-const Login: React.FC<LoginProps> = () => {
-    const { signin, loggedIn, getUserWithToken } = useAuth();
+interface ResetPWProps { }
+
+const ResetPWRequest: React.FC<ResetPWProps> = () => {
+    const { loggedIn, getUserWithToken } = useAuth();
     const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
     const [present] = useIonToast();
-    const [checked, setChecked] = useState(false)
-
-    useEffect(() => {
-        const autoLogin = async function () {
-            const loginWasSaved = localStorage.getItem("SAVELOGIN")
-            if (loginWasSaved === "TRUE") {
-                setChecked(true)
-                const data = localStorage.getItem("TOKEN")
-                if (data && data.length > 0) {
-                    await getUserWithToken()
-                }
-            }
-        }
-        autoLogin()
-    }, [])
 
     if (loggedIn) {
         const url = '/overview'
@@ -55,26 +40,24 @@ const Login: React.FC<LoginProps> = () => {
     }
 
     const handleLogin = async () => {
-        if (!validator.isEmail(email) || password.length <= 0) {
-            await present('E-mail oder Passwort nicht korrekt!', 2000)
+        if (!validator.isEmail(email)) {
+            await present('Keine gültige E-Mail Adresse!', 2000)
         } else {
-            const result = await signin(email, password)
-            if (!result.success) {
-                await present(result.error!.message, 2000)
-            }
-            localStorage.setItem("SAVELOGIN", checked ? "TRUE" : "FALSE")
+
+            const result = await api.requestPW(email)
+            await present("Eine E-Mail zum Zurücksetzen deines Passwortes wurde versandt. Überprüfe bitte deine Inbox.", 5000)
         }
     };
 
     return (
         <IonPage>
-            <Header subTitle="Login" />
+            <Header subTitle="Passwort Reset" />
             <IonContent fullscreen>
 
                 <IonCard>
                     <IonCardHeader>
-                        <IonCardTitle>Mitarbeiter Login</IonCardTitle>
-                        <IonCardSubtitle>Melde dich bitte mit deinen Nutzerdaten an. :)</IonCardSubtitle>
+                        <IonCardTitle>Benutzerpasswort zurücksetzen</IonCardTitle>
+                        <IonCardSubtitle>Bitte gib deine E-Mail Adresse an, mit der du dich hier registiert hast.</IonCardSubtitle>
                     </IonCardHeader>
                     <IonItemDivider></IonItemDivider>
 
@@ -84,20 +67,8 @@ const Login: React.FC<LoginProps> = () => {
                             <IonInput type="email" value={email} onIonChange={(data) => { setEmail(data.detail.value || '') }} autocomplete="on" placeholder={"pazi@nackad.at"} ></IonInput>
                         </IonCardContent>
                     </IonItem>
-                    <IonItem>
-                        <IonCardContent>
-                            <IonLabel position="floating">Password:</IonLabel>
-                            <IonInput type="password" value={password} onIonChange={(data) => { setPassword(data.detail.value || '') }}> </IonInput>
-                        </IonCardContent>
-                    </IonItem>
                 </IonCard>
-                <IonItem>
-                    <IonCheckbox checked={checked} onIonChange={e => setChecked(e.detail.checked)} />
-                    &#160;
-                    <IonLabel> Login für das nächste Mal speichern?</IonLabel>
-
-                </IonItem>
-                <IonButton size="large" expand="block" className="custom-button" onClick={handleLogin}>Login</IonButton>
+                <IonButton size="large" expand="block" className="custom-button" onClick={handleLogin}>Zurücksetzen</IonButton>
                 <IonRow>
                     <IonCol>
                         &nbsp;
@@ -120,13 +91,13 @@ const Login: React.FC<LoginProps> = () => {
                     </IonCol>
                     <IonCol size="12" class="ion-padding-top">
                         <IonText>
-                            Passwort vergessen?
+                            Zurück zum Login!
                         </IonText>
                     </IonCol>
 
                     <IonCol size="12" class="ion-padding-top">
-                        <IonRouterLink href="/requestpw">
-                            Klicke hier, um dein Passwort zurückzusetzen!
+                        <IonRouterLink href="/login">
+                            Klicke hier, um zum Login zurückzukehren!
                         </IonRouterLink>
                     </IonCol>
                 </IonRow>
@@ -141,4 +112,4 @@ const Login: React.FC<LoginProps> = () => {
     );
 };
 
-export default Login;
+export default ResetPWRequest;
