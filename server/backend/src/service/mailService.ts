@@ -27,8 +27,9 @@ const sendMail = async (
   type: MailType
 ): Promise<SentMessageInfo> => {
   const { subject, content } = buildEmailContent(username, data, type)
+  console.log('ENV:', process.env.NODE_ENV)
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'PRODUCTION') {
     console.log('DEVELOPMENT: Email would have been sent.')
     console.log('Subject: ', subject)
     console.log('Content: ', content)
@@ -63,6 +64,7 @@ const buildEmailContent = (username: string, data: string, type: MailType) => {
         `Hey ${username}!  \n\n` +
         'You are receiving this e-mail because you requested the reset of the password for your account.\n\n' +
         'Please click the following link, or paste it into your browser to complete the process:\n\n' +
+        'https://' +
         hostName +
         '/resetpw/' +
         data +
