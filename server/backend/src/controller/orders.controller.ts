@@ -15,8 +15,12 @@ import DepositTypeModel from '../models/DepositType'
 // Webhook that is called when a new order is created on webshop
 const createNewOrder = async (newOrder: Order) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  if(newOrder.test){
-    console.log("This was a test order! Returning ...")
+  if (newOrder.test) {
+    console.log('This was a test order! Returning ...')
+    return
+  }
+  if (newOrder.source_name === 'subscription_contract') {
+    console.log('Deposit charge. Skipping.')
     return
   }
   console.log(newOrder)
