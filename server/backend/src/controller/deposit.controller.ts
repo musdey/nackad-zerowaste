@@ -95,7 +95,7 @@ const getAggregatedDepositByUserId = async (userId: string) => {
           returned: item.returned,
           depositType: item.depositType,
           pricePerItem: item.pricePerItem,
-          returnDates: item.returnDates
+          returnDates: item.returnDates || []
         }
         result.push(copiedItem)
       }
