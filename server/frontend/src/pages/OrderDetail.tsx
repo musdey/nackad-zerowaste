@@ -66,7 +66,23 @@ const OrderDetail: React.FC = (props) => {
                                 <IonRow>
                                     <IonText><b>{order?.customer?.first_name} {order?.customer?.last_name}</b></IonText>
                                 </IonRow>
+                            </IonGrid>
+                        </IonItem>
+                    </IonCardContent>
+                </IonCard>
+                <IonCard style={{ background: '#c2327e' }}>
+                    <IonCardContent>
+                        <IonItem>
+                            <IonGrid>
+                                <IonRow>
+                                    <IonText><b>Hinweis vom Kunden: </b></IonText>
+                                </IonRow>
+                                {order?.note ??
+                                    <IonRow>
+                                        <IonText>{order?.note}</IonText>
 
+                                    </IonRow>
+                                }
                             </IonGrid>
                         </IonItem>
                     </IonCardContent>
