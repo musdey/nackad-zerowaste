@@ -81,16 +81,16 @@ const getAggregatedDepositByUserId = async (userId: string) => {
         const existingIndex = result.indexOf(existing[0])
         result[existingIndex].amount = parseInt(result[existingIndex].amount) + item.amount
         result[existingIndex].returned = parseInt(result[existingIndex].returned) + item.returned
-        if (item.returnDates) {
-          if (!result[existingIndex].returnDates) {
-            result[existingIndex].returnDates = []
-          }
-          if (item.returnDates.length > 0) {
-            console.log(result[existingIndex].returnDates)
-            result[existingIndex].returnDates.push(...item.returnDates)
-            console.log(result[existingIndex].returnDates)
-          }
-        }
+        // if (item.returnDates) {
+        //   if (!result[existingIndex].returnDates) {
+        //     result[existingIndex].returnDates = []
+        //   }
+        //   if (item.returnDates.length > 0) {
+        //     console.log(result[existingIndex].returnDates)
+        //     result[existingIndex].returnDates.push(...item.returnDates)
+        //     console.log(result[existingIndex].returnDates)
+        //   }
+        // }
       } else {
         const copiedItem = {
           _id: item._id,
@@ -98,8 +98,8 @@ const getAggregatedDepositByUserId = async (userId: string) => {
           amount: item.amount,
           returned: item.returned,
           depositType: item.depositType,
-          pricePerItem: item.pricePerItem,
-          returnDates: item.returnDates
+          pricePerItem: item.pricePerItem
+          // returnDates: item.returnDates
         }
         result.push(copiedItem)
       }
