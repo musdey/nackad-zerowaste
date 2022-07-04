@@ -82,6 +82,9 @@ const getAggregatedDepositByUserId = async (userId: string) => {
         result[existingIndex].amount = parseInt(result[existingIndex].amount) + item.amount
         result[existingIndex].returned = parseInt(result[existingIndex].returned) + item.returned
         if (item.returnDates && item.returnDates.length > 0) {
+          if (!result[existingIndex].returnDates) {
+            result[existingIndex].returnDates = []
+          }
           result[existingIndex].returnDates.push(...item.returnDates)
         }
       } else {
