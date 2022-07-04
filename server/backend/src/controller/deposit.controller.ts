@@ -77,6 +77,7 @@ const getAggregatedDepositByUserId = async (userId: string) => {
       } else {
         existing = result.filter((resultItem) => resultItem?.type === item.type)
       }
+      console.log(item)
       if (existing.length > 0) {
         const existingIndex = result.indexOf(existing[0])
         result[existingIndex].amount = parseInt(result[existingIndex].amount) + item.amount
@@ -95,7 +96,7 @@ const getAggregatedDepositByUserId = async (userId: string) => {
           returned: item.returned,
           depositType: item.depositType,
           pricePerItem: item.pricePerItem,
-          returnDates: item.returnDates! || []
+          returnDates: item.returnDates
         }
         result.push(copiedItem)
       }
