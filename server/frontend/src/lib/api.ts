@@ -332,7 +332,13 @@ const returnDeposit = async (
   userId: string,
   deliveryId: string,
   returnedItems: [
-    { amount: number; id: string; depositTypeId?: string; depositName?: string }
+    {
+      amount: number;
+      id: string;
+      depositTypeId?: string;
+      depositName?: string;
+      type?: string;
+    }
   ]
 ): Promise<any> => {
   const url = Config.Deposit.RETURN;
@@ -346,7 +352,12 @@ const returnDeposit = async (
       body: JSON.stringify({ userId, deliveryId, returnedItems }),
     });
     if (result.ok) {
-      return result.json();
+      let text = "";
+      returnedItems.forEach((item) => {
+        text = text + item.amount + " x " + item.type + ". \n";
+      });
+      text = text + " wurden eingetragen.";
+      return { message: "Erfolgreich eingetragen", text };
     }
   } catch (err) {
     return undefined;

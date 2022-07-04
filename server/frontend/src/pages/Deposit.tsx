@@ -15,6 +15,7 @@ import {
     IonAccordionGroup,
     IonText,
     useIonPicker,
+    IonLabel,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
 import { Redirect, useParams } from "react-router";
@@ -33,7 +34,7 @@ const Deposit: React.FC = (props) => {
     const [depositItems, setDepositItems] = useState([])
     const [deposits, setDeposits] = useState([])
     const [totalDeposit, setTotalDeposit] = useState(0)
-    const [present] = useIonToast();
+    const [present, dismiss] = useIonToast();
     const [order, setOrder] = useState({
         firstName: "No", lastName: "data", deliveryStatus: "OPEN", timeslot: "", address: {
             address1: "", address2: "", zip: "", city: ""
@@ -153,7 +154,7 @@ const Deposit: React.FC = (props) => {
                 await present("Fehler beim Eintragen.", 2000)
             } else {
                 setUpdatedDeposit(undefined)
-                await present("Pfand erfolgreich eingetragen.", 2000)
+                await present({ buttons: [{ text: 'hide', handler: () => dismiss() }], message: result.text, duration: 10000 })
                 await fetchDeposit()
             }
         } else {
@@ -200,6 +201,30 @@ const Deposit: React.FC = (props) => {
                                 )}
                             </IonList>
 
+                        </IonAccordion>
+                    </IonAccordionGroup>
+                </IonCard>
+                <IonCard hidden={depositItems.length === 0}>
+                    <IonAccordionGroup>
+                        <IonAccordion>
+                            <IonItem slot="header">Rückgabeverlauf</IonItem>
+                            <IonList slot="content">
+                                {deposits!.map((deposit: any, i) =>
+                                    deposit.depositItems.map((item: any, j: any) => {
+                                        if (item.returned > 0) {
+                                            return (<IonItem key={"returnDate" + item._id}>
+                                                <IonLabel className="ion-text-wrap">
+                                                    <h2 style={{ color: '#c2327e' }}><b>{item.type}</b></h2>
+                                                    {item.returnDates.map((data: any, k: any) => {
+                                                        return (<h3 key={"element" + data._id}>{data.amount} Stück am {new Date(data.date).toLocaleString()}</h3>)
+                                                    })}
+                                                </IonLabel>
+                                            </IonItem>)
+                                        }
+                                    }
+                                    )
+                                )}
+                            </IonList>
                         </IonAccordion>
                     </IonAccordionGroup>
                 </IonCard>

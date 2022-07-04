@@ -8,6 +8,7 @@ export interface IDeposit {
   orderDate: string;
   returnedDeposit: string;
   dueDate: string;
+  depositItems: [];
 }
 
 export type UserOrderProp = {
