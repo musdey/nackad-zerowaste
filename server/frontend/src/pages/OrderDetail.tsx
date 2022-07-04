@@ -70,23 +70,24 @@ const OrderDetail: React.FC = (props) => {
                         </IonItem>
                     </IonCardContent>
                 </IonCard>
-                <IonCard style={{ background: '#c2327e' }}>
-                    <IonCardContent>
-                        <IonItem>
-                            <IonGrid>
-                                <IonRow>
-                                    <IonText><b>Hinweis vom Kunden: </b></IonText>
-                                </IonRow>
-                                {order?.note ??
+                {(order?.note && order?.note.length > 0) ?
+                    <IonCard style={{ background: '#c2327e' }}>
+                        <IonCardContent>
+                            <IonItem>
+                                <IonGrid>
+                                    <IonRow>
+                                        <IonText><b>Hinweis vom Kunden: </b></IonText>
+                                    </IonRow>
+
                                     <IonRow>
                                         <IonText>{order?.note}</IonText>
-
                                     </IonRow>
-                                }
-                            </IonGrid>
-                        </IonItem>
-                    </IonCardContent>
-                </IonCard>
+                                </IonGrid>
+                            </IonItem>
+                        </IonCardContent>
+                    </IonCard> :
+                    <div></div>
+                }
                 <IonList>
                     {order?.line_items?.sort((a: any, b: any) => {
                         if (!a?.deposit) {
