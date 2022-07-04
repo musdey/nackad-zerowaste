@@ -85,9 +85,11 @@ const getAggregatedDepositByUserId = async (userId: string) => {
           if (!result[existingIndex].returnDates) {
             result[existingIndex].returnDates = []
           }
-          console.log(result[existingIndex].returnDates)
-          result[existingIndex].returnDates.push(...item.returnDates)
-          console.log(result[existingIndex].returnDates)
+          if (item.returnDates.length > 0) {
+            console.log(result[existingIndex].returnDates)
+            result[existingIndex].returnDates.push(...item.returnDates)
+            console.log(result[existingIndex].returnDates)
+          }
         }
       } else {
         const copiedItem = {
