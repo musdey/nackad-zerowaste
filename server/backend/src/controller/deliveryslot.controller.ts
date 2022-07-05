@@ -6,10 +6,10 @@ import User from '../models/User'
 const getDeliverySlotsPublic = async () => {
   const settings = await ShopSettings.findOne({})
 
-  // Show deliverySlots ealierst 1h and 15minutes before
+  // Show deliverySlots ealierst 2hours before
   let date = new Date()
-  date.setHours(date.getHours() + 2)
-  date.setMinutes(date.getHours() + 15)
+  date.setHours(date.getHours() + 3)
+  //date.setMinutes(date.getHours() + 15)
 
   const deliverySlots = await DeliverySlotModel.find({
     deliveryDay: {
