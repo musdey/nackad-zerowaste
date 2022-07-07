@@ -40,7 +40,14 @@ const getDeliverySlotsPublic = async () => {
     }
     newArr.push(newObj)
   })
-  return newArr
+  const sorted = newArr.sort((a: any, b: any) => {
+    if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {
+      return 1
+    } else {
+      return -1
+    }
+  })
+  return sorted
 }
 
 const getDeliverySlotsManagement = async () => {
