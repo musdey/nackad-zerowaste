@@ -44,7 +44,7 @@ const getDepositByShopifyId = async (userId: string) => {
   if (!customer) {
     throw new Error('User not found.')
   }
-  const deposits = await DepositModel.find({ customer: customer }).populate('depositItems').select('-customer ')
+  const deposits = await getAggregatedDepositByUserId(customer._id)
   return deposits
 }
 
