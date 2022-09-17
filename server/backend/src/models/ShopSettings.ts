@@ -17,6 +17,7 @@ export interface IShopSettings extends Document {
   slotsPerVehicle: number
   extraSlots: number
   vehicles: number
+  showSlotDaysInAdvance: number
 }
 
 const ShopSettingsSchema = new Schema(
@@ -45,6 +46,10 @@ const ShopSettingsSchema = new Schema(
     vehicles: {
       type: Number,
       default: 2
+    },
+    showSlotDaysInAdvance: {
+      type: Number,
+      default: 5
     }
   },
   { strict: false, versionKey: false }

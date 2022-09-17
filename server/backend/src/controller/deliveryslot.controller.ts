@@ -74,7 +74,7 @@ const createDeliverySlots = async () => {
   let currentDayNight = new Date()
   currentDayMorning.setHours(2, 0, 0)
   currentDayNight.setHours(22, 0, 0)
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < settingObj.showSlotDaysInAdvance; i++) {
     let hoursString
     switch (today) {
       case 1:

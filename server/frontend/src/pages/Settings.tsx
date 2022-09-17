@@ -1,4 +1,4 @@
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonInput, IonPage, IonTextarea, useIonToast } from "@ionic/react"
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonInput, IonPage, IonText, IonTextarea, useIonToast } from "@ionic/react"
 import { useEffect, useState } from "react";
 import { Header } from "../components/Header"
 import { useAuth } from "../lib/use-auth";
@@ -19,6 +19,7 @@ const Settings: React.FC = () => {
     // })
     const [deliveryHours, setDeliveryHours] = useState('')
     const [extraSlots, setExtraSlots] = useState(0)
+    const [showSlotDaysInAdvance, setSlotDaysInAdvance] = useState(0)
     const [slotsPerVehicle, setSlotsPerVehicle] = useState(0)
     const [vehicles, setVehicles] = useState(0)
     const [present] = useIonToast();
@@ -32,6 +33,7 @@ const Settings: React.FC = () => {
             setExtraSlots(data.extraSlots)
             setSlotsPerVehicle(data.slotsPerVehicle)
             setVehicles(data.vehicles)
+            setSlotDaysInAdvance(data.showSlotDaysInAdvance)
         }
         fn()
     }, [])
@@ -65,7 +67,8 @@ const Settings: React.FC = () => {
                 deliveryHours: JSON.parse(deliveryHours),
                 vehicles: vehicles,
                 slotsPerVehicle: slotsPerVehicle,
-                extraSlots: extraSlots
+                extraSlots: extraSlots,
+                showSlotDaysInAdvance: showSlotDaysInAdvance
             }
 
             const result = await api.updateSettings(obj)
@@ -89,6 +92,18 @@ const Settings: React.FC = () => {
                     </IonCardHeader>
                     <IonCardContent>
                         Du hast diese Rolle: {user?.role.name}
+                    </IonCardContent>
+                </IonCard>
+                <IonCard >
+                    <IonCardHeader>
+                        <IonCardTitle>
+                            Lieferslots Tage im Voraus anzeigen
+                        </IonCardTitle>
+                    </IonCardHeader>
+                    <IonCardContent style={{ display: "flex" }}>
+                        <IonInput style={{ width: '50%' }} onInput={(e: any) => setSlotDaysInAdvance(e.target.value)} color="black" type="number" value={showSlotDaysInAdvance} >
+                        </IonInput>
+                        <IonInput disabled style={{ width: '50%' }}>Tage</IonInput>
                     </IonCardContent>
                 </IonCard>
                 <IonCard >

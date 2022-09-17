@@ -43,7 +43,8 @@ const createSettings = async function () {
       sunday: 'closed'
     },
     vehicles: 2,
-    slotsPerVehicle: 2
+    slotsPerVehicle: 2,
+    showSlotDaysInAdvance: 5
   })
   try {
     await newSetting.save()

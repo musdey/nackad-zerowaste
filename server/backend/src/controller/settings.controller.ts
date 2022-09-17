@@ -22,11 +22,18 @@ const updateSettings = async (
   hours: object,
   slotsPerVehicle: number,
   vehicles: number,
-  extraSlots: number
+  extraSlots: number,
+  showSlotDaysInAdvance: number
 ) => {
   const settings = await ShopSettings.find({})
   if (!settings || settings.length === 0) {
-    return await new ShopSettings({ deliveryAreas: areas, deliveryHours: hours, slotsPerVehicle, vehicles }).save()
+    return await new ShopSettings({
+      deliveryAreas: areas,
+      deliveryHours: hours,
+      slotsPerVehicle,
+      vehicles,
+      showSlotDaysInAdvance
+    }).save()
   }
   const oneSetting = settings[0]
   oneSetting.deliveryAreas = areas
@@ -34,6 +41,7 @@ const updateSettings = async (
   oneSetting.slotsPerVehicle = slotsPerVehicle
   oneSetting.vehicles = vehicles
   oneSetting.extraSlots = extraSlots
+  oneSetting.showSlotDaysInAdvance = showSlotDaysInAdvance
   const updated = await oneSetting.save()
   return updated
 }
@@ -49,9 +57,9 @@ const getStatistics = async () => {
     totalDeposit = totalDeposit + parseInt(deposit.totalPrice) - (returnedDep || 0) - (paidDep || 0)
     deposit.depositItems.forEach((item) => {
       let existing
-      if(item.depositType){
-        existing = result.filter((v) => v?.depositType?._id === item?.depositType?._id) 
-      }else{
+      if (item.depositType) {
+        existing = result.filter((v) => v?.depositType?._id === item?.depositType?._id)
+      } else {
         existing = result.filter((v) => v?.type === item.type)
       }
       if (existing.length > 0) {

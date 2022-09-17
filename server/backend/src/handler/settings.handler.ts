@@ -37,7 +37,8 @@ const updateSettingsHandler: Handler = async (req: Request, res: Response, next:
       body.deliveryHours,
       body.slotsPerVehicle,
       body.vehicles,
-      body.extraSlots
+      body.extraSlots,
+      body.showSlotDaysInAdvance
     )
 
     return res.status(200).send(settings)
