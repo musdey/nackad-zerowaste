@@ -29,7 +29,7 @@ import validator from 'validator'
 interface LoginProps { }
 
 const Login: React.FC<LoginProps> = () => {
-    const { signin, loggedIn, getUserWithToken } = useAuth();
+    const { signin, signout, loggedIn, getUserWithToken } = useAuth();
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [present] = useIonToast();
@@ -42,7 +42,10 @@ const Login: React.FC<LoginProps> = () => {
                 setChecked(true)
                 const data = localStorage.getItem("TOKEN")
                 if (data && data.length > 0) {
-                    await getUserWithToken()
+                    const result = await getUserWithToken()
+                    if (!result.success && result.error?.message === "Unauthorized") {
+                        await signout()
+                    }
                 }
             }
         }

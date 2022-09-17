@@ -21,17 +21,24 @@ import OverviewListItem from "../components/OverviewListItem";
 import api from '../lib/api'
 
 const Overview: React.FC = () => {
-    const { loggedIn } = useAuth();
+    const { signout, loggedIn } = useAuth();
     const [deliveries, setDeliveries] = useState([])
     const [isSearch, setSearch] = useState(false)
     const [present] = useIonToast();
 
     const updateData = async () => {
-        const data = await api.getCurrentDeliveries()
-        if (data === undefined) {
-            await present("Unable to get data. Are you offline?", 4000)
+        if (!loggedIn) {
+            return
+        }
+        const result = await api.getCurrentDeliveries()
+        if (result.success) {
+            setDeliveries(result.data)
         } else {
-            setDeliveries(data)
+            if (result.data === "Unauthorized") {
+                await signout()
+            } else {
+                await present("Unable to get data. Are you offline?", 4000)
+            }
         }
     }
 
@@ -40,15 +47,6 @@ const Overview: React.FC = () => {
         setTimeout(() => {
             event.detail.complete();
         }, 1000);
-    }
-
-    const loadOldDeliveries = async () => {
-        const data = await api.getCurrentDeliveries()
-        if (data === undefined) {
-            await present("Unable to get data. Are you offline?", 4000)
-        } else {
-            setDeliveries(data)
-        }
     }
 
     useEffect(() => {

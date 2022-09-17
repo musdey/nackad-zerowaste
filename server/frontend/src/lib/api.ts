@@ -1,7 +1,7 @@
 import Config from "../Config";
 import { ShopifyOrder } from "./types";
 
-const getUserData = async (): Promise<any> => {
+const getUserData = async (): Promise<{ success: boolean; data: any }> => {
   const url = Config.User.SELF_URL;
   try {
     const result = await fetch(url, {
@@ -11,12 +11,20 @@ const getUserData = async (): Promise<any> => {
         Authorization: "Token " + localStorage.getItem("TOKEN"),
       },
     });
-    const body = await result.json();
 
-    return body;
+    let data;
+    if (result.ok) {
+      const body = await result.json();
+      data = { success: true, data: body };
+      return data;
+    } else if (result.status === 401) {
+      data = { success: false, data: "Unauthorized" };
+    } else {
+      data = { success: false, data: "Unknown" };
+    }
+    return data;
   } catch (err) {
-    console.log(err);
-    return undefined;
+    return { success: false, data: err };
   }
 };
 
@@ -162,19 +170,29 @@ const getUser = async (shopId: string): Promise<any> => {
   }
 };
 
-const getCurrentDeliveries = async (): Promise<any> => {
+const getCurrentDeliveries = async (): Promise<{
+  success: boolean;
+  data: any;
+}> => {
   const url = Config.Delivery.ALLOPEN_URL;
   try {
     const result = await fetch(url, {
       method: "GET",
       headers: { Authorization: "Token " + localStorage.getItem("TOKEN") },
     });
+    let data;
     if (result.ok) {
-      return result.json();
+      const body = await result.json();
+      data = { success: true, data: body };
+      return data;
+    } else if (result.status === 401) {
+      data = { success: false, data: "Unauthorized" };
+    } else {
+      data = { success: false, data: "Unknown" };
     }
+    return data;
   } catch (err) {
-    console.log(err);
-    return undefined;
+    return { success: false, data: err };
   }
 };
 

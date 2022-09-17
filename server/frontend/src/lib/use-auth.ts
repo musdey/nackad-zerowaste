@@ -6,8 +6,8 @@ const useProvideAuth = (): AuthContextInterface => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
   const signout = async (): Promise<void> => {
-    setUser(undefined);
     setLoggedIn(false);
+    setUser(undefined);
     localStorage.setItem("TOKEN", "");
   };
 
@@ -38,15 +38,16 @@ const useProvideAuth = (): AuthContextInterface => {
       await api
         .getUserData()
         .then(async (data) => {
-          if (!data) {
-            resolve({ success: false });
+          console.log(data);
+          if (!data.success) {
+            return resolve(data);
           }
-          setUser(data);
+          setUser(data.data);
           setLoggedIn(true);
-          resolve({ success: true });
+          resolve(data);
         })
         .catch((err) => {
-          resolve({ success: false, error: err });
+          resolve(err);
         });
     });
   };

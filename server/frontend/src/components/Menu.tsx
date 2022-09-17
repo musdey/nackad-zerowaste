@@ -50,7 +50,7 @@ export const Menu: React.FC = () => {
         <IonMenu menuId="first" contentId='content1' side="start" id='first'>
             <IonHeader>
                 <IonToolbar color="primary">
-                    {loggedIn ? <IonTitle>Hi, {user?.firstName}</IonTitle>
+                    {loggedIn ? <IonTitle>Hi, {user?.firstName || "No user."}</IonTitle>
                         :
                         <IonTitle>Please login</IonTitle>
                     }
