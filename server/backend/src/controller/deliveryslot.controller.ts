@@ -8,7 +8,12 @@ const getDeliverySlotsPublic = async () => {
 
   // Show deliverySlots ealierst 2hours before
   let date = new Date()
-  date.setHours(date.getHours() + 3)
+  if (date.getHours() >= 11 && date.getMinutes() >= 30) {
+    date.setHours(22)
+  } else {
+    date.setHours(date.getHours() + 3)
+  }
+
   //date.setMinutes(date.getHours() + 15)
 
   const deliverySlots = await DeliverySlotModel.find({
