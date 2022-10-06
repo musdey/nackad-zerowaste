@@ -61,7 +61,6 @@ const updateProducts = async () => {
   })
 
   depositType.forEach(async (elem) => {
-    console.log(elem)
     const name = elem.split('-')[0]
     const price = elem.split('-')[1]
     const found = await DepositTypeModel.findOne({ name }).exec()
