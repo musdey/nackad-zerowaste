@@ -22,7 +22,7 @@ const initProducts = async function () {
   try {
     const productCount = await Product.find({}).count()
     if (productCount === 0) {
-      await productsController.updateProducts()
+      await productsController.triggerUpdateProducts()
       console.log('Products fetched initially')
     }
   } catch (error) {

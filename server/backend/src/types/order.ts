@@ -97,6 +97,7 @@ type Order = {
     presentment_money?: { amount?: string; currency_code?: string }
   }
   line_items?: {
+    imgUrl?: string
     deposit?: {
       depositName: string
       pricePerItem: string

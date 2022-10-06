@@ -92,7 +92,6 @@ const createAndDeliverOTP = async (email: string, password: string) => {
     otpExpires: Date.now() + EXPIRYTIME
   })
   const result = await userOTPObj.save()
-  console.log(result)
   await sendSMS(user.email, user.phoneNumber!, oneTimePwPin)
 }
 

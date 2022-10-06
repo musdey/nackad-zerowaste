@@ -7,6 +7,7 @@ export interface IProduct extends Document {
   packaging?: string
   deposit?: string
   price: string
+  imgUrl?: string
 }
 
 const ProductSchema = new Schema(
@@ -25,6 +26,9 @@ const ProductSchema = new Schema(
       type: String
     },
     price: {
+      type: String
+    },
+    imgUrl: {
       type: String
     }
   },

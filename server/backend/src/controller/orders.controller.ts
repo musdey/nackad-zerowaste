@@ -72,12 +72,16 @@ const createNewOrder = async (newOrder: Order) => {
   //   console.log(dings)
   // }
   // dingser()
+  const newLineItems = [] as Order['line_items']
   await Promise.all(
     newOrder.line_items!.map(async (item) => {
       // Get DepositTypes for each ordered product
       const product = await Product.findOne({ shopifyId: item.product_id })
       let depositName = 'Deposit not set yet.'
       let depositPrice = '0'
+      if (product?.imgUrl) {
+        item.imgUrl = product.imgUrl
+      }
       if (product?.deposit) {
         depositName = product?.deposit.split('-')[0]
         depositPrice = product?.deposit.split('-')[1]
@@ -93,8 +97,11 @@ const createNewOrder = async (newOrder: Order) => {
         totalPrice += parseInt(depositPrice!) * item.quantity!
         depositItemArr.push(depoItem)
       }
+      newLineItems!.push(item)
     })
   )
+  newOrder.line_items = []
+  newOrder.line_items = newLineItems
 
   const orderDatabase = await new OrderModel(newOrder)
   orderDatabase.user = user
@@ -122,9 +129,6 @@ const createNewOrder = async (newOrder: Order) => {
     await item.save()
   })
 
-  // const totalPriceString = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(
-  //   totalPrice / 100
-  // )
   const totalPriceString = totalPrice.toString()
   // Create deposit object and fill with all data
   const tod = new Date()

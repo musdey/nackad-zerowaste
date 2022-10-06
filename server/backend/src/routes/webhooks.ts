@@ -6,5 +6,5 @@ const webhookRouter = express.Router()
 webhookRouter.post('/new-order', orderHandler.createNewOrder)
 webhookRouter.post('/order-updates', orderHandler.orderUpdates)
 webhookRouter.post('/order-cancelled', orderHandler.orderCancelled)
-webhookRouter.post('/new-products-added', productsController.updateProductsHandler)
+webhookRouter.post('/new-products-added', productsController.triggerUpdateProductsHandler)
 export default webhookRouter

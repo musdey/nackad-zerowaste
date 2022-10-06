@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
     IonContent,
     IonPage,
@@ -13,18 +13,26 @@ import {
     IonRow,
     IonLabel,
     IonCheckbox,
+    IonImg,
+    IonThumbnail,
+    IonModal,
+    IonButton,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
-import { Redirect, useHistory, useParams } from "react-router";
+import { Redirect, useParams } from "react-router";
 import { Header } from '../components/Header'
 import api from '../lib/api'
-import { ShopifyOrder, UserOrderProp } from "../lib/types";
+import { ShopifyOrder } from "../lib/types";
 
 const OrderDetail: React.FC = (props) => {
     const { loggedIn } = useAuth();
-    const history = useHistory()
     const params = useParams<{ shopifyOrderId: string }>();
     const [order, setOrder] = useState<ShopifyOrder | undefined>(undefined)
+    const [currentImage, setCurrentImage] = useState('')
+    const [currentProductName, setCurrentProductName] = useState('')
+    const [isOpen, setIsOpen] = useState(false)
+
+    const modal = useRef<HTMLIonModalElement>(null);
 
     const cleanUpShopifyOrder = (data: ShopifyOrder | undefined) => {
         if (!data) {
@@ -37,7 +45,6 @@ const OrderDetail: React.FC = (props) => {
     }
 
     useEffect(() => {
-        const data: UserOrderProp = props
         const fn = async () => {
             const result = await api.getShopifyOrder(params.shopifyOrderId)
             const orderWithoutTipAndDepositObj = cleanUpShopifyOrder(result)
@@ -51,8 +58,26 @@ const OrderDetail: React.FC = (props) => {
         return <Redirect to={url} />
     }
 
+    const showImagePreview = (productName: string, img: string) => {
+        setCurrentProductName(productName)
+        setCurrentImage(img)
+        setIsOpen(true)
+    }
+
     return (
         <IonPage>
+            <IonModal ref={modal} isOpen={isOpen} >
+                <IonContent className="ion-padding">
+                    <IonText><h2 style={{ textAlign: "center" }}>{currentProductName}</h2></IonText>
+                    <IonItem>
+                        <IonImg style={{ width: "100%" }} src={currentImage}></IonImg>
+                    </IonItem>
+                </IonContent>
+                <IonFooter>
+                    <IonButton expand="full" onClick={() => setIsOpen(false)}>Schließen</IonButton>
+                </IonFooter>
+
+            </IonModal>
             <Header subTitle={"Bestelldetails " + order?._id} />
             <IonContent fullscreen>
                 <IonCard>
@@ -103,12 +128,14 @@ const OrderDetail: React.FC = (props) => {
                         }
                     }).map((obj: any, i) =>
                         <IonItem key={"item" + obj.id}>
+                            <IonThumbnail slot="start" onClick={() => showImagePreview(obj.name, obj.imgUrl)}>
+                                <IonImg src={obj.imgUrl}></IonImg>
+                            </IonThumbnail>
                             <IonLabel className="ion-text-wrap" id={"label" + obj.id}>
-                                <h2><b>{obj.quantity}</b> - {obj.name}</h2>
+                                <h2><b>{obj.quantity}</b> x {obj.name}</h2>
                                 {obj.deposit?.depositName && <p slot="end">{obj.deposit?.depositName}</p>}
                             </IonLabel>
                             <IonCheckbox id={"checkbox" + obj.id} style={{ marginLeft: "0px" }} slot="end" onIonChange={(event: any) => {
-                                console.log(event.target.checked)
                                 if (event.target.checked) {
                                     event.target.parentElement!.disabled = true
                                     event.target.parentElement!.style.pointerEvents = 'auto'
