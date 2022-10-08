@@ -32,7 +32,7 @@ const registerCallbackUrl = async () => {
     body: queryString
   })
   if (!response.ok) {
-    throw new Error('Call not successful')
+    console.log('Call not successful')
   }
   return response
 }
@@ -87,7 +87,7 @@ const queryProductsInBulk = async () => {
     body: queryString
   })
   if (!response.ok) {
-    throw new Error('Call not successful')
+    console.log('Call not successful')
   }
   return response
 }
@@ -110,7 +110,7 @@ const getProducts = async (id: string) => {
     body: queryString
   })
   if (!response.ok) {
-    throw new Error('Call not successful')
+    console.log('Call not successful')
   }
   return response
 }
@@ -145,7 +145,7 @@ class ShopifyAdmin {
         dest.on('error', reject)
       })
     } else {
-      throw new Error('Error fetching jsonline file')
+      console.log('Error fetching jsonline file')
     }
   }
 

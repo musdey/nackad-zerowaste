@@ -51,6 +51,12 @@ const OrderDetail: React.FC = (props) => {
             setOrder(orderWithoutTipAndDepositObj)
         }
         fn()
+        const onBackButton = () => {
+            console.log('Handler was called!');
+            setIsOpen(false)
+            document.removeEventListener("backbutton", onBackButton, false);
+        }
+        document.addEventListener('backbutton', onBackButton);
     }, [])
 
     if (!loggedIn) {
@@ -66,7 +72,7 @@ const OrderDetail: React.FC = (props) => {
 
     return (
         <IonPage>
-            <IonModal ref={modal} isOpen={isOpen} >
+            <IonModal ref={modal} isOpen={isOpen}>
                 <IonContent className="ion-padding">
                     <IonText><h2 style={{ textAlign: "center" }}>{currentProductName}</h2></IonText>
                     <IonItem>
