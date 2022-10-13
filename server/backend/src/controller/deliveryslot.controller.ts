@@ -8,10 +8,12 @@ const getDeliverySlotsPublic = async () => {
 
   // Show deliverySlots ealierst 2hours before
   let date = new Date()
-  if (date.getHours() >= 11 && date.getMinutes() >= 30) {
-    date.setHours(22)
+  const currentTime = date.getTime()
+  const threshold = new Date().setHours(11, 30, 0)
+  if (currentTime > threshold) {
+    date.setHours(22, 0, 0)
   } else {
-    date.setHours(date.getHours() + 3)
+    date.setHours(date.getHours() + 3, 0, 0)
   }
 
   //date.setMinutes(date.getHours() + 15)
