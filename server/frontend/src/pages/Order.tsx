@@ -73,6 +73,9 @@ const Order: React.FC = (props) => {
             state: order
         })
     }
+    function containsNumbers(str: string) {
+        return /\d/.test(str);
+    }
 
     return (
         <IonPage>
@@ -115,7 +118,14 @@ const Order: React.FC = (props) => {
                                 </IonRow>
                                 <IonRow>
                                     <IonButton onClick={() => {
-                                        window.open("google.navigation:q=" + (order.address.address1))
+                                        let street = order.address.address1.split("/")[0].replace("ß", "ss")
+                                        if (!containsNumbers(street)) {
+                                            street = street + " " + order.address.address2
+                                            street = street.split("/")[0]
+                                        }
+                                        const totalAddress = street + ", " + order.address.zip + " " + order.address.city
+                                        const add = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURI(totalAddress) + "&dir_action=navigate"
+                                        window.open(add)
                                     }}> Navigiere </IonButton>
                                 </IonRow>
 

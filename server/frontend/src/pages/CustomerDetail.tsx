@@ -38,6 +38,10 @@ const CustomerDetail: React.FC = (props) => {
         return <Redirect to={url} />
     }
 
+    function containsNumbers(str: string) {
+        return /\d/.test(str);
+    }
+
     return (
         <IonPage>
             <Header subTitle={"Kunde " + order?.customer?.first_name + " " + order?.customer?.last_name} />
@@ -85,7 +89,15 @@ const CustomerDetail: React.FC = (props) => {
                                         <h2> <a href={"mailto:" + order?.customer?.email}>{order?.customer?.email}</a> </h2>
                                     </IonText>
                                     <IonButton onClick={() => {
-                                        window.open("google.navigation:q=" + (order?.billing_address?.address1 || order?.billing_address?.address2))
+                                        const address = order?.billing_address?.address1
+                                        let street = address!.split("/")[0].replace("ß", "ss")
+                                        if (!containsNumbers(street)) {
+                                            street = street + " " + order?.billing_address?.address2
+                                            street = street.split("/")[0]
+                                        }
+                                        const totalAddress = street + ", " + order?.billing_address?.zip + " " + order?.billing_address?.city
+                                        const add = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURI(totalAddress) + "&dir_action=navigate"
+                                        window.open(add)
                                     }}>
                                         Google Maps
                                     </IonButton>
@@ -123,7 +135,15 @@ const CustomerDetail: React.FC = (props) => {
                                         <h2> <a href={"mailto:" + order?.customer?.email}>{order?.customer?.email}</a> </h2>
                                     </IonText>
                                     <IonButton onClick={() => {
-                                        window.open("google.navigation:q=" + (order?.shipping_address?.address1 || order?.shipping_address?.address2))
+                                        const address = order?.shipping_address?.address1
+                                        let street = address!.split("/")[0].replace("ß", "ss")
+                                        if (!containsNumbers(street)) {
+                                            street = street + " " + order?.shipping_address?.address2
+                                            street = street.split("/")[0]
+                                        }
+                                        const totalAddress = street + ", " + order?.shipping_address?.zip + " " + order?.shipping_address?.city
+                                        const add = "https://www.google.com/maps/dir/?api=1&destination=" + encodeURI(totalAddress) + "&dir_action=navigate"
+                                        window.open(add)
                                     }}>
                                         Google Maps
                                     </IonButton>
