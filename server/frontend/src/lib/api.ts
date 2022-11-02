@@ -556,7 +556,6 @@ const apiObj = {
   resetPW,
   requestPW,
   chekPWToken,
-  createPin,
   updateShopifyOrder,
 };
 export default apiObj;
