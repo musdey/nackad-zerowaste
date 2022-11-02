@@ -49,6 +49,29 @@ const getShopifyOrder = async (
   }
 };
 
+const updateShopifyOrder = async (
+  id: string,
+  order: ShopifyOrder
+): Promise<ShopifyOrder | undefined> => {
+  const url = Config.Order.POST;
+  try {
+    const result = await fetch(url + id, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify(order),
+    });
+    const body = await result.json();
+
+    return body;
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
 const getStatistics = async (): Promise<any> => {
   const url = Config.Settings.STATISTICS;
   try {
@@ -188,7 +211,9 @@ const getCurrentDeliveries = async (): Promise<{
     } else if (result.status === 401) {
       data = { success: false, data: "Unauthorized" };
     } else {
-      data = { success: false, data: "Unknown" };
+      const msg = await result.text();
+      const jsonmsg = JSON.parse(msg);
+      data = { success: false, data: jsonmsg.message };
     }
     return data;
   } catch (err) {

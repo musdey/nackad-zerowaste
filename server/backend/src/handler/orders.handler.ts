@@ -66,8 +66,20 @@ const getShopifyOrderById: Handler = async (req: Request, res: Response, next: N
   return res.status(200).send(shopifyOrder)
 }
 
+const updateShopifyOrderById: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  const order = req.body as Order
+
+  if (!order) {
+    return res.status(400).send('Input missing')
+  }
+
+  const shopifyOrder = await orderController.updateById(req.params.id, order)
+  return res.status(200).send(shopifyOrder)
+}
+
 const orderHandler = {
   getShopifyOrderById,
+  updateShopifyOrderById,
   orderUpdates,
   createNewOrder,
   orderCancelled,

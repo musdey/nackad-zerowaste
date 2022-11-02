@@ -181,8 +181,8 @@ const createNewOrder = async (newOrder: Order) => {
 
 // Webhook that is called if the fullfilment status of the order changes
 const orderUpdates = async (update: DeliveryUpdate) => {
-  console.log('order Delivered handler called')
-  console.log(update.order_id)
+  console.log('--------------------------order Delivered handler called')
+  console.log(update)
   const currentDelivery = await DeliveryModel.findOne({ shopifyOrderId: update.order_id })
   if (currentDelivery) {
     currentDelivery.updates.push(update)
@@ -252,8 +252,14 @@ const getById = async (id: string) => {
   return shopifyOrder
 }
 
+const updateById = async (id: string, order: Order) => {
+  const shopifyOrder = await OrderModel.findByIdAndUpdate(id, order)
+  return shopifyOrder
+}
+
 const orderController = {
   getById,
+  updateById,
   createNewOrder,
   orderUpdates,
   orderCancelled,

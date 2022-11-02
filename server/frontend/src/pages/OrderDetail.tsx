@@ -22,7 +22,7 @@ import { useAuth } from "../lib/use-auth";
 import { Redirect, useParams } from "react-router";
 import { Header } from '../components/Header'
 import api from '../lib/api'
-import { ShopifyOrder } from "../lib/types";
+import { LineItem, ShopifyOrder } from "../lib/types";
 
 const OrderDetail: React.FC = (props) => {
     const { loggedIn } = useAuth();
@@ -31,7 +31,8 @@ const OrderDetail: React.FC = (props) => {
     const [currentImage, setCurrentImage] = useState('')
     const [currentProductName, setCurrentProductName] = useState('')
     const [isOpen, setIsOpen] = useState(false)
-
+    const [productClicked, setProductClicked] = useState(false)
+    const timeoutRef = useRef<NodeJS.Timeout>();
     const modal = useRef<HTMLIonModalElement>(null);
 
     const cleanUpShopifyOrder = (data: ShopifyOrder | undefined) => {
@@ -59,6 +60,32 @@ const OrderDetail: React.FC = (props) => {
         document.addEventListener('backbutton', onBackButton);
     }, [])
 
+    useEffect(() => {
+        if (productClicked) {
+            if (timeoutRef.current) {
+
+                clearTimeout(timeoutRef.current)
+                timeoutRef.current = setTimeout(async () => {
+                    await updateOrder()
+                    timeoutRef.current = undefined
+                }, 3000);
+            } else {
+
+                timeoutRef.current = setTimeout(async () => {
+                    await updateOrder()
+                    timeoutRef.current = undefined
+                }, 3000);
+            }
+        }
+        setProductClicked(false)
+        //return () => clearTimeout(timeoutRef.current!);
+    }, [productClicked]);
+
+    const updateOrder = async () => {
+        const result = await api.updateShopifyOrder(params.shopifyOrderId, order!)
+        console.log(result)
+    }
+
     if (!loggedIn) {
         const url = '/login'
         return <Redirect to={url} />
@@ -68,6 +95,13 @@ const OrderDetail: React.FC = (props) => {
         setCurrentProductName(productName)
         setCurrentImage(img)
         setIsOpen(true)
+    }
+
+    const updateProduct = (index: number, picked: boolean) => {
+        let newOrder = order!
+        newOrder!.line_items![index].picked = picked
+        setOrder(newOrder)
+        setProductClicked(true)
     }
 
     return (
@@ -132,24 +166,28 @@ const OrderDetail: React.FC = (props) => {
                         } else {
                             return -1
                         }
-                    }).map((obj: any, i) =>
-                        <IonItem key={"item" + obj.id}>
-                            <IonThumbnail slot="start" onClick={() => showImagePreview(obj.name, obj.imgUrl)}>
+                    }).map((obj: LineItem, i) => {
+                        return <IonItem key={"item" + obj.id} disabled={obj.picked}>
+                            <IonThumbnail slot="start" onClick={() => showImagePreview(obj.name!, obj.imgUrl!)}>
                                 <IonImg src={obj.imgUrl}></IonImg>
                             </IonThumbnail>
                             <IonLabel className="ion-text-wrap" id={"label" + obj.id}>
                                 <h2><b>{obj.quantity}</b> x {obj.name}</h2>
                                 {obj.deposit?.depositName && <p slot="end">{obj.deposit?.depositName}</p>}
                             </IonLabel>
-                            <IonCheckbox id={"checkbox" + obj.id} style={{ marginLeft: "0px" }} slot="end" onIonChange={(event: any) => {
+                            <IonCheckbox checked={obj.picked} id={"checkbox" + obj.id} style={{ marginLeft: "0px", pointerEvents: "auto" }} slot="end" onIonChange={(event: any) => {
                                 if (event.target.checked) {
-                                    event.target.parentElement!.disabled = true
-                                    event.target.parentElement!.style.pointerEvents = 'auto'
+                                    event.target.parentElement!.disabled = true;
+                                    event.target.parentElement!.style.pointerEvents = 'auto';
+                                    updateProduct(i, true)
                                 } else {
-                                    event.target.parentElement!.disabled = false
+                                    obj.picked = false
+                                    updateProduct(i, false)
+                                    event.target.parentElement!.disabled = false;
                                 }
                             }}></IonCheckbox>
-                        </IonItem>
+                        </IonItem>;
+                    }
                     )}
                 </IonList>
 

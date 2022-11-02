@@ -8,6 +8,7 @@ const Config = {
   Auth: {
     LOGIN_URL: HOST + "auth/signin",
     SIGNIN_URL: HOST + "auth/signup",
+    CREATE_PIN: HOST + "auth/createpin",
     UPDATE_ROLE_URL: HOST + "auth/updateUserRole",
     REQEUST_PW: HOST + "pw/reset-pw-request",
     CHECK_PW_TOKEN: HOST + "pw/reset-pw-check",
@@ -44,6 +45,7 @@ const Config = {
   },
   Order: {
     GET: HOST + "order/",
+    POST: HOST + "order/",
   },
 };
 

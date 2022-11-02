@@ -82,9 +82,9 @@ const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
             }
             <div style={{ width: '20px' }}></div>
             <IonLabel className="ion-text-wrap">
-                <p>Id {listData.orderId.substring(0, 15)}</p>
+                {/* <p>Id {listData.orderId.substring(0, 15)}</p> */}
                 <h2>
-                    {listData.firstName} {listData.lastName}
+                    <b> {listData.firstName} {listData.lastName} </b>
                 </h2>
                 {listData.type === "DELIVERY" ?
                     <div>

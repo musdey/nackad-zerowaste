@@ -37,7 +37,7 @@ const Overview: React.FC = () => {
             if (result.data === "Unauthorized") {
                 await signout()
             } else {
-                await present("Unable to get data. Are you offline?", 4000)
+                await present(result.data, 4000)
             }
         }
     }
