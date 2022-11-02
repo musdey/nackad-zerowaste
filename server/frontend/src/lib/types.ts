@@ -258,7 +258,7 @@ export type ShopifyOrder = {
 
 export type LineItem = {
   imgUrl?: string;
-  picked: boolean;
+  picked?: boolean;
   deposit: {
     depositName: string;
     pricePerItem: string;

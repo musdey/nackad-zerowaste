@@ -68,13 +68,13 @@ const OrderDetail: React.FC = (props) => {
                 timeoutRef.current = setTimeout(async () => {
                     await updateOrder()
                     timeoutRef.current = undefined
-                }, 3000);
+                }, 2000);
             } else {
 
                 timeoutRef.current = setTimeout(async () => {
                     await updateOrder()
                     timeoutRef.current = undefined
-                }, 3000);
+                }, 2000);
             }
         }
         setProductClicked(false)
@@ -98,9 +98,18 @@ const OrderDetail: React.FC = (props) => {
     }
 
     const updateProduct = (index: number, picked: boolean) => {
-        let newOrder = order!
-        newOrder!.line_items![index].picked = picked
-        setOrder(newOrder)
+        const newLineItems = order?.line_items!.map((c, i) => {
+            if (i === index) {
+                // Increment the clicked counter
+                c.picked = picked
+            }
+            return c
+        });
+
+        setOrder({ ...order, line_items: newLineItems! });
+        // let newOrder = order!
+        // newOrder!.line_items![index].picked = picked
+        // setOrder(newOrder)
         setProductClicked(true)
     }
 
