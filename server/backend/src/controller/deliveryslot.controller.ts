@@ -9,7 +9,7 @@ const getDeliverySlotsPublic = async () => {
   // Show deliverySlots ealierst 2hours before
   let date = new Date()
   const currentTime = date.getTime()
-  const threshold = new Date().setHours(11, 30, 0)
+  const threshold = new Date().setHours(11, 30, 0, 0)
   if (currentTime > threshold) {
     date.setHours(22, 0, 0)
   } else {
@@ -20,7 +20,7 @@ const getDeliverySlotsPublic = async () => {
 
   const deliverySlots = await DeliverySlotModel.find({
     deliveryDay: {
-      $gt: date
+      $gte: date
     }
   })
     .select('-_id -lastUpdatedFrom')
@@ -123,8 +123,9 @@ const createDeliverySlots = async () => {
 
         while (from != to) {
           const toSlot = from + 1
+          const date = new Date(currentDayMorning).setHours(from, 0, 0)
           new DeliverySlotModel({
-            deliveryDay: new Date(currentDayMorning).setHours(from, 0, 0),
+            deliveryDay: new Date(date),
             slotHours: `${from}:00-${toSlot}:00`,
             maxSlotSize: settingObj.slotsPerVehicle * settingObj.vehicles
           }).save()

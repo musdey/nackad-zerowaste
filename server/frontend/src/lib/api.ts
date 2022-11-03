@@ -96,9 +96,10 @@ const signup = async (
   lastName: string,
   email: string,
   pin: string,
-  password: string
+  password: string,
+  shop: string
 ): Promise<any> => {
-  const obj = { firstName, lastName, email, pin, password };
+  const obj = { firstName, lastName, email, pin, password, shop };
   const url = Config.Auth.SIGNIN_URL;
   try {
     const result = await fetch(url, {
@@ -223,6 +224,22 @@ const getCurrentDeliveries = async (): Promise<{
 
 const getAllDeliveries = async (): Promise<any> => {
   const url = Config.Delivery.ALL;
+  try {
+    const result = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: "Token " + localStorage.getItem("TOKEN") },
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
+const createPin = async (): Promise<any> => {
+  const url = Config.Auth.CREATE_PIN;
   try {
     const result = await fetch(url, {
       method: "GET",
@@ -556,6 +573,7 @@ const apiObj = {
   resetPW,
   requestPW,
   chekPWToken,
+  createPin,
   updateShopifyOrder,
 };
 export default apiObj;

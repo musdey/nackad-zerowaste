@@ -1,23 +1,28 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-import User from '../models/User'
-import Role from '../models/Role'
+import User, { IUser } from '../models/User'
+import Role, { IRole } from '../models/Role'
 import UserLoginOTP from '../models/UserLoginOTP'
 import sendSMS from '../lib/smsService'
+import { IShop } from '../models/Shop'
+import SignupOTP from '../models/SingupOTP'
 
 const secret = process.env.JWT_SECRET || 'someRandomTestString'
 const EXPIRYTIME = 10 * 60 * 1000 // 10 minutes
 
-const signup = async (email: string, password: string, firstName: string, lastName: string) => {
+const signup = async (email: string, password: string, firstName: string, lastName: string, shop: IShop) => {
+  // Create user object
   const createdUser = await new User({
     email: email,
     password: bcrypt.hashSync(password!, 8),
     firstName: firstName,
-    lastName: lastName
+    lastName: lastName,
+    mainShop: shop
   }).save()
 
-  const userRole = await Role.findOne({ name: 'CUSTOMER' })
-  createdUser.role = userRole?._id
+  // Set customer role
+  const role = (await Role.findOne({ name: 'CUSTOMER' })) as IRole
+  createdUser.role = role
   await createdUser.save()
 }
 
@@ -34,14 +39,12 @@ const signin = async (email: string, password: string) => {
     throw new Error('Invalid password.')
   }
 
-  // if (user.otpActivated) {
-  //   await createAndDeliverOTP(user)
-  //   return ''
-  // }
+  // Here would be a good spot to send out OTP
+
+  // Sign JWT Token
   const token = jwt.sign({ id: user._id }, secret, {
     expiresIn: 2592000 // 60 * 60 * 24 * 30 // 1 month
   })
-  // res.cookie('Token ', token, { httpOnly: true });
   const role = await Role.findById(user.role).select('-_id')
 
   return {
@@ -51,8 +54,29 @@ const signin = async (email: string, password: string) => {
     username: user.username,
     email: user.email,
     accessToken: token,
-    role: role
+    role: role,
+    extraAccess: user.extraAccess
   }
+}
+
+const createSignupOTP = async (user: IUser, shop: IShop) => {
+  // Invalidate previous token
+  const previousOtp = await SignupOTP.findOne({ createdBy: user, otpExpires: { $gte: new Date() } })
+  if (previousOtp) {
+    previousOtp.otpExpires = new Date()
+    await previousOtp.save()
+  }
+
+  const pin = Math.floor(10000000 + Math.random() * 90000000).toString()
+  //const pin = otpGenerator.generate(8, { digits: true, upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false })
+  const createdOTP = await new SignupOTP({
+    createdBy: user,
+    shop,
+    pin,
+    timestamp: new Date(),
+    otpExpires: new Date().setHours(new Date().getHours() + 2)
+  }).save()
+  return pin
 }
 
 const requestOTP = async (email: string, password: string) => {
@@ -127,5 +151,5 @@ const signinWithOTP = async (email: string, password: string, otp: string) => {
   }
 }
 
-const authController = { signin, signup, signinWithOTP, requestOTP, createAndDeliverOTP }
+const authController = { signin, signup, createSignupOTP, signinWithOTP, requestOTP, createAndDeliverOTP }
 export default authController

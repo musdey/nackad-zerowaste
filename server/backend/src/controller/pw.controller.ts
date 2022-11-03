@@ -11,7 +11,7 @@ const EXPIRYTIME = 60 * 60 * 1000 // 1 hours
 
 const passwordResetRequest: Handler = async (req: Request, res: Response, next: NextFunction) => {
   const email = req.body.email
-  console.log(email)
+  console.log('Reset password was requested by: ' + email)
   if (!email && typeof email !== 'string') {
     return res.status(400).send({ message: 'E-Mail address missing.', error: errors.InputMissing })
   }

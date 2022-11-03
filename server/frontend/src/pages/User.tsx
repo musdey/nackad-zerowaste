@@ -12,6 +12,7 @@ const UserPage: React.FC = () => {
     const [admins, setAdmins] = useState([])
     const [searchResults, setSearchResults] = useState([])
     const [searchString, setSearchString] = useState('')
+    const [pin, setPin] = useState('')
     const [currentEmployee, setCurrentEmployee] = useState<User>()
     const [present] = useIonToast();
 
@@ -68,6 +69,14 @@ const UserPage: React.FC = () => {
             await present("Erfolgreich!", 2000)
         }
     }
+    const createPin = async () => {
+        const pin = await api.createPin()
+        if (pin !== undefined) {
+            setPin(pin.pin)
+            await present("Erfolgreich!", 2000)
+        }
+    }
+
 
     return (
         <IonPage>
@@ -125,70 +134,87 @@ const UserPage: React.FC = () => {
                         Du hast diese Rolle: {user?.role.name}
                     </IonCardContent>
                 </IonCard>
-                <IonCard>
-                    <IonCardHeader>
-                        <IonCardTitle >
-                            Deine Mitarbeiter:
-                        </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                        {employees?.map((obj: any, i) =>
-                            <div>
-                                <IonLabel id={obj.shopifyUserId}>{obj.firstName} {obj.lastName} </IonLabel>
-                                <IonButton onClick={(e) => {
-                                    handleClick(obj)
-                                }} color="secondary" slot="right">
-                                    Anpassen
-                                </IonButton></div>
-                        )}
-                    </IonCardContent>
-                </IonCard>
-                <IonCard>
-                    <IonCardHeader>
-                        <IonCardTitle >
-                            Deine Admins:
-                        </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                        {admins?.map((obj: any, i) =>
-                            <div>
-                                <IonLabel id={obj.shopifyUserId}>{obj.firstName} {obj.lastName}</IonLabel>
-                                <IonButton hidden={user?._id === obj._id} onClick={(e) => {
-                                    handleClick(obj)
-                                }} color="secondary" slot="right">
-                                    Anpassen
-                                </IonButton></div>
-                        )}
-                    </IonCardContent>
-                </IonCard>
-                <IonCard>
-                    <IonCardHeader>
-                        <IonCardTitle >
-                            User suchen:
-                        </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                        <IonInput placeholder="Suchanfrage.." type="text" onIonChange={(data) => { setSearchString(data.detail.value || '') }}>
+                {user?.role.name === "ADMIN" &&
+                    <><IonCard>
+                        <IonCardHeader>
+                            <IonCardTitle >
+                                Pin für neuen MA erstellen
+                            </IonCardTitle>
+                        </IonCardHeader>
+                        <IonCardContent>
 
-                        </IonInput>
-                        <IonList>
-                            {searchResults?.map((obj: any, i) =>
-                                <div id={"listid" + obj.shopifyUserId}>
-                                    <IonLabel id={obj.shopifyUserId}>{obj.firstName} {obj.lastName} </IonLabel>
-                                    <IonButton onClick={(e) => {
-                                        handleClick(obj)
-                                    }} color="secondary" slot="right">
-                                        Anpassen
-                                    </IonButton></div>
-                            )}
-                        </IonList>
-                        <IonButton onClick={searchUser}>
-                            Suchen
-                        </IonButton>
-                    </IonCardContent>
+                            <IonLabel>{pin && "Pin ist:"} {pin} </IonLabel>
+                            <IonButton onClick={(e) => {
+                                createPin()
+                            }} color="primary" slot="right">
+                                Erstellen
+                            </IonButton>
+                        </IonCardContent>
+                    </IonCard>
+                        <IonCard>
+                            <IonCardHeader>
+                                <IonCardTitle >
+                                    Deine Mitarbeiter:
+                                </IonCardTitle>
+                            </IonCardHeader>
+                            <IonCardContent>
+                                {employees?.map((obj: any, i) =>
+                                    <div id={obj.shopifyUserId + "div"}>
+                                        <IonLabel id={obj.shopifyUserId}>{obj.firstName} {obj.lastName} </IonLabel>
+                                        <IonButton onClick={(e) => {
+                                            handleClick(obj)
+                                        }} color="secondary" slot="right">
+                                            Anpassen
+                                        </IonButton></div>
+                                )}
+                            </IonCardContent>
+                        </IonCard>
+                        <IonCard>
+                            <IonCardHeader>
+                                <IonCardTitle >
+                                    Deine Admins:
+                                </IonCardTitle>
+                            </IonCardHeader>
+                            <IonCardContent>
+                                {admins?.map((obj: any, i) =>
+                                    <div>
+                                        <IonLabel id={obj.shopifyUserId}>{obj.firstName} {obj.lastName}</IonLabel>
+                                        <IonButton hidden={user?._id === obj._id} onClick={(e) => {
+                                            handleClick(obj)
+                                        }} color="secondary" slot="right">
+                                            Anpassen
+                                        </IonButton></div>
+                                )}
+                            </IonCardContent>
+                        </IonCard>
+                        <IonCard>
+                            <IonCardHeader>
+                                <IonCardTitle >
+                                    User suchen:
+                                </IonCardTitle>
+                            </IonCardHeader>
+                            <IonCardContent>
+                                <IonInput placeholder="Suchanfrage.." type="text" onIonChange={(data) => { setSearchString(data.detail.value || '') }}>
 
-                </IonCard>
+                                </IonInput>
+                                <IonList>
+                                    {searchResults?.map((obj: any, i) =>
+                                        <div id={"listid" + obj.shopifyUserId}>
+                                            <IonLabel id={obj.shopifyUserId}>{obj.firstName} {obj.lastName} </IonLabel>
+                                            <IonButton onClick={(e) => {
+                                                handleClick(obj)
+                                            }} color="secondary" slot="right">
+                                                Anpassen
+                                            </IonButton></div>
+                                    )}
+                                </IonList>
+                                <IonButton onClick={searchUser}>
+                                    Suchen
+                                </IonButton>
+                            </IonCardContent>
 
+                        </IonCard>
+                    </>}
 
             </IonContent>
         </IonPage >

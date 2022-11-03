@@ -11,7 +11,6 @@ import settings from './lib/db/initalizeShopSettings'
 import deliverySlotController from './controller/deliveryslot.controller'
 import rateLimit from 'express-rate-limit'
 import path from 'path'
-import dbNotUp from './middleware/db-not-up'
 import cron from 'node-cron'
 
 dotenv.config()
@@ -24,6 +23,7 @@ const mongodbDBName = process.env.MONGO_INITDB_DATABASE || 'nackad-database'
 // Connect mongoose
 connectDB(mongodbHost, 27017, mongodbUser, mongodbPw, mongodbDBName, 10000)
 initalizeRoles()
+settings.initializeShops(['REXEAT', 'NACKAD'])
 settings.initializeSettings()
 settings.initProducts()
 settings.registerRechargeWebhooks()

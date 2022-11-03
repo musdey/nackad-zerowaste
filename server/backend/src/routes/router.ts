@@ -70,6 +70,7 @@ router.use('/recharge-webhooks', verifyRechargeWebhook, rechargeWebhookRouter)
 // Admin routes
 router.post('/settings/update', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.updateSettingsHandler)
 router.get('/statistics', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.getStatistics)
+router.get('/auth/createpin', [authJwt.verifyToken, authJwt.isAdmin], authHandler.requestSignupOTP)
 router.post('/test/webhook/new-order', orderHandler.createNewOrder)
 
 export default router

@@ -5,7 +5,7 @@ const Config = {
     API_KEY: process.env.API_KEY,
     API_PASSWORD: process.env.API_PASSWORD,
     STORE_NAME: process.env.STORE_NAME,
-    API_VERSION: ApiVersion.October21,
+    API_VERSION: '2022-10',
     SCOPES: ['read_products', 'write_products'],
     STOREFRONTACCESSTOKEN: process.env.STOREFRONTACCESSTOKEN
   },

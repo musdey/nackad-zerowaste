@@ -1,4 +1,5 @@
 import { Document, Schema, Model, model } from 'mongoose'
+import { IShop } from './Shop'
 
 export type DeliveryHours = {
   monday: string
