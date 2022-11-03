@@ -48,7 +48,28 @@ const OrderDetail: React.FC = (props) => {
     useEffect(() => {
         const fn = async () => {
             const result = await api.getShopifyOrder(params.shopifyOrderId)
-            const orderWithoutTipAndDepositObj = cleanUpShopifyOrder(result)
+            const orderWithoutTipAndDepositObj: ShopifyOrder = cleanUpShopifyOrder(result)!
+            const sortedLineItems = orderWithoutTipAndDepositObj!.line_items!.sort((a: LineItem, b: LineItem) => {
+                if (!a?.deposit) {
+                    return 1
+                }
+                if (isNaN(parseInt(a?.deposit?.pricePerItem))) {
+                    return 1
+                }
+
+                if (parseInt(a?.deposit?.pricePerItem) < parseInt(b?.deposit?.pricePerItem)) {
+                    return 1
+                } else if (parseInt(a?.deposit?.pricePerItem) === parseInt(b?.deposit?.pricePerItem)) {
+                    if (a!.name! >= b!.name!) {
+                        return 1
+                    } else {
+                        return -1
+                    }
+                } else {
+                    return -1
+                }
+            })
+            orderWithoutTipAndDepositObj.line_items = sortedLineItems
             setOrder(orderWithoutTipAndDepositObj)
         }
         fn()
@@ -98,18 +119,9 @@ const OrderDetail: React.FC = (props) => {
     }
 
     const updateProduct = (index: number, picked: boolean) => {
-        const newLineItems = order?.line_items!.map((c, i) => {
-            if (i === index) {
-                // Increment the clicked counter
-                c.picked = picked
-            }
-            return c
-        });
-
-        setOrder({ ...order, line_items: newLineItems! });
-        // let newOrder = order!
-        // newOrder!.line_items![index].picked = picked
-        // setOrder(newOrder)
+        const newOrder = { ...order! }
+        newOrder!.line_items![index].picked = picked
+        setOrder(newOrder)
         setProductClicked(true)
     }
 
@@ -163,19 +175,7 @@ const OrderDetail: React.FC = (props) => {
                     <div></div>
                 }
                 <IonList>
-                    {order?.line_items?.sort((a: any, b: any) => {
-                        if (!a?.deposit) {
-                            return 1
-                        }
-                        if (isNaN(parseInt(a?.deposit?.pricePerItem))) {
-                            return 1
-                        }
-                        if (parseInt(a?.deposit?.pricePerItem) < parseInt(b?.deposit?.pricePerItem)) {
-                            return 1
-                        } else {
-                            return -1
-                        }
-                    }).map((obj: LineItem, i) => {
+                    {order?.line_items?.map((obj: LineItem, i) => {
                         return <IonItem key={"item" + obj.id} disabled={obj.picked}>
                             <IonThumbnail slot="start" onClick={() => showImagePreview(obj.name!, obj.imgUrl!)}>
                                 <IonImg src={obj.imgUrl}></IonImg>

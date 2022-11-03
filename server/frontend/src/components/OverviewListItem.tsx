@@ -89,7 +89,9 @@ const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
                 {listData.type === "DELIVERY" ?
                     <div>
                         <h3>{listData.address.address1}</h3>
-                        <h3>{listData.address.address2}</h3>
+                        {listData.address.address2 &&
+                            <h3 style={{ WebkitBoxOrient: 'vertical', WebkitLineClamp: '2', display: '-webkit-box', textOverflow: 'ellipsis', overflow: 'hidden' }}>{listData.address.address2}</h3>
+                        }
                         <h3>{listData.address.zip}, {listData.address.city}</h3>
                     </div>
                     :
