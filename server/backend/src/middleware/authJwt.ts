@@ -35,6 +35,21 @@ const isAdmin = async (req: any, res: Response, next: NextFunction) => {
     res.status(403).send({ message: 'Require Admin Role!' })
   }
 }
+
+const isManager = async (req: any, res: Response, next: NextFunction) => {
+  const user = await User.findById(req.userId).populate('role').exec()
+  if (!user) {
+    res.status(500).send({ message: 'User not found!' })
+    return
+  }
+
+  if (user.role.name === 'ADMIN' || user.role.name === 'MANAGER') {
+    next()
+  } else {
+    res.status(403).send({ message: 'Require Manager Role!' })
+  }
+}
+
 const isEmployee = async (req: any, res: Response, next: NextFunction) => {
   const user = await User.findById(req.userId).populate('role').exec()
   if (!user) {
@@ -42,7 +57,7 @@ const isEmployee = async (req: any, res: Response, next: NextFunction) => {
     return
   }
 
-  if (user.role.name === 'ADMIN' || user.role.name === 'EMPLOYEE') {
+  if (user.role.name === 'ADMIN' || user.role.name === 'MANAGER' || user.role.name === 'EMPLOYEE') {
     next()
   } else {
     res.status(403).send({ message: 'Require Employee Role!' })
@@ -55,8 +70,7 @@ const isCustomer = async (req: any, res: Response, next: NextFunction) => {
     res.status(500).send({ message: 'User not found!' })
     return
   }
-  console.log(user.role.name)
-  if (user.role.name === 'ADMIN' || user.role.name === 'EMPLOYEE' || user.role.name === 'CUSTOMER') {
+  if (user.role.name === 'ADMIN' || user.role.name === 'MANAGER' || user.role.name === 'EMPLOYEE' || user.role.name === 'CUSTOMER') {
     next()
   } else {
     res.status(403).send({ message: 'Require Customer Role' })
@@ -66,6 +80,7 @@ const isCustomer = async (req: any, res: Response, next: NextFunction) => {
 const authJwt = {
   verifyToken,
   isAdmin,
+  isManager,
   isEmployee,
   isCustomer
 }

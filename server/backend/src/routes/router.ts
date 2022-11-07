@@ -15,6 +15,7 @@ import depositHandler from '../handler/deposit.handler'
 import rechargeWebhookRouter from './rechargeWebhooks'
 import verifyRechargeWebhook from '../middleware/verifyRechargeWebhook'
 import passwordController from '../controller/pw.controller'
+import createNewNackadOrder from '../controller/orders/nackad.orders'
 const router = express.Router()
 
 router.post('*', verifyBody)
@@ -70,7 +71,7 @@ router.use('/recharge-webhooks', verifyRechargeWebhook, rechargeWebhookRouter)
 // Admin routes
 router.post('/settings/update', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.updateSettingsHandler)
 router.get('/statistics', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.getStatistics)
-router.get('/auth/createpin', [authJwt.verifyToken, authJwt.isAdmin], authHandler.requestSignupOTP)
-router.post('/test/webhook/new-order', orderHandler.createNewOrder)
+router.get('/auth/createpin', [authJwt.verifyToken, authJwt.isManager], authHandler.requestSignupOTP)
+router.post('/test/webhook/new-order', createNewNackadOrder)
 
 export default router

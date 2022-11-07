@@ -1,15 +1,30 @@
 import { Handler, NextFunction, Request, Response } from 'express'
-import orderController from '../controller/orders.controller'
+import createNewNackadOrder from '../controller/orders/nackad.orders'
+import orderController from '../controller/orders/orders.controller'
+import createNewRexEatOrder from '../controller/orders/rexeat.orders'
 import Cancellation from '../types/cancellation'
 import DeliveryUpdate from '../types/deliveryupdate'
 import Order from '../types/order'
 
-// Webhook that is called when a new order is created on webshop
-const createNewOrder: Handler = async (req: Request, res: Response, next: NextFunction) => {
+// Webhook that is called when a new order is created on NACKAD webshop
+const createNewNackadOrderHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
   console.log('Congratulations, a new order has been made!')
   const newOrder = req.body as Order
   try {
-    await orderController.createNewOrder(newOrder)
+    await createNewNackadOrder(newOrder)
+    return res.status(200).send('Public Content.')
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send('nok')
+  }
+}
+
+// Webhook that is called when a new order is created on Rexeat webshop
+const createNewRexeatOrderHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  console.log('Congratulations, a new order has been made!')
+  const newOrder = req.body as Order
+  try {
+    await createNewRexEatOrder(newOrder)
     return res.status(200).send('Public Content.')
   } catch (err) {
     console.log(err)
@@ -81,7 +96,8 @@ const orderHandler = {
   getShopifyOrderById,
   updateShopifyOrderById,
   orderUpdates,
-  createNewOrder,
+  createNewNackadOrderHandler,
+  createNewRexeatOrderHandler,
   orderCancelled,
   getAll,
   getCurrent,
