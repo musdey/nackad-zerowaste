@@ -47,7 +47,7 @@ const getDepositByUserId: Handler = async (req: Request, res: Response, next: Ne
   }
 
   try {
-    const deposit = await depositcontroller.getDepositByUserId(userId)
+    const deposit = await depositcontroller.getDepositByUserId(userId, req.access!)
     return res.status(200).send(deposit)
   } catch (err) {
     return next(err)

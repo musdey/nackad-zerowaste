@@ -21,12 +21,12 @@ import { ShopifyOrder } from "../lib/types";
 
 const CustomerDetail: React.FC = (props) => {
     const { loggedIn } = useAuth();
-    const params = useParams<{ shopifyOrderId: string }>();
+    const params = useParams<{ webShopOrderId: string }>();
     const [order, setOrder] = useState<ShopifyOrder | undefined>(undefined)
 
     useEffect(() => {
         const fn = async () => {
-            const result = await api.getShopifyOrder(params.shopifyOrderId)
+            const result = await api.getShopifyOrder(params.webShopOrderId)
             setOrder(result)
             console.log(result)
         }

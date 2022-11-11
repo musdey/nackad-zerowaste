@@ -42,10 +42,16 @@ const signin = async (email: string, password: string) => {
   // Here would be a good spot to send out OTP
 
   // Sign JWT Token
-  const token = jwt.sign({ id: user._id }, secret, {
-    expiresIn: 2592000 // 60 * 60 * 24 * 30 // 1 month
-  })
+
   const role = await Role.findById(user.role).select('-_id')
+
+  const token = jwt.sign(
+    { userId: user._id, mainShop: user.mainShop, role: role, extraAccess: user.extraAccess },
+    secret,
+    {
+      expiresIn: 2592000 // 60 * 60 * 24 * 30 // 1 month
+    }
+  )
 
   return {
     _id: user._id,

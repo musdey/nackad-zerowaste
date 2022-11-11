@@ -11,9 +11,21 @@ export type DeliveryHours = {
   sunday: string
 }
 
+type BigSlots = {
+  monday: string[]
+  tuesday: string[]
+  wednesday: string[]
+  thursday: string[]
+  friday: string[]
+  saturday: string[]
+  sunday: string[]
+}
+
 export interface IShopSettings extends Document {
-  // _id let it autogenerate by mongodb
+  shop: IShop
   deliveryHours: DeliveryHours
+  bigSlots: BigSlots
+  exludedDeliveryAreas?: string
   deliveryAreas: string
   slotsPerVehicle: number
   extraSlots: number
@@ -23,7 +35,10 @@ export interface IShopSettings extends Document {
 
 const ShopSettingsSchema = new Schema(
   {
-    // _id let it autogenerate by mongodb
+    shop: {
+      type: Schema.Types.ObjectId,
+      ref: 'Shop'
+    },
     deliveryHours: {
       monday: { type: String },
       tuesday: { type: String },
@@ -32,6 +47,15 @@ const ShopSettingsSchema = new Schema(
       friday: { type: String },
       saturday: { type: String },
       sunday: { type: String }
+    },
+    bigSlots: {
+      monday: { type: [String] },
+      tuesday: { type: [String] },
+      wednesday: { type: [String] },
+      thursday: { type: [String] },
+      friday: { type: [String] },
+      saturday: { type: [String] },
+      sunday: { type: [String] }
     },
     deliveryAreas: {
       type: [String]

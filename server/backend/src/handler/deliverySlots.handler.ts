@@ -10,6 +10,15 @@ const getAllPublic: Handler = async (req: Request, res: Response, next: NextFunc
   }
 }
 
+const getRexeatPublic: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const deliverySlots = await deliverySlotController.getRexeatSlotsPublic()
+    return res.status(200).send(deliverySlots)
+  } catch (err) {
+    return next(err)
+  }
+}
+
 const getAllManagement: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const deliverySlots = await deliverySlotController.getDeliverySlotsManagement()
@@ -53,6 +62,7 @@ const removeSlot: Handler = async (req: Request & { userId?: string }, res: Resp
 
 const deliverySlotHandler = {
   getAllPublic,
+  getRexeatPublic,
   getAllManagement,
   addSlot,
   removeSlot

@@ -26,7 +26,7 @@ import { LineItem, ShopifyOrder } from "../lib/types";
 
 const OrderDetail: React.FC = (props) => {
     const { loggedIn } = useAuth();
-    const params = useParams<{ shopifyOrderId: string }>();
+    const params = useParams<{ webShopOrderId: string }>();
     const [order, setOrder] = useState<ShopifyOrder | undefined>(undefined)
     const [currentImage, setCurrentImage] = useState('')
     const [currentProductName, setCurrentProductName] = useState('')
@@ -47,7 +47,7 @@ const OrderDetail: React.FC = (props) => {
 
     useEffect(() => {
         const fn = async () => {
-            const result = await api.getShopifyOrder(params.shopifyOrderId)
+            const result = await api.getShopifyOrder(params.webShopOrderId)
             const orderWithoutTipAndDepositObj: ShopifyOrder = cleanUpShopifyOrder(result)!
             const sortedLineItems = orderWithoutTipAndDepositObj!.line_items!.sort((a: LineItem, b: LineItem) => {
                 if (!a?.deposit) {
@@ -103,7 +103,7 @@ const OrderDetail: React.FC = (props) => {
     }, [productClicked]);
 
     const updateOrder = async () => {
-        const result = await api.updateShopifyOrder(params.shopifyOrderId, order!)
+        const result = await api.updateShopifyOrder(params.webShopOrderId, order!)
         console.log(result)
     }
 

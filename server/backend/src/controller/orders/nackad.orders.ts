@@ -1,14 +1,14 @@
-import Shop from "../../models/Shop"
-import Address from "../../types/address"
-import Order from "../../types/order"
+import Shop from '../../models/Shop'
+import Address from '../../types/address'
+import Order from '../../types/order'
 import UserModel from '../../models/User'
 import DepositItemModel, { IDepositItem } from '../../models/DepositItem'
 import Product from '../../models/Product'
 import DepositModel from '../../models/Deposit'
 import DeliverySlotModel from '../../models/DeliverySlots'
 import DepositTypeModel from '../../models/DepositType'
-import OrderModel from "../../models/Order"
-import DeliveryModel from "../../models/Delivery"
+import OrderModel from '../../models/Order'
+import DeliveryModel from '../../models/Delivery'
 
 // Webhook that is called when a new order is created on webshop
 const createNewNackadOrder = async (newOrder: Order) => {
@@ -58,7 +58,7 @@ const createNewNackadOrder = async (newOrder: Order) => {
       lastName: newOrder.customer?.last_name
     }).save()
   }
-  const exists = await OrderModel.exists({ shopifyOrderId: newOrder.id })
+  const exists = await OrderModel.exists({ webShopOrderId: newOrder.id })
   console.log('exists', exists)
   if (exists) {
     return
@@ -102,10 +102,11 @@ const createNewNackadOrder = async (newOrder: Order) => {
   )
   newOrder.line_items = []
   newOrder.line_items = newLineItems
+  newOrder.shop = mainShop!
 
   const orderDatabase = await new OrderModel(newOrder)
   orderDatabase.user = user
-  orderDatabase.shopifyOrderId = newOrder.id?.toString()
+  orderDatabase.webShopOrderId = newOrder.id?.toString()
   await orderDatabase.save()
 
   const output: IDepositItem[] = []
@@ -145,6 +146,7 @@ const createNewNackadOrder = async (newOrder: Order) => {
   // const dateParts = deliveryDay.split('.')
   // const day = new Date(+dateParts[2], parseInt(dateParts[1]) - 1, +dateParts[0])
   const deliverySlot = await DeliverySlotModel.findOne({
+    shop: mainShop,
     deliveryDay: {
       $gte: deliveryDay!.setHours(2, 0, 0),
       $lte: deliveryDay!.setHours(23, 0, 0)
@@ -156,16 +158,16 @@ const createNewNackadOrder = async (newOrder: Order) => {
   if (shippingAddress) {
     delivery = await new DeliveryModel({
       user,
-      shopifyOrder: orderDatabase,
+      webShopOrder: orderDatabase,
       address: shippingAddress,
-      shopifyOrderId: newOrder.id
+      webShopOrderId: newOrder.id
     })
   } else {
     delivery = await new DeliveryModel({
       user,
       type: 'PICKUP',
-      shopifyOrder: orderDatabase,
-      shopifyOrderId: newOrder.id
+      webShopOrder: orderDatabase,
+      webShopOrderId: newOrder.id
     })
   }
 

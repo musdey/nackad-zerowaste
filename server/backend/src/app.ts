@@ -8,10 +8,10 @@ import errorHandler from './middleware/error-handler'
 import connectDB from './lib/db/connect'
 import initalizeRoles from './lib/db/initalizeRoles'
 import settings from './lib/db/initalizeShopSettings'
-import deliverySlotController from './controller/deliveryslot.controller'
 import rateLimit from 'express-rate-limit'
 import path from 'path'
 import cron from 'node-cron'
+import deliverySlotController from './controller/deliveryslot.controller'
 
 dotenv.config()
 
@@ -57,6 +57,7 @@ app.use(
 )
 
 cron.schedule('0 1 * * *', async () => {
+  await deliverySlotController.createRexeatSlots()
   await deliverySlotController.createDeliverySlots()
   console.log('DeliverySlots created')
 })

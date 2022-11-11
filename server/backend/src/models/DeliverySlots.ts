@@ -1,9 +1,10 @@
 import { Document, Schema, Model, model } from 'mongoose'
-import Config from '../Config'
 import { IDelivery } from './Delivery'
+import { IShop } from './Shop'
 import { IUser } from './User'
 export interface IDeliverySlot extends Document {
   // _id let it autogenerate by mongodb
+  shop: IShop
   deliveryDay: Date
   slotHours: string
   deliveries?: [IDelivery]
@@ -15,6 +16,10 @@ export interface IDeliverySlot extends Document {
 const DeliverySlotSchema = new Schema(
   {
     // _id let it autogenerate by mongodb
+    shop: {
+      type: Schema.Types.ObjectId,
+      ref: 'Shop'
+    },
     deliveryDay: {
       type: Date
     },

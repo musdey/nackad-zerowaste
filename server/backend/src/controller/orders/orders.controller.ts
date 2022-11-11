@@ -9,7 +9,7 @@ import Cancellation from '../../types/cancellation'
 const orderUpdates = async (update: DeliveryUpdate) => {
   console.log('--------------------------order Delivered handler called')
   console.log(update)
-  const currentDelivery = await DeliveryModel.findOne({ shopifyOrderId: update.order_id })
+  const currentDelivery = await DeliveryModel.findOne({ webShopOrderId: update.order_id })
   if (currentDelivery) {
     currentDelivery.updates.push(update)
     if (update.shipment_status == 'out_for_delivery') {
@@ -28,7 +28,7 @@ const orderUpdates = async (update: DeliveryUpdate) => {
 const orderCancelled = async (cancellation: Cancellation) => {
   console.log('Cancel order handler has been calledcalled')
   console.log(cancellation)
-  const currentDelivery = await DeliveryModel.findOne({ shopifyOrderId: cancellation.id })
+  const currentDelivery = await DeliveryModel.findOne({ webShopOrderId: cancellation.id })
   if (currentDelivery) {
     currentDelivery.updates.push(cancellation)
     currentDelivery.status = 'CANCELLED'

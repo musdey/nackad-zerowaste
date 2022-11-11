@@ -7,8 +7,8 @@ import { DepositStatus } from '../types'
 import usercontroller from './user.controller'
 import rechargeController from './recharge.controller'
 
-const getDepositByUserId = async (userId: string) => {
-  const customer = await User.findOne({ _id: userId })
+const getDepositByUserId = async (userId: string, access?: string[]) => {
+  const customer = await User.findOne({ _id: userId, mainShop: { $or: [access] } })
   if (!customer) {
     throw new Error('User not found.')
   }

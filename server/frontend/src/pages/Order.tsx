@@ -32,7 +32,7 @@ const Order: React.FC = (props) => {
             _id: "",
             address: {
                 address1: '', address2: '', city: '', zip: '', province: '', email: "", emailIsVerified: false, firstName: "", lastName: ""
-                , phoneNumber: "", shopifyUserId: "", _id: ""
+                , phoneNumber: "", webShopUserId: "", _id: "", shopifyUserId: ""
             }
         }
     })
@@ -73,6 +73,7 @@ const Order: React.FC = (props) => {
             state: order
         })
     }
+
     function containsNumbers(str: string) {
         return /\d/.test(str);
     }

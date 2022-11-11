@@ -1,10 +1,9 @@
 import jwt from 'jsonwebtoken'
-import User from '../models/User'
-import { NextFunction, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
 const secret = process.env.JWT_SECRET || 'someRandomTestString'
 
-const verifyToken = (req: any, res: Response, next: NextFunction) => {
+const verifyToken = (req: Request, res: Response, next: NextFunction) => {
   let token = req.headers.authorization
 
   if (!token) {
@@ -17,19 +16,18 @@ const verifyToken = (req: any, res: Response, next: NextFunction) => {
     if (err) {
       return res.status(401).send({ message: 'Unauthorized!' })
     }
+    const arr = decoded.extraAccess
+    arr.push(decoded.mainShop)
     req.userId = decoded.id
+    req.role = decoded.role
+    req.access = arr
+    console.log(decoded)
     next()
   })
 }
 
-const isAdmin = async (req: any, res: Response, next: NextFunction) => {
-  const user = await User.findById(req.userId).populate('role').exec()
-  if (!user) {
-    res.status(500).send({ message: 'User not found!' })
-    return
-  }
-
-  if (user.role.name === 'ADMIN') {
+const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
+  if (req.role!.name === 'ADMIN') {
     next()
   } else {
     res.status(403).send({ message: 'Require Admin Role!' })
@@ -37,13 +35,7 @@ const isAdmin = async (req: any, res: Response, next: NextFunction) => {
 }
 
 const isManager = async (req: any, res: Response, next: NextFunction) => {
-  const user = await User.findById(req.userId).populate('role').exec()
-  if (!user) {
-    res.status(500).send({ message: 'User not found!' })
-    return
-  }
-
-  if (user.role.name === 'ADMIN' || user.role.name === 'MANAGER') {
+  if (req.role.name === 'ADMIN' || req.role.name === 'MANAGER') {
     next()
   } else {
     res.status(403).send({ message: 'Require Manager Role!' })
@@ -51,13 +43,7 @@ const isManager = async (req: any, res: Response, next: NextFunction) => {
 }
 
 const isEmployee = async (req: any, res: Response, next: NextFunction) => {
-  const user = await User.findById(req.userId).populate('role').exec()
-  if (!user) {
-    res.status(500).send({ message: 'User not found!' })
-    return
-  }
-
-  if (user.role.name === 'ADMIN' || user.role.name === 'MANAGER' || user.role.name === 'EMPLOYEE') {
+  if (req.role.name === 'ADMIN' || req.role.name === 'MANAGER' || req.role.name === 'EMPLOYEE') {
     next()
   } else {
     res.status(403).send({ message: 'Require Employee Role!' })
@@ -65,12 +51,12 @@ const isEmployee = async (req: any, res: Response, next: NextFunction) => {
 }
 
 const isCustomer = async (req: any, res: Response, next: NextFunction) => {
-  const user = await User.findById(req.userId).populate('role').exec()
-  if (!user) {
-    res.status(500).send({ message: 'User not found!' })
-    return
-  }
-  if (user.role.name === 'ADMIN' || user.role.name === 'MANAGER' || user.role.name === 'EMPLOYEE' || user.role.name === 'CUSTOMER') {
+  if (
+    req.role.name === 'ADMIN' ||
+    req.role.name === 'MANAGER' ||
+    req.role.name === 'EMPLOYEE' ||
+    req.role.name === 'CUSTOMER'
+  ) {
     next()
   } else {
     res.status(403).send({ message: 'Require Customer Role' })

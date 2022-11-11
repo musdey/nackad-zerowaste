@@ -39,6 +39,7 @@ router.post('/pw/reset-pw', passwordController.passwordReset)
 router.get('/settings', settingsHandler.getSettingsHandler)
 router.get('/settings/admin', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.getSettingsAdminHandler)
 router.get('/deliveryslots', deliverySlotHandler.getAllPublic)
+router.get('/deliveryslots/rexeat', deliverySlotHandler.getRexeatPublic)
 router.get('/opendeposit/:shopifyUserId', depositHandler.getDepositByShopifyId)
 
 // Delivery Management ACHTUNG EMPLOYEE
