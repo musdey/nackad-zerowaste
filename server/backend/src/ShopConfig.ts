@@ -9,7 +9,7 @@ const NackadConfig = {
     wednesday: '15:00-20:00',
     thursday: '15:00-20:00',
     friday: '15:00-20:00',
-    saturday: '15:00-20:00',
+    saturday: '09:00-18:00',
     sunday: 'closed'
   },
   vehicles: 2,
@@ -19,15 +19,6 @@ const NackadConfig = {
 
 const RexeatConfig = {
   deliveryAreas: '',
-  deliveryHours: {
-    monday: '08:00-19:00',
-    tuesday: '08:00-19:00',
-    wednesday: '08:00-19:00',
-    thursday: 'closed',
-    friday: 'closed',
-    saturday: 'closed',
-    sunday: 'closed'
-  },
   bigSlots: {
     monday: ['08:00-12:00', '13:00-15:00', '16:00-19:00'],
     tuesday: ['08:00-12:00', '13:00-15:00', '16:00-19:00'],

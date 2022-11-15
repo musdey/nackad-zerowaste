@@ -17,11 +17,10 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
       return res.status(401).send({ message: 'Unauthorized!' })
     }
     const arr = decoded.extraAccess
-    arr.push(decoded.mainShop)
-    req.userId = decoded.id
+    req.mainShop = decoded.mainShop
+    req.userId = decoded.userId
     req.role = decoded.role
     req.access = arr
-    console.log(decoded)
     next()
   })
 }
@@ -34,28 +33,28 @@ const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
   }
 }
 
-const isManager = async (req: any, res: Response, next: NextFunction) => {
-  if (req.role.name === 'ADMIN' || req.role.name === 'MANAGER') {
+const isManager = async (req: Request, res: Response, next: NextFunction) => {
+  if (req.role!.name === 'ADMIN' || req.role!.name === 'MANAGER') {
     next()
   } else {
     res.status(403).send({ message: 'Require Manager Role!' })
   }
 }
 
-const isEmployee = async (req: any, res: Response, next: NextFunction) => {
-  if (req.role.name === 'ADMIN' || req.role.name === 'MANAGER' || req.role.name === 'EMPLOYEE') {
+const isEmployee = async (req: Request, res: Response, next: NextFunction) => {
+  if (req.role!.name === 'ADMIN' || req.role!.name === 'MANAGER' || req.role!.name === 'EMPLOYEE') {
     next()
   } else {
     res.status(403).send({ message: 'Require Employee Role!' })
   }
 }
 
-const isCustomer = async (req: any, res: Response, next: NextFunction) => {
+const isCustomer = async (req: Request, res: Response, next: NextFunction) => {
   if (
-    req.role.name === 'ADMIN' ||
-    req.role.name === 'MANAGER' ||
-    req.role.name === 'EMPLOYEE' ||
-    req.role.name === 'CUSTOMER'
+    req.role!.name === 'ADMIN' ||
+    req.role!.name === 'MANAGER' ||
+    req.role!.name === 'EMPLOYEE' ||
+    req.role!.name === 'CUSTOMER'
   ) {
     next()
   } else {

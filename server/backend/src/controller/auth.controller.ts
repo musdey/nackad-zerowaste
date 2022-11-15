@@ -27,8 +27,7 @@ const signup = async (email: string, password: string, firstName: string, lastNa
 }
 
 const signin = async (email: string, password: string) => {
-  const user = await User.findOne({ email })
-
+  const user = await User.findOne({ email }).populate('mainShop')
   if (!user) {
     throw new Error('User Not found.')
   }
@@ -42,7 +41,6 @@ const signin = async (email: string, password: string) => {
   // Here would be a good spot to send out OTP
 
   // Sign JWT Token
-
   const role = await Role.findById(user.role).select('-_id')
 
   const token = jwt.sign(

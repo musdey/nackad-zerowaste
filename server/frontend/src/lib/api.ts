@@ -522,6 +522,29 @@ const getDeliverySlots = async (): Promise<any> => {
   }
 };
 
+const updateDeliverySlot = async (
+  id: string,
+  deliverySlot: any
+): Promise<ShopifyOrder | undefined> => {
+  const url = Config.Delivery.UPDATESLOT;
+  try {
+    const result = await fetch(url + id, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify(deliverySlot),
+    });
+    const body = await result.json();
+
+    return body;
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
 const updateDeliverySlots = async (
   deliverySlotId: string,
   action: string
@@ -570,6 +593,7 @@ const apiObj = {
   getDepositTypes,
   getDeliverySlots,
   updateDeliverySlots,
+  updateDeliverySlot,
   resetPW,
   requestPW,
   chekPWToken,

@@ -11,7 +11,6 @@ import settings from './lib/db/initalizeShopSettings'
 import rateLimit from 'express-rate-limit'
 import path from 'path'
 import cron from 'node-cron'
-import deliverySlotController from './controller/deliveryslot.controller'
 
 dotenv.config()
 
@@ -25,6 +24,7 @@ connectDB(mongodbHost, 27017, mongodbUser, mongodbPw, mongodbDBName, 10000)
 initalizeRoles()
 settings.initializeShops(['REXEAT', 'NACKAD'])
 settings.initializeSettings()
+settings.initalizeDeliverySlots()
 settings.initProducts()
 settings.registerRechargeWebhooks()
 
@@ -57,8 +57,7 @@ app.use(
 )
 
 cron.schedule('0 1 * * *', async () => {
-  await deliverySlotController.createRexeatSlots()
-  await deliverySlotController.createDeliverySlots()
+  await settings.initalizeDeliverySlots()
   console.log('DeliverySlots created')
 })
 

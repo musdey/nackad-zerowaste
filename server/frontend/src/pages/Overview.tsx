@@ -108,7 +108,7 @@ const Overview: React.FC = () => {
                     }).map((obj: any, i) =>
                         <OverviewListItem
                             type={obj.type}
-                            key={obj.webShopOrder || obj.shopifyOrder || ""}
+                            key={obj.shopifyOrder || obj.webShopOrder || ""}
                             firstName={(obj.type === 'DELIVERY' ? obj.address?.first_name : obj.user.firstName) || "First Name"}
                             lastName={(obj.type === 'DELIVERY' ? obj.address?.last_name : obj.user.lastName) || "Last Name"}
                             address={{ address1: obj.address?.address1 || "", address2: obj.address?.address2 || "", zip: obj.address?.zip || "", city: obj.address?.city || "" }}

@@ -31,6 +31,7 @@ const Config = {
     GETSLOTS: HOST + "deliveryslots/detail",
     SLOTADD: HOST + "deliveryslot/add",
     SLOTREMOVE: HOST + "deliveryslot/remove",
+    UPDATESLOT: HOST + "deliveryslot",
   },
   Deposit: {
     RETURN: HOST + "deposit/return",

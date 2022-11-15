@@ -29,7 +29,7 @@ const getAll: Handler = async (req: Request, res: Response, next: NextFunction) 
   }
 }
 
-const getSelf: Handler = async (req: Request & { userId?: string }, res: Response, next: NextFunction) => {
+const getSelf: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await usercontroller.getOne(req.userId!)
     return res.status(200).send(user)
@@ -38,7 +38,7 @@ const getSelf: Handler = async (req: Request & { userId?: string }, res: Respons
   }
 }
 
-const searchUser: Handler = async (req: Request & { userId?: string }, res: Response, next: NextFunction) => {
+const searchUser: Handler = async (req: Request, res: Response, next: NextFunction) => {
   const searchString = req.body.searchString
 
   if (!searchString) {

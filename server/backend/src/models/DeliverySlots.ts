@@ -9,6 +9,7 @@ export interface IDeliverySlot extends Document {
   slotHours: string
   deliveries?: [IDelivery]
   maxSlotSize: number
+  excludedDeliveryAreas: string
   available: number
   lastUpdatedFrom: [{ date: Date; user: IUser }]
 }
@@ -24,6 +25,9 @@ const DeliverySlotSchema = new Schema(
       type: Date
     },
     slotHours: {
+      type: String
+    },
+    excludedDeliveryAreas: {
       type: String
     },
     deliveries: {

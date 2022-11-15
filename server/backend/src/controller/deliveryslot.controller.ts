@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
-import DeliverySlotModel from '../models/DeliverySlots'
-import Shop from '../models/Shop'
+import DeliverySlotModel, { IDeliverySlot } from '../models/DeliverySlots'
+import Shop, { IShop } from '../models/Shop'
 import ShopSettings from '../models/ShopSettings'
 import User from '../models/User'
 
@@ -12,22 +12,17 @@ const getRexeatSlotsPublic = async () => {
   const currentTime = startDate.getTime()
   const threshold = new Date().setHours(11, 0, 0, 0)
 
-  console.log(today)
-  console.log(new Date(currentTime))
-  console.log(new Date(threshold))
-
   startDate.setDate(startDate.getDate() + (7 - today)) // Set date to sunday
-  if (today <= 5 && currentTime < threshold) {
+  if (today < 5 || (today == 5 && currentTime < threshold)) {
+    // Until friday 11am show next week
     // Show next week
     endDate.setDate(startDate.getDate() + 7)
   } else {
+    // After friday 12pm (midday) show the week after next week
     // Show week after next week
     startDate.setDate(startDate.getDate() + 7)
     endDate.setDate(startDate.getDate() + 14)
   }
-  console.log(startDate)
-  console.log(endDate)
-
   const shop = await Shop.findOne({ name: 'REXEAT' })
   const deliverySlots = await DeliverySlotModel.find({
     shop,
@@ -49,22 +44,23 @@ const getRexeatSlotsPublic = async () => {
   return sorted
 }
 
+// Get Nackad deliveryslots
 const getDeliverySlotsPublic = async () => {
-  const settings = await ShopSettings.findOne({})
+  const shop = await Shop.findOne({ name: 'NACKAD' })
+  const settings = await ShopSettings.findOne({ shop })
 
   // Show deliverySlots ealierst 2hours before
   let date = new Date()
   const currentTime = date.getTime()
-  const threshold = new Date().setHours(11, 30, 0, 0)
+  const threshold = new Date().setHours(12, 30, 0, 0)
   if (currentTime > threshold) {
     date.setHours(22, 0, 0)
   } else {
     date.setHours(date.getHours() + 3, 0, 0)
   }
 
-  //date.setMinutes(date.getHours() + 15)
-
   const deliverySlots = await DeliverySlotModel.find({
+    shop,
     deliveryDay: {
       $gte: date
     }
@@ -76,12 +72,6 @@ const getDeliverySlotsPublic = async () => {
 
   deliverySlots.forEach((data) => {
     let suggestion: string[] = []
-    // data.deliveries?.forEach((delivery) => {
-    //   const zip = delivery.address.zip
-    //   if (zip && !suggestion.includes(zip)) {
-    //     suggestion.push(zip)
-    //   }
-    // })
 
     const newObj = {
       deliveryDay: data.deliveryDay,
@@ -103,8 +93,9 @@ const getDeliverySlotsPublic = async () => {
   return sorted
 }
 
-const getDeliverySlotsManagement = async () => {
+const getDeliverySlotsManagement = async (shop: string) => {
   const deliverySlots = await DeliverySlotModel.find({
+    //shop: shop,
     deliveryDay: {
       $gte: new Date()
     }
@@ -319,12 +310,18 @@ const updateSlot = async (deliverySlotId: string, userId: string, type: 'ADD' | 
   }
 }
 
+const updateById = async (id: string, deliverySlot: IDeliverySlot) => {
+  const slot = await DeliverySlotModel.findByIdAndUpdate(id, deliverySlot)
+  return slot
+}
+
 const deliverySlotController = {
   getRexeatSlotsPublic,
   createDeliverySlots,
   createRexeatSlots,
   getDeliverySlotsManagement,
   getDeliverySlotsPublic,
-  updateSlot
+  updateSlot,
+  updateById
 }
 export default deliverySlotController
