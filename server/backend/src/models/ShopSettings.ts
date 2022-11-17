@@ -11,27 +11,36 @@ export type DeliveryHours = {
   sunday: string
 }
 
-type BigSlots = {
-  monday: string[]
-  tuesday: string[]
-  wednesday: string[]
-  thursday: string[]
-  friday: string[]
-  saturday: string[]
-  sunday: string[]
+export type SingleSlot = {
+  hours: string
+  excludedDeliveryAreas?: string
 }
 
+type BigSlots = {
+  monday: SingleSlot[]
+  tuesday: SingleSlot[]
+  wednesday: SingleSlot[]
+  thursday: SingleSlot[]
+  friday: SingleSlot[]
+  saturday: SingleSlot[]
+  sunday: SingleSlot[]
+}
 export interface IShopSettings extends Document {
   shop: IShop
   deliveryHours: DeliveryHours
   bigSlots: BigSlots
-  exludedDeliveryAreas?: string
+  exludedDeliveryAreas?: [string]
   deliveryAreas: string
   slotsPerVehicle: number
   extraSlots: number
   vehicles: number
   showSlotDaysInAdvance: number
 }
+
+const SingleSlotSchema = new Schema({
+  hours: String,
+  excludedDeliveryAreas: String
+})
 
 const ShopSettingsSchema = new Schema(
   {
@@ -49,13 +58,13 @@ const ShopSettingsSchema = new Schema(
       sunday: { type: String }
     },
     bigSlots: {
-      monday: { type: [String] },
-      tuesday: { type: [String] },
-      wednesday: { type: [String] },
-      thursday: { type: [String] },
-      friday: { type: [String] },
-      saturday: { type: [String] },
-      sunday: { type: [String] }
+      monday: { type: [SingleSlotSchema] },
+      tuesday: { type: [SingleSlotSchema] },
+      wednesday: { type: [SingleSlotSchema] },
+      thursday: { type: [SingleSlotSchema] },
+      friday: { type: [SingleSlotSchema] },
+      saturday: { type: [SingleSlotSchema] },
+      sunday: { type: [SingleSlotSchema] }
     },
     deliveryAreas: {
       type: [String]
