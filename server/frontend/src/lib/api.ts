@@ -528,7 +528,7 @@ const updateDeliverySlot = async (
 ): Promise<ShopifyOrder | undefined> => {
   const url = Config.Delivery.UPDATESLOT;
   try {
-    const result = await fetch(url + id, {
+    const result = await fetch(url + "/" + id, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

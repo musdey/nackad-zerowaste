@@ -11,7 +11,7 @@ const DeliverySlots: React.FC = () => {
     const options: any = {
         weekday: 'short',
         year: 'numeric',
-        month: 'long',
+        month: 'short',
         day: 'numeric',
     };
 
@@ -51,27 +51,56 @@ const DeliverySlots: React.FC = () => {
         }
     }
 
-
     const handleChipClick = async (plz: string, slotId: string) => {
-
+        let updated
         const updatedSlots = deliverySlots.map((slot: Slot) => {
             if (slot._id === slotId) {
-                console.log("path with id equal")
                 const split = slot.excludedDeliveryAreas.split(";")
                 const index = split.indexOf(plz)
                 split.splice(index, 1)
                 slot.excludedDeliveryAreas = split.join(";")
+                updated = slot
             }
             return slot
         })
         if (updatedSlots) {
             setDeliverySlots(updatedSlots)
+            await api.updateDeliverySlot(slotId, updated)
         }
-        //const result = await api.updateDeliverySlot(slotId, deliverySlots.)
     }
 
-
-
+    const handleAddExcludePLZClick = async (slotId: string) => {
+        const element: any = document.getElementById("plzInput" + slotId)
+        const plz = element!.value
+        let updated
+        if (plz.length !== 4) {
+            await present('Bitte eine gültige Postleitzahl eingeben', 3000)
+        } else {
+            const updatedSlots = deliverySlots.map((slot: Slot) => {
+                if (slot._id === slotId) {
+                    if (!slot.excludedDeliveryAreas || slot.excludedDeliveryAreas.length === 0) {
+                        slot.excludedDeliveryAreas = plz
+                        element.value = ""
+                    } else {
+                        const split = slot.excludedDeliveryAreas.split(";")
+                        const index = split.indexOf(plz)
+                        if (index < 0) {
+                            split.push(plz)
+                            split.sort()
+                            slot.excludedDeliveryAreas = split.join(";")
+                            element.value = ""
+                        }
+                    }
+                    updated = slot
+                }
+                return slot
+            })
+            if (updatedSlots) {
+                setDeliverySlots(updatedSlots)
+                await api.updateDeliverySlot(slotId, updated)
+            }
+        }
+    }
     return (
         <IonPage>
             <Header subTitle="Einstellungen" />
@@ -84,7 +113,7 @@ const DeliverySlots: React.FC = () => {
                     }
                 }).map((slot: any) =>
                     <IonCard key={"slotid+" + slot._id}>
-                        <IonItem>
+                        <IonItem lines="none">
                             <IonItem>
                                 <IonLabel className="ion-text-wrap">
                                     <p>{new Date(slot.deliveryDay).toLocaleDateString('de-at', options)}</p>
@@ -105,17 +134,21 @@ const DeliverySlots: React.FC = () => {
                                 </IonButton>
                             </IonItem>
                         </IonItem>
+
                         <IonItem lines="none">
-                            <IonItem lines="none">
+                            <IonItem lines="none" slot="start" >
                                 <IonLabel>
                                     Exkludierte Bezirke:
                                 </IonLabel>
-                                <IonItem slot="end">
-                                    <IonButton color={"grey"}> + </IonButton>
-                                </IonItem>
+                            </IonItem>
+
+                            <IonItem slot="end">
+                                <IonInput id={"plzInput" + slot._id} style={{ width: "50px !important;" }} type="number" inputMode="numeric" maxlength={4} placeholder="PLZ"></IonInput>
+                                <IonButton color={"grey"} onClick={() => handleAddExcludePLZClick(slot._id)}> + </IonButton>
                             </IonItem>
                         </IonItem>
-                        {slot.excludedDeliveryAreas &&
+                        {
+                            slot.excludedDeliveryAreas &&
                             <IonItem>
                                 <div >
                                     {slot.excludedDeliveryAreas.split(";").map((plz: string) => {
@@ -124,7 +157,6 @@ const DeliverySlots: React.FC = () => {
                                             <IonIcon icon={close} onClick={() => handleChipClick(plz, slot._id)}></IonIcon>
                                         </IonChip>
                                     })}
-
                                 </div>
                             </IonItem>
                         }
