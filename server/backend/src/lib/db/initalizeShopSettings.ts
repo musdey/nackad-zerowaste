@@ -7,13 +7,11 @@ import ShopSettings from '../../models/ShopSettings'
 import shopConfigs from '../../ShopConfig'
 
 const initializeShops = async function (shopString: string[]) {
-  await deliverySlotController.createRexeatSlots()
-
   try {
     shopString.forEach(async (shopName) => {
       const result = await Shop.findOne({ name: shopName })
       if (!result) {
-        await new Shop({ name: shopName })
+        await new Shop({ name: shopName }).save()
       }
     })
   } catch (err) {
