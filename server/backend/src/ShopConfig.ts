@@ -26,7 +26,8 @@ const RexeatConfig = {
   },
   vehicles: 2,
   slotsPerVehicle: 25,
-  showSlotDaysInAdvance: 14
+  showSlotDaysInAdvance: 14,
+  useBigSlots: true
 } as IShopSettings
 
 const shopConfigs = {
