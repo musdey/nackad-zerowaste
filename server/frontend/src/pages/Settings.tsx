@@ -179,7 +179,6 @@ const Settings: React.FC = () => {
   }
 
   const handleAddExcludedSlot = (slotId: string, day: string) => {
-    console.log('handleexcludedslot')
     const element: any = document.getElementById('plzInput' + slotId)
     const plz = element.value
     if (!plz) return
@@ -198,6 +197,28 @@ const Settings: React.FC = () => {
       slotToAddExcludedPlz.excludedDeliveryAreas = plzArray.join(';')
       setBigSlots(updatedBigSlots)
       element.value = ''
+    }
+  }
+
+  const handleRemoveExcludedSlot = (
+    plz: string,
+    slotId: string,
+    day: string
+  ) => {
+    let updatedBigSlots = { ...bigSlots! }
+    const dayToRemoveExcludedPlz = updatedBigSlots[day]
+    const slotToRemoveExcludedPlz = dayToRemoveExcludedPlz.find(
+      (slot) => slot._id === slotId
+    )
+    if (slotToRemoveExcludedPlz) {
+      const plzArray = slotToRemoveExcludedPlz.excludedDeliveryAreas!.split(';')
+      const index = plzArray.indexOf(plz)
+      if (index > 0) {
+        plzArray.splice(index, 1)
+        plzArray.sort()
+        slotToRemoveExcludedPlz.excludedDeliveryAreas = plzArray.join(';')
+        setBigSlots(updatedBigSlots)
+      }
     }
   }
 
@@ -323,7 +344,13 @@ const Settings: React.FC = () => {
                                           <IonLabel>{plz}</IonLabel>
                                           <IonIcon
                                             icon={close}
-                                            onClick={() => handleChipClose(plz)}
+                                            onClick={() =>
+                                              handleRemoveExcludedSlot(
+                                                plz,
+                                                bigslot._id,
+                                                day
+                                              )
+                                            }
                                           ></IonIcon>
                                         </IonChip>
                                       )
