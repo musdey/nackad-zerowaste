@@ -68,7 +68,7 @@ const ShopSettingsSchema = new Schema(
       sunday: { type: [SingleSlotSchema] }
     },
     deliveryAreas: {
-      type: [String]
+      type: String
     },
     slotsPerVehicle: {
       type: Number,
