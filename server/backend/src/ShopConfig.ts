@@ -20,9 +20,17 @@ const NackadConfig = {
 const RexeatConfig = {
   deliveryAreas: '',
   bigSlots: {
-    monday: ['08:00-12:00', '13:00-15:00', '16:00-19:00'],
-    tuesday: ['08:00-12:00', '13:00-15:00', '16:00-19:00'],
-    wednesday: ['08:00-12:00', '13:00-15:00', '16:00-19:00']
+    monday: [
+      { hours: '08:00-12:00', excludedDeliveryAreas: '1210;1220' },
+      { hours: '13:00-15:00', excludedDeliveryAreas: '1210;1220' },
+      { hours: '16:00-19:00', excludedDeliveryAreas: '1210;1220' }
+    ],
+    tuesday: [
+      { hours: '08:00-12:00' },
+      { hours: '13:00-15:00' },
+      { hours: '16:00-19:00', excludedDeliveryAreas: '1210;1220' }
+    ],
+    wednesday: [{ hours: '08:00-12:00' }, { hours: '13:00-15:00' }, { hours: '16:00-19:00' }]
   },
   vehicles: 2,
   slotsPerVehicle: 25,

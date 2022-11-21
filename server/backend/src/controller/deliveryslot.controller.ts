@@ -258,12 +258,13 @@ const createRexeatSlots = async () => {
         // const to = parseInt(hoursString!.split('-')[1].split(':')[0])
 
         hoursStringArr.forEach(async (bigSlot) => {
-          let from = parseInt(bigSlot!.split('-')[0].split(':')[0])
-          const to = parseInt(bigSlot!.split('-')[1].split(':')[0])
+          let from = parseInt(bigSlot!.hours.split('-')[0].split(':')[0])
+          const to = parseInt(bigSlot!.hours.split('-')[1].split(':')[0])
           const date = new Date(currentDayMorning).setHours(from, 0, 0)
           new DeliverySlotModel({
             shop,
             deliveryDay: new Date(date),
+            excludedDeliveryAreas: bigSlot.excludedDeliveryAreas,
             slotHours: `${from}:00-${to}:00`,
             maxSlotSize: settingObj.slotsPerVehicle
           }).save()
