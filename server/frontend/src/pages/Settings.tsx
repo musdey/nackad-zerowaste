@@ -42,11 +42,17 @@ const days = [
   'sunday',
 ]
 
-type BigSlots = Record<string, string[]>
+export type SingleSlot = {
+  hours: string
+  excludedDeliveryAreas?: string
+  _id: string
+}
+
+type BigSlots = Record<string, SingleSlot[]>
 
 const Settings: React.FC = () => {
   const { user } = useAuth()
-  const [deliveryAreas, setDeliveryAreas] = useState<string[]>()
+  const [deliveryAreas, setDeliveryAreas] = useState<string>()
   // const [deliveryHours, setDeliveryHours] = useState({
   //     monday: '',
   //     tuesday: '',
@@ -99,14 +105,14 @@ const Settings: React.FC = () => {
         error = true
       }
     }
-    deliveryAreas?.forEach((data: string) => {
-      if (data.length !== 4) {
-        error = true
-      }
-      if (isNaN(parseInt(data))) {
-        error = true
-      }
-    })
+    // deliveryAreas?.forEach((data: string) => {
+    //   if (data.length !== 4) {
+    //     error = true
+    //   }
+    //   if (isNaN(parseInt(data))) {
+    //     error = true
+    //   }
+    // })
 
     if (error) {
       await present('Input validation error.', 2000)
@@ -133,22 +139,65 @@ const Settings: React.FC = () => {
   const handleAddPLZ = async () => {
     const element: any = document.getElementById('plzInput')
     const plz = element!.value
-    if (plz.length !== 4 || deliveryAreas?.includes(plz)) {
+    if (plz.length !== 4 || deliveryAreas?.split(';').includes(plz)) {
       await present('Bitte eine gültige Postleitzahl eingeben', 3000)
     } else {
-      const updatedAreas = [...deliveryAreas!]
-      updatedAreas.push(plz)
-      setDeliveryAreas(updatedAreas)
-      element.value = ''
+      let updatedAreas = deliveryAreas!
+      const areasArray = updatedAreas.split(';')
+      const index = areasArray.indexOf(plz)
+      if (index < 0) {
+        areasArray.push(plz)
+        areasArray.sort()
+        updatedAreas = areasArray.join(';')
+        setDeliveryAreas(updatedAreas)
+        element.value = ''
+      }
     }
   }
 
   const handleChipClose = (plz: string) => {
-    const updatedAreas = [...deliveryAreas!]
-    const index = updatedAreas.indexOf(plz)
+    let updatedAreas = deliveryAreas!
+    const areasArray = updatedAreas.split(';')
+    const index = areasArray.indexOf(plz)
     if (index > -1) {
-      updatedAreas.splice(index, 1)
+      areasArray.splice(index, 1)
+      areasArray.sort()
+      updatedAreas = areasArray.join(';')
       setDeliveryAreas(updatedAreas)
+    }
+  }
+
+  const handleRemoveSlot = (_id: string, day: string) => {
+    let updatedBigSlots = { ...bigSlots! }
+    const dayToRemoveSlot = updatedBigSlots[day]
+    const index = dayToRemoveSlot.findIndex((slot) => slot._id === _id)
+    if (index > -1) {
+      dayToRemoveSlot.splice(index, 1)
+      dayToRemoveSlot.sort()
+      setBigSlots(updatedBigSlots)
+    }
+  }
+
+  const handleAddExcludedSlot = (slotId: string, day: string) => {
+    console.log('handleexcludedslot')
+    const element: any = document.getElementById('plzInput' + slotId)
+    const plz = element.value
+    if (!plz) return
+    let updatedBigSlots = { ...bigSlots! }
+    const dayToAddExcludedPlz = updatedBigSlots[day]
+    const slotToAddExcludedPlz = dayToAddExcludedPlz.find(
+      (slot) => slot._id === slotId
+    )
+    if (slotToAddExcludedPlz) {
+      const plzArray =
+        slotToAddExcludedPlz.excludedDeliveryAreas?.split(';') || []
+      const index = plzArray.indexOf(plz)
+      if (index > 0) return
+      plzArray.push(plz)
+      plzArray.sort()
+      slotToAddExcludedPlz.excludedDeliveryAreas = plzArray.join(';')
+      setBigSlots(updatedBigSlots)
+      element.value = ''
     }
   }
 
@@ -191,24 +240,26 @@ const Settings: React.FC = () => {
             {deliveryAreas && (
               <IonItem lines="none" slot="start">
                 <div>
-                  {deliveryAreas.sort().map((plz: string) => {
-                    return (
-                      <IonChip key={'ChipPlz' + plz} id={plz + 'plz'}>
-                        <IonLabel>{plz}</IonLabel>
-                        <IonIcon
-                          icon={close}
-                          onClick={() => handleChipClose(plz)}
-                        ></IonIcon>
-                      </IonChip>
-                    )
-                  })}
+                  {deliveryAreas
+                    .split(';')
+                    .sort()
+                    .map((plz: string) => {
+                      return (
+                        <IonChip key={'ChipPlz' + plz} id={plz + 'plz'}>
+                          <IonLabel>{plz}</IonLabel>
+                          <IonIcon
+                            icon={close}
+                            onClick={() => handleChipClose(plz)}
+                          ></IonIcon>
+                        </IonChip>
+                      )
+                    })}
                 </div>
               </IonItem>
             )}
             <IonItem slot="end">
               <IonInput
                 id={'plzInput'}
-                style={{ width: '50px !important;' }}
                 type="number"
                 inputMode="numeric"
                 maxlength={4}
@@ -226,48 +277,93 @@ const Settings: React.FC = () => {
           </IonCardHeader>
           <IonCardContent>
             {useBigSlots && bigSlots ? (
-              <>
-                <IonAccordionGroup>
-                  {days.map((day, dayIndex) => (
-                    <IonAccordion value={day} key={dayIndex}>
-                      <IonItem slot="header" color="light">
-                        <IonLabel>{`${
-                          day.charAt(0).toUpperCase() + day.slice(1)
-                        } (${bigSlots[day].length})`}</IonLabel>
-                      </IonItem>
-                      <div className="ion-padding" slot="content">
-                        {bigSlots[day].map((bigslot, slotIndex) => (
-                          <div>
+              <IonAccordionGroup>
+                {days.map((day, dayIndex) => (
+                  <IonAccordion value={day} key={dayIndex}>
+                    <IonItem slot="header" color="light">
+                      <IonLabel>{`${
+                        day.charAt(0).toUpperCase() + day.slice(1)
+                      } (${bigSlots[day].length})`}</IonLabel>
+                    </IonItem>
+                    <div className="ion-padding" slot="content">
+                      {bigSlots[day].map((bigslot, slotIndex) => (
+                        <IonCard>
+                          <IonItem>
                             <IonInput
-                              value={bigslot}
+                              slot="start"
+                              value={bigslot.hours}
                               key={`${dayIndex}_${slotIndex}`}
                               color="dark"
+                            />
+                            <IonButton
+                              slot="end"
+                              color="secondary"
+                              id={'REMOVE_' + dayIndex + slotIndex}
+                              size="small"
+                              onClick={() => {
+                                handleRemoveSlot(bigslot._id, day)
+                              }}
                             >
+                              x
+                            </IonButton>
+                          </IonItem>
+                          <div>
+                            {bigslot.excludedDeliveryAreas && (
+                              <IonItem lines="none" slot="start">
+                                <div>
+                                  {bigslot.excludedDeliveryAreas
+                                    .split(';')
+                                    .sort()
+                                    .map((plz: string) => {
+                                      return (
+                                        <IonChip
+                                          key={'ChipPlz' + plz}
+                                          id={plz + 'plz'}
+                                        >
+                                          <IonLabel>{plz}</IonLabel>
+                                          <IonIcon
+                                            icon={close}
+                                            onClick={() => handleChipClose(plz)}
+                                          ></IonIcon>
+                                        </IonChip>
+                                      )
+                                    })}
+                                </div>
+                              </IonItem>
+                            )}
+                            <IonItem slot="end" lines="full">
+                              <IonInput
+                                id={'plzInput' + bigslot._id}
+                                type="number"
+                                inputMode="numeric"
+                                maxlength={4}
+                                placeholder="Exkl. Plz"
+                              ></IonInput>
                               <IonButton
-                                slot="end"
-                                color="secondary"
-                                id={'REMOVE_' + dayIndex + slotIndex}
-                                size="small"
-                                onClick={() => {}}
+                                color={'grey'}
+                                onClick={() =>
+                                  handleAddExcludedSlot(bigslot._id, day)
+                                }
                               >
-                                x
+                                +
                               </IonButton>
-                            </IonInput>
+                            </IonItem>
                           </div>
-                        ))}
-                        <IonButton
-                          slot="end"
-                          id={'ADD_' + dayIndex}
-                          size="small"
-                          onClick={() => {}}
-                        >
-                          +
-                        </IonButton>
-                      </div>
-                    </IonAccordion>
-                  ))}
-                </IonAccordionGroup>
-              </>
+                        </IonCard>
+                      ))}
+                      <IonButton
+                        slot="end"
+                        id={'ADD_' + dayIndex}
+                        size="small"
+                        style={{ width: '100%' }}
+                        onClick={() => {}}
+                      >
+                        Add slot
+                      </IonButton>
+                    </div>
+                  </IonAccordion>
+                ))}
+              </IonAccordionGroup>
             ) : (
               // TODO: convert to inputs
               <IonTextarea
