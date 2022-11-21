@@ -58,26 +58,26 @@ const orderCancelled: Handler = async (req: Request, res: Response, next: NextFu
 }
 
 const getAll: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  const order = await orderController.getAll()
+  const order = await orderController.getAll(req.mainShop)
   return res.status(200).send(order)
 }
 const getFuture: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  const order = await orderController.getFuture()
+  const order = await orderController.getFuture(req.mainShop)
   return res.status(200).send(order)
 }
 
 const getToday: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  const order = await orderController.getToday()
+  const order = await orderController.getToday(req.mainShop)
   return res.status(200).send(order)
 }
 
 const getCurrent: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  const order = await orderController.getCurrent()
+  const order = await orderController.getCurrent(req.mainShop)
   return res.status(200).send(order)
 }
 
 const getShopifyOrderById: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  const shopifyOrder = await orderController.getById(req.params.id)
+  const shopifyOrder = await orderController.getById(req.params.id, req.mainShop)
   return res.status(200).send(shopifyOrder)
 }
 
@@ -88,7 +88,7 @@ const updateShopifyOrderById: Handler = async (req: Request, res: Response, next
     return res.status(400).send('Input missing')
   }
 
-  const shopifyOrder = await orderController.updateById(req.params.id, order)
+  const shopifyOrder = await orderController.updateById(req.params.id, order, req.mainShop)
   return res.status(200).send(shopifyOrder)
 }
 

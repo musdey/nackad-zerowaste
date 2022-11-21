@@ -1,8 +1,10 @@
 import { Document, Schema, Model, model } from 'mongoose'
+import { IShop } from './Shop'
 
 export interface IProduct extends Document {
   // _id let it autogenerate by mongodb
   webShopId: string
+  webShop: IShop
   title: string
   packaging?: string
   deposit?: string

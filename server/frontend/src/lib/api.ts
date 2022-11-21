@@ -549,9 +549,9 @@ const updateDeliverySlots = async (
   deliverySlotId: string,
   action: string
 ): Promise<any> => {
-  const addUrl = Config.Delivery.SLOTADD;
-  const removeUrl = Config.Delivery.SLOTREMOVE;
-  const url = action === "ADD" ? addUrl : removeUrl;
+  const baseurl = Config.Delivery.SLOTADD + "/" + deliverySlotId;
+  const end = action === "ADD" ? "/add" : "/remove";
+  const url = baseurl + end;
   try {
     const result = await fetch(url, {
       method: "POST",

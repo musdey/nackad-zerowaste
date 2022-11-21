@@ -11,6 +11,7 @@ import settings from './lib/db/initalizeShopSettings'
 import rateLimit from 'express-rate-limit'
 import path from 'path'
 import cron from 'node-cron'
+import { updateNackadOrders, updateNackadUsers } from './lib/db/updateNackadUsers'
 
 dotenv.config()
 
@@ -27,6 +28,8 @@ settings.initializeSettings()
 settings.initalizeDeliverySlots()
 settings.initProducts()
 settings.registerRechargeWebhooks()
+updateNackadUsers()
+updateNackadOrders()
 
 const app = express()
 const limiter = rateLimit({

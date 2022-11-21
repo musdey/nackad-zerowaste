@@ -46,7 +46,7 @@ const initNackadProductsProducts = async function () {
 }
 
 const initalizeDeliverySlots = async () => {
-  await deliverySlotController.createDeliverySlots()
+  await deliverySlotController.createNackadSlots()
   await deliverySlotController.createRexeatSlots()
 }
 

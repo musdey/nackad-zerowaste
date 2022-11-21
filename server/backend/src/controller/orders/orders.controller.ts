@@ -37,12 +37,13 @@ const orderCancelled = async (cancellation: Cancellation) => {
   }
 }
 
-const getAll = async () => {
-  const order = await OrderModel.find({})
+const getAll = async (shop: string) => {
+  const order = await OrderModel.find({ shop })
   return order
 }
-const getFuture = async () => {
+const getFuture = async (shop: string) => {
   const order = await OrderModel.find({
+    shop,
     deliveryDay: {
       $gte: new Date()
     }
@@ -50,11 +51,9 @@ const getFuture = async () => {
   return order
 }
 
-const getToday = async () => {
-  console.log(new Date(new Date().setHours(2, 0, 0)))
-  console.log(new Date(new Date().setHours(23, 59, 0)))
-
+const getToday = async (shop: string) => {
   const order = await OrderModel.find({
+    shop,
     deliveryDay: {
       $gte: new Date(new Date().setHours(2, 0, 0)),
       $lte: new Date(new Date().setHours(23, 59, 0))
@@ -63,8 +62,9 @@ const getToday = async () => {
   return order
 }
 
-const getCurrent = async () => {
+const getCurrent = async (shop: string) => {
   const order = await OrderModel.find({
+    shop,
     deliveryDay: {
       $gte: new Date(new Date().setHours(new Date().getHours() - 2)),
       $lte: new Date(new Date().setHours(new Date().getHours() + 2))
@@ -73,13 +73,18 @@ const getCurrent = async () => {
   return order
 }
 
-const getById = async (id: string) => {
-  const shopifyOrder = await OrderModel.findOne({ _id: id })
+const getById = async (id: string, shop: string) => {
+  const shopifyOrder = await OrderModel.findOne({ _id: id, shop })
   return shopifyOrder
 }
 
-const updateById = async (id: string, order: Order) => {
-  const shopifyOrder = await OrderModel.findByIdAndUpdate(id, order)
+const updateById = async (id: string, order: Order, shop: string) => {
+  const shopifyOrder = await OrderModel.findOne({ id, shop })
+  if (shopifyOrder) {
+    await shopifyOrder.update(order)
+    await shopifyOrder.save()
+  }
+  //const shopifyOrder = await OrderModel.findByIdAndUpdate(id, order)
   return shopifyOrder
 }
 

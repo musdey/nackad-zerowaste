@@ -157,6 +157,7 @@ const createNewNackadOrder = async (newOrder: Order) => {
   let delivery
   if (shippingAddress) {
     delivery = await new DeliveryModel({
+      shop: mainShop,
       user,
       webShopOrder: orderDatabase,
       address: shippingAddress,
@@ -164,6 +165,7 @@ const createNewNackadOrder = async (newOrder: Order) => {
     })
   } else {
     delivery = await new DeliveryModel({
+      shop: mainShop,
       user,
       type: 'PICKUP',
       webShopOrder: orderDatabase,

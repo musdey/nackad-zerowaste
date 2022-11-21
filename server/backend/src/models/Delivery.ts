@@ -2,10 +2,12 @@ import { Document, Schema, Model, model } from 'mongoose'
 import Address from '../types/address'
 import Order from '../types/order'
 import { IDeliverySlot } from './DeliverySlots'
+import { IShop } from './Shop'
 import { IUser } from './User'
 
 export interface IDelivery extends Document {
   // _id let it autogenerate by mongodb
+  shop: IShop
   webShopOrder: Order
   webShopOrderId: string
   status: string
@@ -24,6 +26,10 @@ const DeliverySchema = new Schema(
     webShopOrder: {
       type: Schema.Types.ObjectId,
       ref: 'Order'
+    },
+    shop: {
+      type: Schema.Types.ObjectId,
+      ref: 'Shop'
     },
     type: {
       type: String,
