@@ -45,7 +45,7 @@ const days = [
 export type SingleSlot = {
   hours: string
   excludedDeliveryAreas?: string
-  _id: string
+  _id?: string
 }
 
 type BigSlots = Record<string, SingleSlot[]>
@@ -105,6 +105,7 @@ const Settings: React.FC = () => {
         error = true
       }
     }
+    // TODO: add this  validation back
     // deliveryAreas?.forEach((data: string) => {
     //   if (data.length !== 4) {
     //     error = true
@@ -155,7 +156,7 @@ const Settings: React.FC = () => {
     }
   }
 
-  const handleChipClose = (plz: string) => {
+  const handleRemovePlz = (plz: string) => {
     let updatedAreas = deliveryAreas!
     const areasArray = updatedAreas.split(';')
     const index = areasArray.indexOf(plz)
@@ -165,6 +166,13 @@ const Settings: React.FC = () => {
       updatedAreas = areasArray.join(';')
       setDeliveryAreas(updatedAreas)
     }
+  }
+
+  const handleAddSlot = (day: string) => {
+    let updatedBigSlots = { ...bigSlots! }
+    const dayToAddSlot = updatedBigSlots[day]
+    dayToAddSlot.push({ hours: '' })
+    setBigSlots(updatedBigSlots)
   }
 
   const handleRemoveSlot = (_id: string, day: string) => {
@@ -270,7 +278,7 @@ const Settings: React.FC = () => {
                           <IonLabel>{plz}</IonLabel>
                           <IonIcon
                             icon={close}
-                            onClick={() => handleChipClose(plz)}
+                            onClick={() => handleRemovePlz(plz)}
                           ></IonIcon>
                         </IonChip>
                       )
@@ -315,6 +323,8 @@ const Settings: React.FC = () => {
                               value={bigslot.hours}
                               key={`${dayIndex}_${slotIndex}`}
                               color="dark"
+                              placeholder="Add slot time"
+                              // TODO: onChange?
                             />
                             <IonButton
                               slot="end"
@@ -322,7 +332,7 @@ const Settings: React.FC = () => {
                               id={'REMOVE_' + dayIndex + slotIndex}
                               size="small"
                               onClick={() => {
-                                handleRemoveSlot(bigslot._id, day)
+                                handleRemoveSlot(bigslot._id!, day)
                               }}
                             >
                               x
@@ -347,7 +357,7 @@ const Settings: React.FC = () => {
                                             onClick={() =>
                                               handleRemoveExcludedSlot(
                                                 plz,
-                                                bigslot._id,
+                                                bigslot._id!,
                                                 day
                                               )
                                             }
@@ -369,7 +379,7 @@ const Settings: React.FC = () => {
                               <IonButton
                                 color={'grey'}
                                 onClick={() =>
-                                  handleAddExcludedSlot(bigslot._id, day)
+                                  handleAddExcludedSlot(bigslot._id!, day)
                                 }
                               >
                                 +
@@ -383,7 +393,9 @@ const Settings: React.FC = () => {
                         id={'ADD_' + dayIndex}
                         size="small"
                         style={{ width: '100%' }}
-                        onClick={() => {}}
+                        onClick={() => {
+                          handleAddSlot(day)
+                        }}
                       >
                         Add slot
                       </IonButton>
