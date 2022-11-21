@@ -1,4 +1,5 @@
 import DepositModel from '../models/Deposit'
+import Shop from '../models/Shop'
 import ShopSettings, { DeliveryHours } from '../models/ShopSettings'
 
 const getSettings = async () => {
@@ -10,7 +11,8 @@ const getSettings = async () => {
 }
 
 const getSettingsAdmin = async () => {
-  const settings = await ShopSettings.find({})
+  const s = await Shop.findOne({ name: 'REXEAT' })
+  const settings = await ShopSettings.find({ shop: s })
   if (!settings || settings.length === 0) {
     return 'empty'
   }
