@@ -6,8 +6,8 @@ declare global {
   namespace Express {
     export interface Request {
       userId?: string
-      mainShop?: string
-      role?: IRole
+      mainShop: string
+      role: IRole
       access?: string[]
     }
   }

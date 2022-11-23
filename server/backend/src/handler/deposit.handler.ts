@@ -17,7 +17,7 @@ const getDepositById: Handler = async (req: Request, res: Response, next: NextFu
 
 const getDepositTypes: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const depositTypes = await depositcontroller.getDepositTypes()
+    const depositTypes = await depositcontroller.getDepositTypes(req.mainShop)
     return res.status(200).send(depositTypes)
   } catch (err) {
     return next(err)
@@ -47,7 +47,7 @@ const getDepositByUserId: Handler = async (req: Request, res: Response, next: Ne
   }
 
   try {
-    const deposit = await depositcontroller.getDepositByUserId(userId, req.access!)
+    const deposit = await depositcontroller.getDepositByUserId(userId, req.mainShop)
     return res.status(200).send(deposit)
   } catch (err) {
     return next(err)
@@ -83,7 +83,7 @@ const returnDeposit: Handler = async (req: Request, res: Response, next: NextFun
     return res.status(404).send('One of the params userId or deliveryId must be provided.')
   }
   try {
-    const result = await depositcontroller.returnDeposit(userId, deliveryId, returnedItems)
+    const result = await depositcontroller.returnDeposit(userId, deliveryId, returnedItems, req.mainShop)
     return res.status(200).send(result)
   } catch (err) {
     return next(err)
@@ -108,9 +108,8 @@ const addNewDeposit: Handler = async (req: Request, res: Response, next: NextFun
   if (!depositTypeId && !type) {
     return res.status(404).send('One of the params userId or deliveryId must be provided.')
   }
-  console.log('depositId' + depositId)
   try {
-    const result = await depositcontroller.addNewDeposit(userId, type, amount, depositTypeId, depositId)
+    const result = await depositcontroller.addNewDeposit(userId, type, amount, req.mainShop, depositTypeId, depositId)
     return res.status(200).send(result)
   } catch (err) {
     return next(err)

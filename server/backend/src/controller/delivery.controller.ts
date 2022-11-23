@@ -1,21 +1,23 @@
 import DeliveryModel from '../models/Delivery'
+import { IShop } from '../models/Shop'
 import User from '../models/User'
 
-const getAll = async () => {
-  const delivery = await DeliveryModel.find({}).populate('deliverySlot user')
+const getAll = async (shop: string) => {
+  const delivery = await DeliveryModel.find({ shop }).populate('deliverySlot user')
   return delivery
 }
 
-const getAllWithStatus = async (status: 'OPEN' | 'INDELIVERY' | 'DELIVERED' | 'CANCELLED') => {
-  const delivery = await DeliveryModel.find({ status: status }).populate('deliverySlot')
+const getAllWithStatus = async (status: 'OPEN' | 'INDELIVERY' | 'DELIVERED' | 'CANCELLED', shop: string) => {
+  const delivery = await DeliveryModel.find({ status: status, shop }).populate('deliverySlot')
   return delivery
 }
 
-const getCurrent = async () => {
+const getCurrent = async (shop: string) => {
   const todayMorning = new Date(Date.now())
   todayMorning.setHours(0)
   todayMorning.setMinutes(0)
   const delivery = await DeliveryModel.find({
+    shop,
     deliveryDay: {
       $gte: todayMorning
     }
@@ -23,7 +25,7 @@ const getCurrent = async () => {
   return delivery
 }
 
-const getTodays = async () => {
+const getTodays = async (shop: string) => {
   const todayMorning = new Date(Date.now())
   todayMorning.setHours(0)
   todayMorning.setMinutes(0)
@@ -31,6 +33,7 @@ const getTodays = async () => {
   todayMorning.setHours(23)
   todayMorning.setMinutes(59)
   const delivery = await DeliveryModel.find({
+    shop,
     deliveryDay: {
       $gte: todayMorning,
       $lt: todayNight
@@ -39,9 +42,10 @@ const getTodays = async () => {
   return delivery
 }
 
-const search = async (query: string) => {
+const search = async (query: string, shop: string) => {
   const regex = new RegExp(query, 'gm')
   const user = await User.find({
+    mainShop: shop,
     $or: [
       { firstName: { $regex: regex } },
       { lastName: { $regex: regex } },

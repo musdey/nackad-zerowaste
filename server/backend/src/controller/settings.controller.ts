@@ -1,18 +1,13 @@
-import DepositModel from '../models/Deposit'
-import Shop from '../models/Shop'
+import DepositModel, { IDeposit } from '../models/Deposit'
 import ShopSettings, { DeliveryHours } from '../models/ShopSettings'
 
-const getSettings = async () => {
-  const settings = await ShopSettings.find({}).select('-slotsPerVehicle -vehicles')
-  if (!settings || settings.length === 0) {
-    return 'empty'
-  }
-  return settings[0]
+const getSettings = async (shop: string) => {
+  const settings = await ShopSettings.findOne({ shop }).select('-slotsPerVehicle -vehicles')
+  return settings
 }
 
-const getSettingsAdmin = async () => {
-  const s = await Shop.findOne({ name: 'REXEAT' })
-  const settings = await ShopSettings.find({ shop: s })
+const getSettingsAdmin = async (shop: string) => {
+  const settings = await ShopSettings.find({ shop })
   if (!settings || settings.length === 0) {
     return 'empty'
   }
@@ -25,9 +20,10 @@ const updateSettings = async (
   slotsPerVehicle: number,
   vehicles: number,
   extraSlots: number,
-  showSlotDaysInAdvance: number
+  showSlotDaysInAdvance: number,
+  shop: string
 ) => {
-  const settings = await ShopSettings.find({})
+  const settings = await ShopSettings.find({ shop })
   if (!settings || settings.length === 0) {
     return await new ShopSettings({
       deliveryAreas: areas,
@@ -48,16 +44,24 @@ const updateSettings = async (
   return updated
 }
 
-const getStatistics = async () => {
-  const deposits = await DepositModel.find({ status: { $ne: 'RETURNED' } }).populate('depositItems')
-
+const getStatistics = async (shop: any) => {
+  const depositsAll = await DepositModel.find({
+    status: { $ne: 'RETURNED' }
+  }).populate('depositItems customer')
+  const deposits = await depositsAll.map((deposit: IDeposit) => {
+    console.log(deposit.customer.mainShop._id.toString())
+    if (deposit.customer.mainShop._id.toString() === shop._id) {
+      console.log(deposit)
+      return deposit
+    }
+  })
   let totalDeposit = 0
   const result: any[] = []
   deposits.forEach((deposit) => {
-    const returnedDep = parseInt(deposit.returnedDeposit)
-    const paidDep = parseInt(deposit.paidDeposit)
-    totalDeposit = totalDeposit + parseInt(deposit.totalPrice) - (returnedDep || 0) - (paidDep || 0)
-    deposit.depositItems.forEach((item) => {
+    const returnedDep = parseInt(deposit!.returnedDeposit)
+    const paidDep = parseInt(deposit!.paidDeposit)
+    totalDeposit = totalDeposit + parseInt(deposit!.totalPrice) - (returnedDep || 0) - (paidDep || 0)
+    deposit!.depositItems.forEach((item) => {
       let existing
       if (item.depositType) {
         existing = result.filter((v) => v?.depositType?._id === item?.depositType?._id)
@@ -89,18 +93,3 @@ const getStatistics = async () => {
 
 const settingsController = { getSettings, updateSettings, getSettingsAdmin, getStatistics }
 export default settingsController
-
-/*
-{
-	"deliveryAreas":"1020;1030;1040;1050;1060;1070;1080;1090;1120;1130;1140;1150;1160;1170;1180",
-	"deliveryHours": {
-	"monday":"15:00-20:00",
-      "tuesday":"15:00-20:00",
-      "wednesday":"15:00-20:00",
-      "thursday":"15:00-20:00",
-      "friday":"15:00-20:00",
-      "saturday":"15:00-20:00",
-      "sunday":"15:00-20:00"
- }
-}
-*/

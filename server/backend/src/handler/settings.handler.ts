@@ -5,7 +5,7 @@ const getSettingsHandler: Handler = async (req: Request, res: Response, next: Ne
   // TODO: do input validation
 
   try {
-    const settings = await settingsController.getSettings()
+    const settings = await settingsController.getSettings(req.mainShop)
 
     return res.status(200).send(settings)
   } catch (err) {
@@ -17,7 +17,7 @@ const getSettingsAdminHandler: Handler = async (req: Request, res: Response, nex
   // TODO: do input validation
 
   try {
-    const settings = await settingsController.getSettingsAdmin()
+    const settings = await settingsController.getSettingsAdmin(req.mainShop)
 
     return res.status(200).send(settings)
   } catch (err) {
@@ -38,7 +38,8 @@ const updateSettingsHandler: Handler = async (req: Request, res: Response, next:
       body.slotsPerVehicle,
       body.vehicles,
       body.extraSlots,
-      body.showSlotDaysInAdvance
+      body.showSlotDaysInAdvance,
+      req.mainShop
     )
 
     return res.status(200).send(settings)
@@ -49,7 +50,7 @@ const updateSettingsHandler: Handler = async (req: Request, res: Response, next:
 
 const getStatistics: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await settingsController.getStatistics()
+    const result = await settingsController.getStatistics(req.mainShop)
 
     return res.status(200).send(result)
   } catch (err) {

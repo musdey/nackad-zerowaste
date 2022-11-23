@@ -95,7 +95,7 @@ const getDeliverySlotsPublic = async () => {
 
 const getDeliverySlotsManagement = async (shop: string) => {
   const deliverySlots = await DeliverySlotModel.find({
-    //shop: shop,
+    shop,
     deliveryDay: {
       $gte: new Date()
     }
@@ -103,7 +103,7 @@ const getDeliverySlotsManagement = async (shop: string) => {
   return deliverySlots
 }
 
-const createDeliverySlots = async () => {
+const createNackadSlots = async () => {
   const shop = await Shop.findOne({ name: 'NACKAD' })
   const shopSetting = await ShopSettings.findOne({ shop: shop!._id })
   const settingObj = shopSetting
@@ -283,11 +283,10 @@ const createRexeatSlots = async () => {
   return 'ok'
 }
 
-const updateSlot = async (deliverySlotId: string, userId: string, type: 'ADD' | 'REMOVE') => {
+const updateSlot = async (deliverySlotId: string, userId: string, type: 'ADD' | 'REMOVE', shop: string) => {
   const slot = await DeliverySlotModel.findOne({
-    _id: {
-      $eq: deliverySlotId
-    }
+    shop,
+    _id: deliverySlotId
   })
   if (!slot) {
     throw new Error('No open slots to remove.')
@@ -305,20 +304,24 @@ const updateSlot = async (deliverySlotId: string, userId: string, type: 'ADD' | 
     if (user) {
       slot.lastUpdatedFrom.push({ date: new Date(), user: user })
     }
-    await slot.save()
+    const result = await slot.save()
 
-    return slot
+    return result
   }
 }
 
-const updateById = async (id: string, deliverySlot: IDeliverySlot) => {
-  const slot = await DeliverySlotModel.findByIdAndUpdate(id, deliverySlot)
+const updateById = async (id: string, deliverySlot: IDeliverySlot, shop: string) => {
+  const slot = await DeliverySlotModel.findOne({ _id: id, shop })
+  if (slot) {
+    await slot.updateOne(deliverySlot)
+    await slot.save()
+  }
   return slot
 }
 
 const deliverySlotController = {
   getRexeatSlotsPublic,
-  createDeliverySlots,
+  createNackadSlots,
   createRexeatSlots,
   getDeliverySlotsManagement,
   getDeliverySlotsPublic,

@@ -29,8 +29,8 @@ const Config = {
     DEPOSIT_BYID: HOST + "deposit/",
     SEARCH: HOST + "delivery/search",
     GETSLOTS: HOST + "deliveryslots/detail",
-    SLOTADD: HOST + "deliveryslot/add",
-    SLOTREMOVE: HOST + "deliveryslot/remove",
+    SLOTADD: HOST + "deliveryslot/", // /:id/add
+    SLOTREMOVE: HOST + "deliveryslot/", // /:id/remove
     UPDATESLOT: HOST + "deliveryslot",
   },
   Deposit: {

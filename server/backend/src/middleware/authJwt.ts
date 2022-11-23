@@ -21,6 +21,11 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     req.userId = decoded.userId
     req.role = decoded.role
     req.access = arr
+
+    if (!decoded.mainShop || !decoded.userId || !decoded.role) {
+      return res.status(400).send({ message: 'User not distinguishable!' })
+    }
+
     next()
   })
 }

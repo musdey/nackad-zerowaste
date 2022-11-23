@@ -3,6 +3,7 @@ import ShopifyAdmin from './shopifyAdminController'
 import { GraphQLProduct } from '../types/GraphQLProduct'
 import Product from '../models/Product'
 import DepositTypeModel from '../models/DepositType'
+import Shop from '../models/Shop'
 
 const shopifyAdmin = new ShopifyAdmin()
 
@@ -40,6 +41,7 @@ const updateProducts = async () => {
   const lines = await shopifyAdmin.readJsonFile()
   const newProductArr: any[] = []
   const depositType: string[] = []
+  const shop = await Shop.findOne({ name: 'NACKAD' })
   //await fs.writeFile(path.join(__dirname, '/updatedProducts.json'), JSON.stringify(result))
   lines?.forEach((product: GraphQLProduct) => {
     let deposit = null
@@ -52,6 +54,7 @@ const updateProducts = async () => {
     const idArr = product.id.split('/')
     const id = idArr[idArr.length - 1]
     const newProduct = new Product({
+      webShop: shop,
       title: product.title,
       shopifyId: id,
       deposit: deposit,
@@ -63,9 +66,9 @@ const updateProducts = async () => {
   depositType.forEach(async (elem) => {
     const name = elem.split('-')[0]
     const price = elem.split('-')[1]
-    const found = await DepositTypeModel.findOne({ name }).exec()
+    const found = await DepositTypeModel.findOne({ name, shop }).exec()
     if (!found) {
-      await new DepositTypeModel({ name, price }).save()
+      await new DepositTypeModel({ name, price, shop }).save()
     }
   })
 

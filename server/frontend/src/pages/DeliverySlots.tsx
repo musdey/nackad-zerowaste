@@ -137,7 +137,7 @@ const DeliverySlots: React.FC = () => {
 
                         <IonItem lines="none">
                             <IonItem lines="none" slot="start" >
-                                <IonLabel>
+                                <IonLabel style={{ color: "grey" }} color={"grey"}>
                                     Exkludierte Bezirke:
                                 </IonLabel>
                             </IonItem>

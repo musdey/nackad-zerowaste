@@ -1,8 +1,8 @@
 import Role from '../models/Role'
 import User from '../models/User'
 
-const updateRole = async (userId: string, newRole: string) => {
-  const user = await User.findOne({ _id: userId })
+const updateRole = async (userId: string, newRole: string, shop: string) => {
+  const user = await User.findOne({ _id: userId, mainShop: shop })
   const role = await Role.findOne({ name: newRole })
   if (!user) {
     throw new Error('User Not found.')
@@ -12,17 +12,19 @@ const updateRole = async (userId: string, newRole: string) => {
   return newUser
 }
 
-const getUserByRole = async (desiredRole: string) => {
+const getUserByRole = async (desiredRole: string, shop: string) => {
   const role = await Role.findOne({ name: desiredRole })
-  const user = await User.find({ role: role }).select('-password').populate({ path: 'role', select: 'name -_id' })
+  const user = await User.find({ role: role, mainShop: shop })
+    .select('-password')
+    .populate({ path: 'role', select: 'name -_id' })
   if (!user) {
     throw new Error('No users found.')
   }
   return user
 }
 
-const getAll = async () => {
-  const users = await User.find().populate({ path: 'role', select: 'name -_id' }).select('-password')
+const getAll = async (shop: string) => {
+  const users = await User.find({ mainShop: shop }).populate({ path: 'role', select: 'name -_id' }).select('-password')
   return users
 }
 
@@ -31,8 +33,9 @@ const getOne = async (userId: string) => {
   return user
 }
 
-const searchUser = async (searchString: string) => {
+const searchUser = async (searchString: string, shop: string) => {
   const user = await User.find({
+    mainShop: shop,
     $or: [
       { firstName: { $regex: '(?i)' + searchString } },
       { lastName: { $regex: '(?i)' + searchString } },
