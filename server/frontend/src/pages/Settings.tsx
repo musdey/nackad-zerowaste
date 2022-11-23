@@ -8,7 +8,6 @@ import {
   IonInput,
   IonItem,
   IonPage,
-  IonTextarea,
   useIonToast,
   IonLabel,
   IonAccordionGroup,
@@ -22,15 +21,7 @@ import { Header } from '../components/Header'
 import { useAuth } from '../lib/use-auth'
 import api from '../lib/api'
 
-type DeliveryHours = {
-  monday: string
-  tuesday: string
-  wednesday: string
-  thursday: string
-  friday: string
-  saturday: string
-  sunday: string
-}
+type DeliveryHours = Record<string, string>
 
 const days = [
   'monday',
@@ -53,16 +44,7 @@ type BigSlots = Record<string, SingleSlot[]>
 const Settings: React.FC = () => {
   const { user } = useAuth()
   const [deliveryAreas, setDeliveryAreas] = useState<string>()
-  // const [deliveryHours, setDeliveryHours] = useState({
-  //     monday: '',
-  //     tuesday: '',
-  //     wednesday: '',
-  //     thursday: '',
-  //     friday: '',
-  //     saturday: '',
-  //     sunday: ''
-  // })
-  const [deliveryHours, setDeliveryHours] = useState('')
+  const [deliveryHours, setDeliveryHours] = useState<DeliveryHours>()
   const [extraSlots, setExtraSlots] = useState(0)
   const [showSlotDaysInAdvance, setSlotDaysInAdvance] = useState(0)
   const [slotsPerVehicle, setSlotsPerVehicle] = useState(0)
@@ -75,7 +57,7 @@ const Settings: React.FC = () => {
     const fn = async () => {
       const data = await api.getSettings()
       setDeliveryAreas(data.deliveryAreas)
-      setDeliveryHours(JSON.stringify(data.deliveryHours))
+      setDeliveryHours(data.deliveryHours)
       setExtraSlots(data.extraSlots)
       setSlotsPerVehicle(data.slotsPerVehicle)
       setVehicles(data.vehicles)
@@ -92,35 +74,35 @@ const Settings: React.FC = () => {
       error = true
     }
     if (useBigSlots) {
-      // TODO: validate this
+      // TODO: validate this ?
       //   try {
       //     JSON.parse(bigSlots)
       //   } catch (err) {
       //     error = true
       //   }
     } else {
-      try {
-        JSON.parse(deliveryHours)
-      } catch (err) {
+      // TODO: validate this ?
+      // try {
+      //   JSON.parse(deliveryHours)
+      // } catch (err) {
+      //   error = true
+      // }
+    }
+    deliveryAreas?.split(';').forEach((data: string) => {
+      if (data.length !== 4) {
         error = true
       }
-    }
-    // TODO: add this  validation back
-    // deliveryAreas?.forEach((data: string) => {
-    //   if (data.length !== 4) {
-    //     error = true
-    //   }
-    //   if (isNaN(parseInt(data))) {
-    //     error = true
-    //   }
-    // })
+      if (isNaN(parseInt(data))) {
+        error = true
+      }
+    })
 
     if (error) {
       await present('Input validation error.', 2000)
     } else {
       const obj = {
-        deliveryAreas: [deliveryAreas],
-        // deliveryHours: JSON.parse(deliveryHours), // TODO this
+        deliveryAreas: deliveryAreas,
+        deliveryHours: deliveryHours,
         bigSlots: bigSlots,
         vehicles: vehicles,
         slotsPerVehicle: slotsPerVehicle,
@@ -230,6 +212,21 @@ const Settings: React.FC = () => {
     }
   }
 
+  const handleSetDeliveryHour = (slot: string, day: string) => {
+    const updatedDeliveryHours = { ...deliveryHours }
+    updatedDeliveryHours[day] = slot
+    setDeliveryHours(updatedDeliveryHours)
+  }
+
+  const handleSetBigSlotTime = (hours: string, day: string, id: string) => {
+    let updatedBigSlots = { ...bigSlots! }
+    const bigSlotToUpdate = updatedBigSlots[day].find(
+      (bigSlot) => bigSlot._id === id
+    )
+    bigSlotToUpdate!.hours = hours
+    setBigSlots(updatedBigSlots)
+  }
+
   return (
     <IonPage>
       <Header subTitle="Einstellungen" />
@@ -324,7 +321,15 @@ const Settings: React.FC = () => {
                               key={`${dayIndex}_${slotIndex}`}
                               color="dark"
                               placeholder="Add slot time"
-                              // TODO: onChange?
+                              onInput={(event: any) => {
+                                if (event.target.value)
+                                  handleSetBigSlotTime(
+                                    event.target.value,
+                                    day,
+                                    bigslot._id ||
+                                      `new_${dayIndex}_${slotIndex}`
+                                  )
+                              }}
                             />
                             <IonButton
                               slot="end"
@@ -404,14 +409,25 @@ const Settings: React.FC = () => {
                 ))}
               </IonAccordionGroup>
             ) : (
-              // TODO: convert to inputs
-              <IonTextarea
-                onInput={(e: any) => setDeliveryHours(e.target.value)}
-                rows={6}
-                cols={20}
-                color="black"
-                value={deliveryHours}
-              ></IonTextarea>
+              deliveryHours &&
+              days.map((day, dayIndex) => (
+                <IonItem>
+                  <IonLabel slot="start">
+                    {day.charAt(0).toUpperCase() + day.slice(1)}
+                  </IonLabel>
+                  <IonInput
+                    slot="end"
+                    value={deliveryHours[day]}
+                    key={dayIndex}
+                    color="dark"
+                    placeholder="Add slot time"
+                    onInput={(event: any) => {
+                      if (event.target.value)
+                        handleSetDeliveryHour(event.target.value, day)
+                    }}
+                  />
+                </IonItem>
+              ))
             )}
           </IonCardContent>
         </IonCard>
