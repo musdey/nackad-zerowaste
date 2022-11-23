@@ -1,14 +1,17 @@
 import React, { useContext, createContext, useState } from "react";
 import api from "./api";
+import { useHistory } from "react-router";
 
 const useProvideAuth = (): AuthContextInterface => {
   const [user, setUser] = useState<User | undefined>();
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const history = useHistory();
 
   const signout = async (): Promise<void> => {
     setLoggedIn(false);
     setUser(undefined);
     localStorage.setItem("TOKEN", "");
+    history.push("/login");
   };
 
   const signin = async (
@@ -75,6 +78,7 @@ export const useAuth = (): AuthContextInterface => useContext(AuthContext);
 
 export type User = {
   firstName: string;
+  mainShop: string;
   lastName: string;
   address: string;
   email: string;

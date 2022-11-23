@@ -9,7 +9,6 @@ const Config = {
     LOGIN_URL: HOST + "auth/signin",
     SIGNIN_URL: HOST + "auth/signup",
     CREATE_PIN: HOST + "auth/createpin",
-    UPDATE_ROLE_URL: HOST + "auth/updateUserRole",
     REQEUST_PW: HOST + "pw/reset-pw-request",
     CHECK_PW_TOKEN: HOST + "pw/reset-pw-check",
     RESET_PW: HOST + "pw/reset-pw",
@@ -29,8 +28,8 @@ const Config = {
     DEPOSIT_BYID: HOST + "deposit/",
     SEARCH: HOST + "delivery/search",
     GETSLOTS: HOST + "deliveryslots/detail",
-    SLOTADD: HOST + "deliveryslot/", // /:id/add
-    SLOTREMOVE: HOST + "deliveryslot/", // /:id/remove
+    SLOTADD: HOST + "deliveryslot", // /:id/add
+    SLOTREMOVE: HOST + "deliveryslot", // /:id/remove
     UPDATESLOT: HOST + "deliveryslot",
   },
   Deposit: {

@@ -23,13 +23,12 @@ router.post('*', verifyBody)
 // User Management
 router.post('/auth/signup', verifySignUp.checkDuplicateUsernameOrEmail, authHandler.signup)
 router.post('/auth/signin', authHandler.signin)
-router.post('/auth/updateUserRole', [authJwt.verifyToken, authJwt.isAdmin], userHandler.updateUserRole)
-router.get('/user/all', [authJwt.verifyToken, authJwt.isAdmin], userHandler.getAll)
-router.get('/user/employees', [authJwt.verifyToken, authJwt.isAdmin], userHandler.getEmployees)
-router.get('/user/admins', [authJwt.verifyToken, authJwt.isAdmin], userHandler.getAdmins)
+
+router.get('/user/all', [authJwt.verifyToken, authJwt.isManager], userHandler.getAll)
+router.get('/user/employees', [authJwt.verifyToken, authJwt.isEmployee], userHandler.getEmployees)
 router.post('/user/search', [authJwt.verifyToken, authJwt.isEmployee], userHandler.searchUser)
 router.get('/user', [authJwt.verifyToken, authJwt.isCustomer], userHandler.getSelf)
-router.post('/user/update', [authJwt.verifyToken, authJwt.isAdmin], userHandler.updateUserRole)
+router.post('/user/update', [authJwt.verifyToken, authJwt.isManager], userHandler.updateUserRole)
 
 router.post('/pw/reset-pw-request', passwordController.passwordResetRequest)
 router.get('/pw/reset-pw-check/:token', passwordController.passwordResetCheckToken)
@@ -37,7 +36,6 @@ router.post('/pw/reset-pw', passwordController.passwordReset)
 
 // Open routes
 router.get('/settings', settingsHandler.getSettingsHandler)
-router.get('/settings/admin', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.getSettingsAdminHandler)
 router.get('/deliveryslots', deliverySlotHandler.getNackadPublic)
 router.get('/deliveryslots/rexeat', deliverySlotHandler.getRexeatPublic)
 router.get('/opendeposit/:shopifyUserId', depositHandler.getDepositByShopifyId)
@@ -66,13 +64,13 @@ router.post('/order/:id', [authJwt.verifyToken, authJwt.isEmployee], orderHandle
 // Shopify Webhooks & Product Database
 router.get('/update-products', productsController.triggerUpdateProductsHandler)
 router.post('/update-products-handler', productsController.handleIncomingProductsHandler)
-
 router.use('/webhooks', verifyWebhook, webhookRouter)
 router.use('/recharge-webhooks', verifyRechargeWebhook, rechargeWebhookRouter)
 
-// Admin routes
-router.post('/settings/update', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.updateSettingsHandler)
-router.get('/statistics', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.getStatistics)
+// Manager routes
+router.get('/settings/admin', [authJwt.verifyToken, authJwt.isManager], settingsHandler.getSettingsAdminHandler)
+router.post('/settings/update', [authJwt.verifyToken, authJwt.isManager], settingsHandler.updateSettingsHandler)
+router.get('/statistics', [authJwt.verifyToken, authJwt.isManager], settingsHandler.getStatistics)
 router.get('/auth/createpin', [authJwt.verifyToken, authJwt.isManager], authHandler.requestSignupOTP)
 router.post('/test/webhook/new-order', createNewNackadOrder)
 

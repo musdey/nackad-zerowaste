@@ -16,7 +16,7 @@ export type SingleSlot = {
   excludedDeliveryAreas?: string
 }
 
-type BigSlots = {
+export type BigSlots = {
   monday: SingleSlot[]
   tuesday: SingleSlot[]
   wednesday: SingleSlot[]

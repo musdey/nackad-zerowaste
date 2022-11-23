@@ -52,10 +52,12 @@ const Settings: React.FC = () => {
   const [present] = useIonToast()
   const [bigSlots, setBigSlots] = useState<BigSlots>()
   const [useBigSlots, setUseBigSlots] = useState(false)
+  const [shop, setShop] = useState()
 
   useEffect(() => {
     const fn = async () => {
       const data = await api.getSettings()
+      setShop(data.shop.name)
       setDeliveryAreas(data.deliveryAreas)
       setDeliveryHours(data.deliveryHours)
       setExtraSlots(data.extraSlots)
@@ -108,6 +110,7 @@ const Settings: React.FC = () => {
         slotsPerVehicle: slotsPerVehicle,
         extraSlots: extraSlots,
         showSlotDaysInAdvance: showSlotDaysInAdvance,
+        useBigSlots: useBigSlots
       }
 
       const result = await api.updateSettings(obj)
@@ -122,18 +125,27 @@ const Settings: React.FC = () => {
   const handleAddPLZ = async () => {
     const element: any = document.getElementById('plzInput')
     const plz = element!.value
-    if (plz.length !== 4 || deliveryAreas?.split(';').includes(plz)) {
+    if (plz.length !== 4) {
       await present('Bitte eine gültige Postleitzahl eingeben', 3000)
     } else {
-      let updatedAreas = deliveryAreas!
-      const areasArray = updatedAreas.split(';')
-      const index = areasArray.indexOf(plz)
-      if (index < 0) {
-        areasArray.push(plz)
-        areasArray.sort()
-        updatedAreas = areasArray.join(';')
-        setDeliveryAreas(updatedAreas)
+      if (!deliveryAreas) {
+        setDeliveryAreas(plz)
         element.value = ''
+      } else {
+        if (!deliveryAreas?.split(';').includes(plz)) {
+          let updatedAreas = deliveryAreas!
+          const areasArray = updatedAreas.split(';')
+          const index = areasArray.indexOf(plz)
+          if (index < 0) {
+            areasArray.push(plz)
+            areasArray.sort()
+            updatedAreas = areasArray.join(';')
+            setDeliveryAreas(updatedAreas)
+            element.value = ''
+          }
+        } else {
+          await present('Bitte eine gültige Postleitzahl eingeben', 3000)
+        }
       }
     }
   }
@@ -234,12 +246,9 @@ const Settings: React.FC = () => {
         <IonCard>
           <IonCardHeader>
             <IonCardTitle color="primary">
-              Hallo, {user?.firstName}
+              Einstellungen für {shop} ändern
             </IonCardTitle>
           </IonCardHeader>
-          <IonCardContent>
-            Du hast diese Rolle: {user?.role.name}
-          </IonCardContent>
         </IonCard>
         <IonCard>
           <IonCardHeader>
@@ -307,9 +316,8 @@ const Settings: React.FC = () => {
                 {days.map((day, dayIndex) => (
                   <IonAccordion value={day} key={dayIndex}>
                     <IonItem slot="header" color="light">
-                      <IonLabel>{`${
-                        day.charAt(0).toUpperCase() + day.slice(1)
-                      } (${bigSlots[day].length})`}</IonLabel>
+                      <IonLabel>{`${day.charAt(0).toUpperCase() + day.slice(1)
+                        } (${bigSlots[day].length})`}</IonLabel>
                     </IonItem>
                     <div className="ion-padding" slot="content">
                       {bigSlots[day].map((bigslot, slotIndex) => (
@@ -327,7 +335,7 @@ const Settings: React.FC = () => {
                                     event.target.value,
                                     day,
                                     bigslot._id ||
-                                      `new_${dayIndex}_${slotIndex}`
+                                    `new_${dayIndex}_${slotIndex}`
                                   )
                               }}
                             />
