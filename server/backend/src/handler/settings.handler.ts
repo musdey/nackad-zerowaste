@@ -27,14 +27,23 @@ const getSettingsAdminHandler: Handler = async (req: Request, res: Response, nex
 
 const updateSettingsHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
   const body = req.body
-  if (!body || !body.deliveryAreas || !body.deliveryHours || !body.slotsPerVehicle || !body.vehicles) {
+  console.log(body)
+  if (
+    !body ||
+    !body.deliveryAreas ||
+    !(body.deliveryHours || body.bigSlots) ||
+    !body.slotsPerVehicle ||
+    !body.vehicles
+  ) {
     return res.status(404).send('Missing Body')
   }
 
   try {
     const settings = await settingsController.updateSettings(
+      body.useBigSlots,
       body.deliveryAreas,
       body.deliveryHours,
+      body.bigSlots,
       body.slotsPerVehicle,
       body.vehicles,
       body.extraSlots,

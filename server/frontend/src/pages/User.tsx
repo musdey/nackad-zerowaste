@@ -9,7 +9,6 @@ const UserPage: React.FC = () => {
     const { user } = useAuth();
     const [modalOpen, setModalState] = useState(false)
     const [employees, setEmployees] = useState([])
-    const [admins, setAdmins] = useState([])
     const [searchResults, setSearchResults] = useState([])
     const [searchString, setSearchString] = useState('')
     const [pin, setPin] = useState('')
@@ -23,16 +22,9 @@ const UserPage: React.FC = () => {
             setEmployees(employees)
         }
     }
-    const getAdmins = async function () {
-        const admins = await api.getAdmins()
-        if (admins !== undefined) {
-            setAdmins(admins)
-        }
-    }
 
     useEffect(() => {
         getEmployees()
-        getAdmins()
     }, [])
 
     const handleClick = (userId: User) => {
@@ -134,7 +126,7 @@ const UserPage: React.FC = () => {
                         Du hast diese Rolle: {user?.role.name}
                     </IonCardContent>
                 </IonCard>
-                {user?.role.name === "ADMIN" &&
+                {user?.role.name === "MANAGER" &&
                     <><IonCard>
                         <IonCardHeader>
                             <IonCardTitle >
@@ -162,24 +154,6 @@ const UserPage: React.FC = () => {
                                     <div id={obj.shopifyUserId + "div"}>
                                         <IonLabel id={obj.shopifyUserId}>{obj.firstName} {obj.lastName} </IonLabel>
                                         <IonButton onClick={(e) => {
-                                            handleClick(obj)
-                                        }} color="secondary" slot="right">
-                                            Anpassen
-                                        </IonButton></div>
-                                )}
-                            </IonCardContent>
-                        </IonCard>
-                        <IonCard>
-                            <IonCardHeader>
-                                <IonCardTitle >
-                                    Deine Admins:
-                                </IonCardTitle>
-                            </IonCardHeader>
-                            <IonCardContent>
-                                {admins?.map((obj: any, i) =>
-                                    <div>
-                                        <IonLabel id={obj.shopifyUserId}>{obj.firstName} {obj.lastName}</IonLabel>
-                                        <IonButton hidden={user?._id === obj._id} onClick={(e) => {
                                             handleClick(obj)
                                         }} color="secondary" slot="right">
                                             Anpassen

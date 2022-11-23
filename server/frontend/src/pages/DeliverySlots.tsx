@@ -103,7 +103,7 @@ const DeliverySlots: React.FC = () => {
     }
     return (
         <IonPage>
-            <Header subTitle="Einstellungen" />
+            <Header subTitle="Lieferslots anpassen" />
             <IonContent fullscreen>
                 {deliverySlots.sort((a: any, b: any) => {
                     if (new Date(a.deliveryDay) > new Date(b.deliveryDay)) {

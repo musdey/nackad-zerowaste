@@ -16,7 +16,7 @@ export type SingleSlot = {
   excludedDeliveryAreas?: string
 }
 
-type BigSlots = {
+export type BigSlots = {
   monday: SingleSlot[]
   tuesday: SingleSlot[]
   wednesday: SingleSlot[]
@@ -35,6 +35,7 @@ export interface IShopSettings extends Document {
   extraSlots: number
   vehicles: number
   showSlotDaysInAdvance: number
+  useBigSlots: boolean
 }
 
 const SingleSlotSchema = new Schema({
@@ -67,7 +68,7 @@ const ShopSettingsSchema = new Schema(
       sunday: { type: [SingleSlotSchema] }
     },
     deliveryAreas: {
-      type: [String]
+      type: String
     },
     slotsPerVehicle: {
       type: Number,
@@ -84,6 +85,10 @@ const ShopSettingsSchema = new Schema(
     showSlotDaysInAdvance: {
       type: Number,
       default: 5
+    },
+    useBigSlots: {
+      type: Boolean,
+      default: false
     }
   },
   { strict: false, versionKey: false }

@@ -1,5 +1,5 @@
 import DepositModel, { IDeposit } from '../models/Deposit'
-import ShopSettings, { DeliveryHours } from '../models/ShopSettings'
+import ShopSettings, { BigSlots, DeliveryHours } from '../models/ShopSettings'
 
 const getSettings = async (shop: string) => {
   const settings = await ShopSettings.findOne({ shop }).select('-slotsPerVehicle -vehicles')
@@ -7,40 +7,40 @@ const getSettings = async (shop: string) => {
 }
 
 const getSettingsAdmin = async (shop: string) => {
-  const settings = await ShopSettings.find({ shop })
-  if (!settings || settings.length === 0) {
+  const settings = await ShopSettings.findOne({ shop }).populate('shop')
+  if (!settings) {
     return 'empty'
   }
-  return settings[0]
+  return settings
 }
 
 const updateSettings = async (
+  useBigSlots: boolean,
   areas: string,
   hours: object,
+  bigSlots: object,
   slotsPerVehicle: number,
   vehicles: number,
   extraSlots: number,
   showSlotDaysInAdvance: number,
   shop: string
 ) => {
-  const settings = await ShopSettings.find({ shop })
-  if (!settings || settings.length === 0) {
-    return await new ShopSettings({
-      deliveryAreas: areas,
-      deliveryHours: hours,
-      slotsPerVehicle,
-      vehicles,
-      showSlotDaysInAdvance
-    }).save()
+  const setting = await ShopSettings.findOne({ shop })
+  if (!setting) {
+    return 'No Settings existent'
   }
-  const oneSetting = settings[0]
-  oneSetting.deliveryAreas = areas
-  oneSetting.deliveryHours = hours as DeliveryHours
-  oneSetting.slotsPerVehicle = slotsPerVehicle
-  oneSetting.vehicles = vehicles
-  oneSetting.extraSlots = extraSlots
-  oneSetting.showSlotDaysInAdvance = showSlotDaysInAdvance
-  const updated = await oneSetting.save()
+  if (useBigSlots) {
+    setting.bigSlots = bigSlots as BigSlots
+  } else {
+    setting.deliveryHours = hours as DeliveryHours
+  }
+  setting.useBigSlots = useBigSlots
+  setting.deliveryAreas = areas
+  setting.slotsPerVehicle = slotsPerVehicle
+  setting.vehicles = vehicles
+  setting.extraSlots = extraSlots
+  setting.showSlotDaysInAdvance = showSlotDaysInAdvance
+  const updated = await setting.save()
   return updated
 }
 

@@ -7,7 +7,7 @@ const updateUserRole: Handler = async (req: Request, res: Response, next: NextFu
   const userId = req.body.userId
   const newRole = req.body.role
 
-  if (!newRole || !(newRole == 'ADMIN' || newRole == 'MANAGER' || newRole == 'EMPLOYEE' || newRole == 'CUSTOMER')) {
+  if (!newRole || !(newRole == 'MANAGER' || newRole == 'EMPLOYEE' || newRole == 'CUSTOMER')) {
     return res.status(404).send({ message: 'Role not set.' })
   }
 
@@ -62,15 +62,5 @@ const getEmployees: Handler = async (req: Request, res: Response, next: NextFunc
   }
 }
 
-const getAdmins: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const user = await usercontroller.getUserByRole('ADMIN', req.mainShop)
-
-    return res.status(200).send(user)
-  } catch (err) {
-    return next(err)
-  }
-}
-
-const userHandler = { updateUserRole, getAll, getSelf, searchUser, getEmployees, getAdmins }
+const userHandler = { updateUserRole, getAll, getSelf, searchUser, getEmployees }
 export default userHandler
