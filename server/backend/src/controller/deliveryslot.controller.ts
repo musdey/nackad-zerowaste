@@ -3,25 +3,29 @@ import DeliverySlotModel, { IDeliverySlot } from '../models/DeliverySlots'
 import Shop, { IShop } from '../models/Shop'
 import ShopSettings from '../models/ShopSettings'
 import User from '../models/User'
+import { SlotDetails, VehicleConfig } from '../types/shopconfig'
 
 const getRexeatSlotsPublic = async () => {
   // Show deliveryslots from friday to friday for the week after
   let startDate = new Date()
-  let endDate = new Date()
   const today = startDate.getDay() // 5 is friday
   const currentTime = startDate.getTime()
   const threshold = new Date().setHours(11, 0, 0, 0)
 
   startDate.setDate(startDate.getDate() + (7 - today)) // Set date to sunday
+  let endDate = new Date(startDate)
+
   if (today < 5 || (today == 5 && currentTime < threshold)) {
     // Until friday 11am show next week
     // Show next week
-    endDate.setDate(startDate.getDate() + 7)
+    endDate.setDate(endDate.getDate() + 7)
+    console.log(startDate)
+    console.log(endDate)
   } else {
     // After friday 12pm (midday) show the week after next week
     // Show week after next week
     startDate.setDate(startDate.getDate() + 7)
-    endDate.setDate(startDate.getDate() + 14)
+    endDate.setDate(endDate.getDate() + 14)
   }
   const shop = await Shop.findOne({ name: 'REXEAT' })
   const deliverySlots = await DeliverySlotModel.find({
@@ -35,12 +39,21 @@ const getRexeatSlotsPublic = async () => {
     .populate('deliveries')
 
   const sorted = deliverySlots.sort((a: any, b: any) => {
-    if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {
-      return 1
+    if (a.vehicleId > b.vehicleId) {
+      if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {
+        return -1
+      } else {
+        return 1
+      }
     } else {
-      return -1
+      if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {
+        return 1
+      } else {
+        return -1
+      }
     }
   })
+
   return sorted
 }
 
@@ -77,9 +90,9 @@ const getDeliverySlotsPublic = async () => {
       deliveryDay: data.deliveryDay,
       slotHours: data.slotHours,
       maxSlotSize: data.maxSlotSize,
-      available: data.maxSlotSize - data.deliveries!.length,
-      suggestions:
-        settings!.extraSlots * settings!.vehicles + data.maxSlotSize - data.deliveries!.length > 0 ? suggestion : []
+      available: data.maxSlotSize - data.deliveries!.length
+      // suggestions:
+      //   settings!.extraSlots * settings!.vehicles + data.maxSlotSize - data.deliveries!.length > 0 ? suggestion : []
     }
     newArr.push(newObj)
   })
@@ -112,42 +125,48 @@ const createNackadSlots = async () => {
     return 'error'
   }
 
-  const deliveryHours = settingObj.deliveryHours
+  const deliverySlots = settingObj.deliverySlots
 
   let today = new Date().getDay() // 0-6
   let currentDayMorning = new Date()
   let currentDayNight = new Date()
   currentDayMorning.setHours(2, 0, 0)
   currentDayNight.setHours(22, 0, 0)
+
+  // Iterate how mandy days in advance you want to show the deliveryslots
   for (let i = 0; i < settingObj.showSlotDaysInAdvance; i++) {
-    let hoursString
-    switch (today) {
+    let dayObject
+    switch (
+      today // Begin with todays config
+    ) {
       case 1:
-        hoursString = deliveryHours.monday
+        dayObject = deliverySlots.monday
         break
       case 2:
-        hoursString = deliveryHours.tuesday
+        dayObject = deliverySlots.tuesday
         break
       case 3:
-        hoursString = deliveryHours.wednesday
+        dayObject = deliverySlots.wednesday
         break
       case 4:
-        hoursString = deliveryHours.thursday
+        dayObject = deliverySlots.thursday
         break
       case 5:
-        hoursString = deliveryHours.friday
+        dayObject = deliverySlots.friday
         break
       case 6:
-        hoursString = deliveryHours.saturday
+        dayObject = deliverySlots.saturday
         break
       case 0:
-        hoursString = deliveryHours.sunday
+        dayObject = deliverySlots.sunday
         break
       default:
-        hoursString = deliveryHours.sunday
+        dayObject = deliverySlots.sunday
         break
     }
-    if (hoursString && !hoursString?.includes('closed')) {
+
+    // Check if there is a config for given day
+    if (dayObject) {
       const slots = await DeliverySlotModel.find({
         shop,
         deliveryDay: {
@@ -155,22 +174,34 @@ const createNackadSlots = async () => {
           $lt: currentDayNight
         }
       })
-      if (slots.length == 0) {
-        // E.g 15:00-20:00
-        let from = parseInt(hoursString!.split('-')[0].split(':')[0])
-        const to = parseInt(hoursString!.split('-')[1].split(':')[0])
 
-        while (from != to) {
-          const toSlot = from + 1
-          const date = new Date(currentDayMorning).setHours(from, 0, 0)
-          new DeliverySlotModel({
-            shop,
-            deliveryDay: new Date(date),
-            slotHours: `${from}:00-${toSlot}:00`,
-            maxSlotSize: settingObj.slotsPerVehicle * settingObj.vehicles
-          }).save()
-          from++
-        }
+      // Only create slots, if there are no slots for given day
+      if (slots.length == 0) {
+        dayObject.forEach(async (vehicleObject: VehicleConfig) => {
+          const keyName = Object.keys(vehicleObject)
+          const vehicleId = keyName[0]
+          const currentSlotConfig = vehicleObject[vehicleId]
+
+          currentSlotConfig?.forEach((config) => {
+            // E.g 15:00-20:00
+            let from = parseInt(config.hours.split('-')[0].split(':')[0])
+            const to = parseInt(config.hours.split('-')[1].split(':')[0])
+
+            while (from != to) {
+              const toSlot = from + 1
+              const date = new Date(currentDayMorning).setHours(from, 0, 0)
+              new DeliverySlotModel({
+                vehicleId: vehicleId,
+                shop,
+                deliveryDay: new Date(date),
+                slotHours: `${from}:00-${toSlot}:00`,
+                maxSlotSize: config.maxDeliveries,
+                deliveryAreas: config.deliveryAreas
+              }).save()
+              from++
+            }
+          })
+        })
       }
     }
     currentDayMorning.setDate(currentDayMorning.getDate() + 1)
@@ -193,7 +224,7 @@ const createRexeatSlots = async () => {
     return 'error'
   }
 
-  const deliveryHours = settingObj.bigSlots
+  const deliverySlots = settingObj.deliverySlots
 
   let today = new Date().getDay() // 0-6
   let currentDayMorning = new Date()
@@ -201,50 +232,34 @@ const createRexeatSlots = async () => {
   currentDayMorning.setHours(2, 0, 0)
   currentDayNight.setHours(22, 0, 0)
   for (let i = 0; i < settingObj.showSlotDaysInAdvance; i++) {
-    let hoursStringArr
+    let dayObject
     switch (today) {
       case 1:
-        if (deliveryHours.monday) {
-          hoursStringArr = deliveryHours.monday
-        }
+        dayObject = deliverySlots.monday
         break
       case 2:
-        if (deliveryHours.tuesday) {
-          hoursStringArr = deliveryHours.tuesday
-        }
+        dayObject = deliverySlots.tuesday
         break
       case 3:
-        if (deliveryHours.wednesday) {
-          hoursStringArr = deliveryHours.wednesday
-        }
+        dayObject = deliverySlots.wednesday
         break
       case 4:
-        if (deliveryHours.thursday) {
-          hoursStringArr = deliveryHours.thursday
-        }
+        dayObject = deliverySlots.thursday
         break
       case 5:
-        if (deliveryHours.friday) {
-          hoursStringArr = deliveryHours.friday
-        }
+        dayObject = deliverySlots.friday
         break
       case 6:
-        if (deliveryHours.saturday) {
-          hoursStringArr = deliveryHours.saturday
-        }
+        dayObject = deliverySlots.saturday
         break
       case 0:
-        if (deliveryHours.sunday) {
-          hoursStringArr = deliveryHours.sunday
-        }
+        dayObject = deliverySlots.sunday
         break
       default:
-        if (deliveryHours.sunday) {
-          hoursStringArr = deliveryHours.sunday
-        }
+        dayObject = deliverySlots.sunday
         break
     }
-    if (hoursStringArr) {
+    if (dayObject) {
       const slots = await DeliverySlotModel.find({
         shop,
         deliveryDay: {
@@ -252,25 +267,29 @@ const createRexeatSlots = async () => {
           $lt: currentDayNight
         }
       })
-      if (!slots || slots.length == 0) {
-        // E.g 15:00-20:00
-        // let from = parseInt(hoursString!.split('-')[0].split(':')[0])
-        // const to = parseInt(hoursString!.split('-')[1].split(':')[0])
+      if (slots.length == 0) {
+        dayObject.forEach(async (vehicleObject: VehicleConfig) => {
+          const keyName = Object.keys(vehicleObject)
+          const vehicleId = keyName[0]
+          const currentSlotConfig = vehicleObject[vehicleId]
 
-        hoursStringArr.forEach(async (bigSlot) => {
-          let from = parseInt(bigSlot!.hours.split('-')[0].split(':')[0])
-          const to = parseInt(bigSlot!.hours.split('-')[1].split(':')[0])
-          const date = new Date(currentDayMorning).setHours(from, 0, 0)
-          new DeliverySlotModel({
-            shop,
-            deliveryDay: new Date(date),
-            excludedDeliveryAreas: bigSlot.excludedDeliveryAreas,
-            slotHours: `${from}:00-${to}:00`,
-            maxSlotSize: settingObj.slotsPerVehicle
-          }).save()
+          currentSlotConfig?.forEach((config: SlotDetails) => {
+            let from = parseInt(config.hours.split('-')[0].split(':')[0])
+            const to = parseInt(config.hours.split('-')[1].split(':')[0])
+            const date = new Date(currentDayMorning).setHours(from, 0, 0)
+            new DeliverySlotModel({
+              shop,
+              deliveryDay: new Date(date),
+              deliveryAreas: config.deliveryAreas,
+              slotHours: `${from}:00-${to}:00`,
+              maxSlotSize: config.maxDeliveries,
+              vehicleId: vehicleId
+            }).save()
+          })
         })
       }
     }
+
     currentDayMorning.setDate(currentDayMorning.getDate() + 1)
     currentDayNight.setDate(currentDayNight.getDate() + 1)
     if (today == 6) {

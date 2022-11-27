@@ -1,5 +1,6 @@
 import DepositModel, { IDeposit } from '../models/Deposit'
-import ShopSettings, { BigSlots, DeliveryHours } from '../models/ShopSettings'
+import ShopSettings from '../models/ShopSettings'
+import { DeliverySlots } from '../types/shopconfig'
 
 const getSettings = async (shop: string) => {
   const settings = await ShopSettings.findOne({ shop }).select('-slotsPerVehicle -vehicles')
@@ -15,13 +16,8 @@ const getSettingsAdmin = async (shop: string) => {
 }
 
 const updateSettings = async (
-  useBigSlots: boolean,
-  areas: string,
-  hours: object,
-  bigSlots: object,
-  slotsPerVehicle: number,
-  vehicles: number,
-  extraSlots: number,
+  useHourlySlots: boolean,
+  deliverySlots: DeliverySlots,
   showSlotDaysInAdvance: number,
   shop: string
 ) => {
@@ -29,17 +25,10 @@ const updateSettings = async (
   if (!setting) {
     return 'No Settings existent'
   }
-  if (useBigSlots) {
-    setting.bigSlots = bigSlots as BigSlots
-  } else {
-    setting.deliveryHours = hours as DeliveryHours
-  }
-  setting.useBigSlots = useBigSlots
-  setting.deliveryAreas = areas
-  setting.slotsPerVehicle = slotsPerVehicle
-  setting.vehicles = vehicles
-  setting.extraSlots = extraSlots
+  setting.useHourlySlots = useHourlySlots
   setting.showSlotDaysInAdvance = showSlotDaysInAdvance
+  setting.deliverySlots = deliverySlots
+
   const updated = await setting.save()
   return updated
 }

@@ -1,19 +1,26 @@
-type ShopConfig = {
-  shop: string
-  exludedDeliveryAreas?: string
+export type SlotDetails = {
+  hours: string
   deliveryAreas: string
-  deliveryHours: {
-    monday: string
-    tuesday: string
-    wednesday: string
-    thursday: string
-    friday: string
-    saturday: string
-    sunday: string
-  }
-  vehicles: number
-  slotsPerVehicle: number
-  showSlotDaysInAdvance: number
+  maxDeliveries: number
 }
 
-export default ShopConfig
+export type VehicleConfig = {
+  [key: string]: SlotDetails[]
+}
+
+export type DeliverySlots = {
+  monday?: VehicleConfig[]
+  tuesday?: VehicleConfig[]
+  wednesday?: VehicleConfig[]
+  thursday?: VehicleConfig[]
+  friday?: VehicleConfig[]
+  saturday?: VehicleConfig[]
+  sunday?: VehicleConfig[]
+}
+
+export type ShopConfig = {
+  shop?: string
+  useHourlySlots: boolean
+  showSlotDaysInAdvance: number
+  deliverySlots: DeliverySlots
+}

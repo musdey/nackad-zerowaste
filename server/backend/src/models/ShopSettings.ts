@@ -1,46 +1,17 @@
 import { Document, Schema, Model, model } from 'mongoose'
+import { DeliverySlots } from '../types/shopconfig'
 import { IShop } from './Shop'
-
-export type DeliveryHours = {
-  monday: string
-  tuesday: string
-  wednesday: string
-  thursday: string
-  friday: string
-  saturday: string
-  sunday: string
-}
-
-export type SingleSlot = {
-  hours: string
-  excludedDeliveryAreas?: string
-}
-
-export type BigSlots = {
-  monday: SingleSlot[]
-  tuesday: SingleSlot[]
-  wednesday: SingleSlot[]
-  thursday: SingleSlot[]
-  friday: SingleSlot[]
-  saturday: SingleSlot[]
-  sunday: SingleSlot[]
-}
 export interface IShopSettings extends Document {
   shop: IShop
-  deliveryHours: DeliveryHours
-  bigSlots: BigSlots
-  exludedDeliveryAreas?: [string]
-  deliveryAreas: string
-  slotsPerVehicle: number
-  extraSlots: number
-  vehicles: number
+  deliverySlots: DeliverySlots
   showSlotDaysInAdvance: number
-  useBigSlots: boolean
+  useHourlySlots: boolean
 }
 
 const SingleSlotSchema = new Schema({
   hours: String,
-  excludedDeliveryAreas: String
+  deliveryAreas: String,
+  maxDeliveries: Number
 })
 
 const ShopSettingsSchema = new Schema(
@@ -49,44 +20,55 @@ const ShopSettingsSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Shop'
     },
-    deliveryHours: {
-      monday: { type: String },
-      tuesday: { type: String },
-      wednesday: { type: String },
-      thursday: { type: String },
-      friday: { type: String },
-      saturday: { type: String },
-      sunday: { type: String }
-    },
-    bigSlots: {
-      monday: { type: [SingleSlotSchema] },
-      tuesday: { type: [SingleSlotSchema] },
-      wednesday: { type: [SingleSlotSchema] },
-      thursday: { type: [SingleSlotSchema] },
-      friday: { type: [SingleSlotSchema] },
-      saturday: { type: [SingleSlotSchema] },
-      sunday: { type: [SingleSlotSchema] }
-    },
-    deliveryAreas: {
-      type: String
-    },
-    slotsPerVehicle: {
-      type: Number,
-      default: 2
-    },
-    extraSlots: {
-      type: Number,
-      default: 1
-    },
-    vehicles: {
-      type: Number,
-      default: 2
+    deliverySlots: {
+      monday: [
+        {
+          type: Object,
+          of: [SingleSlotSchema]
+        }
+      ],
+      tuesday: [
+        {
+          type: Object,
+          of: [SingleSlotSchema]
+        }
+      ],
+      wednesday: [
+        {
+          type: Object,
+          of: [SingleSlotSchema]
+        }
+      ],
+      thursday: [
+        {
+          type: Object,
+          of: [SingleSlotSchema]
+        }
+      ],
+      friday: [
+        {
+          type: Object,
+          of: [SingleSlotSchema]
+        }
+      ],
+      saturday: [
+        {
+          type: Object,
+          of: [SingleSlotSchema]
+        }
+      ],
+      sunday: [
+        {
+          type: Object,
+          of: [SingleSlotSchema]
+        }
+      ]
     },
     showSlotDaysInAdvance: {
       type: Number,
       default: 5
     },
-    useBigSlots: {
+    useHourlySlots: {
       type: Boolean,
       default: false
     }
