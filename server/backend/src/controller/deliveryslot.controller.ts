@@ -77,26 +77,9 @@ const getDeliverySlotsPublic = async () => {
     deliveryDay: {
       $gte: date
     }
-  })
-    .select('-_id -lastUpdatedFrom')
-    .populate('deliveries')
+  }).select('-_id -lastUpdatedFrom -shop')
 
-  let newArr: object[] = []
-
-  deliverySlots.forEach((data) => {
-    let suggestion: string[] = []
-
-    const newObj = {
-      deliveryDay: data.deliveryDay,
-      slotHours: data.slotHours,
-      maxSlotSize: data.maxSlotSize,
-      available: data.maxSlotSize - data.deliveries!.length
-      // suggestions:
-      //   settings!.extraSlots * settings!.vehicles + data.maxSlotSize - data.deliveries!.length > 0 ? suggestion : []
-    }
-    newArr.push(newObj)
-  })
-  const sorted = newArr.sort((a: any, b: any) => {
+  const sorted = deliverySlots.sort((a: any, b: any) => {
     if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {
       return 1
     } else {
@@ -178,11 +161,9 @@ const createNackadSlots = async () => {
       // Only create slots, if there are no slots for given day
       if (slots.length == 0) {
         dayObject.forEach(async (vehicleObject: VehicleConfig) => {
-          const keyName = Object.keys(vehicleObject)
-          const vehicleId = keyName[0]
-          const currentSlotConfig = vehicleObject[vehicleId]
+          const { slots, vehicle } = vehicleObject
 
-          currentSlotConfig?.forEach((config) => {
+          slots?.forEach((config) => {
             // E.g 15:00-20:00
             let from = parseInt(config.hours.split('-')[0].split(':')[0])
             const to = parseInt(config.hours.split('-')[1].split(':')[0])
@@ -191,7 +172,7 @@ const createNackadSlots = async () => {
               const toSlot = from + 1
               const date = new Date(currentDayMorning).setHours(from, 0, 0)
               new DeliverySlotModel({
-                vehicleId: vehicleId,
+                vehicleId: vehicle,
                 shop,
                 deliveryDay: new Date(date),
                 slotHours: `${from}:00-${toSlot}:00`,
@@ -269,11 +250,9 @@ const createRexeatSlots = async () => {
       })
       if (slots.length == 0) {
         dayObject.forEach(async (vehicleObject: VehicleConfig) => {
-          const keyName = Object.keys(vehicleObject)
-          const vehicleId = keyName[0]
-          const currentSlotConfig = vehicleObject[vehicleId]
+          const { slots, vehicle } = vehicleObject
 
-          currentSlotConfig?.forEach((config: SlotDetails) => {
+          slots?.forEach((config: SlotDetails) => {
             let from = parseInt(config.hours.split('-')[0].split(':')[0])
             const to = parseInt(config.hours.split('-')[1].split(':')[0])
             const date = new Date(currentDayMorning).setHours(from, 0, 0)
@@ -283,7 +262,7 @@ const createRexeatSlots = async () => {
               deliveryAreas: config.deliveryAreas,
               slotHours: `${from}:00-${to}:00`,
               maxSlotSize: config.maxDeliveries,
-              vehicleId: vehicleId
+              vehicleId: vehicle
             }).save()
           })
         })
