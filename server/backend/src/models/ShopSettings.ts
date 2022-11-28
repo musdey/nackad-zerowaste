@@ -14,6 +14,11 @@ const SingleSlotSchema = new Schema({
   maxDeliveries: Number
 })
 
+const VehicleSlot = new Schema({
+  vehicle: String,
+  slots: [SingleSlotSchema]
+})
+
 const ShopSettingsSchema = new Schema(
   {
     shop: {
@@ -24,43 +29,43 @@ const ShopSettingsSchema = new Schema(
       monday: [
         {
           type: Object,
-          of: [SingleSlotSchema]
+          of: [VehicleSlot]
         }
       ],
       tuesday: [
         {
           type: Object,
-          of: [SingleSlotSchema]
+          of: [VehicleSlot]
         }
       ],
       wednesday: [
         {
           type: Object,
-          of: [SingleSlotSchema]
+          of: [VehicleSlot]
         }
       ],
       thursday: [
         {
           type: Object,
-          of: [SingleSlotSchema]
+          of: [VehicleSlot]
         }
       ],
       friday: [
         {
           type: Object,
-          of: [SingleSlotSchema]
+          of: [VehicleSlot]
         }
       ],
       saturday: [
         {
           type: Object,
-          of: [SingleSlotSchema]
+          of: [VehicleSlot]
         }
       ],
       sunday: [
         {
           type: Object,
-          of: [SingleSlotSchema]
+          of: [VehicleSlot]
         }
       ]
     },
