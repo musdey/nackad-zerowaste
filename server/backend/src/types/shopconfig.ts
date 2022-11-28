@@ -5,7 +5,8 @@ export type SlotDetails = {
 }
 
 export type VehicleConfig = {
-  [key: string]: SlotDetails[]
+  vehicle: string
+  slots: SlotDetails[]
 }
 
 export type DeliverySlots = {
