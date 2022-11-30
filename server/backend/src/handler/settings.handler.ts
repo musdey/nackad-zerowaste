@@ -28,7 +28,7 @@ const getSettingsAdminHandler: Handler = async (req: Request, res: Response, nex
 const updateSettingsHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
   const body = req.body
   console.log(body)
-  if (!body || !body.deliverySlots || !body.useHourlySlots || !body.showSlotDaysInAdvance) {
+  if (!body || !body.deliverySlots || typeof body.useHourlySlots !== 'boolean' || !body.showSlotDaysInAdvance) {
     return res.status(404).send('Missing Body')
   }
 
