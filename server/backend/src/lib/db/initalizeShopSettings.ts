@@ -7,16 +7,16 @@ import ShopSettings from '../../models/ShopSettings'
 import shopConfigs from '../../ShopConfig'
 
 const initializeShops = async function (shopString: string[]) {
-  try {
-    shopString.forEach(async (shopName) => {
+  await Promise.all(
+    shopString.map(async (shopName) => {
       const result = await Shop.findOne({ name: shopName })
       if (!result) {
         await new Shop({ name: shopName }).save()
+      } else {
+        console.log('Error creating shop' + shopName + '. Aready there.')
       }
     })
-  } catch (err) {
-    console.log('Error creating shops. Aready there.')
-  }
+  )
 }
 
 const initializeSettings = async function () {
