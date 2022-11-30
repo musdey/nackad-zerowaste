@@ -31,6 +31,8 @@ const days = [
   'sunday',
 ]
 
+const tage = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]
+
 type SingleSlot = {
   hours: string
   deliveryAreas: string
@@ -82,7 +84,7 @@ const Settings: React.FC = () => {
     })
 
     if (error) {
-      await present('Input validation error.', 2000)
+      await present('Eingabe nicht gültig.', 2000)
     } else {
       const obj = {
         deliverySlots: deliverySlots,
@@ -272,8 +274,8 @@ const Settings: React.FC = () => {
         <IonCard>
           <IonCardContent>
             <IonItem className="ion-no-padding" lines="none">
-              <IonLabel>Hourly slots</IonLabel>
-              <IonLabel slot="end">{useHourlySlots ? 'Yes' : 'No'}</IonLabel>
+              <IonLabel>Stundenslots</IonLabel>
+              <IonLabel slot="end">{useHourlySlots ? 'Ja' : 'Nein'}</IonLabel>
             </IonItem>
           </IonCardContent>
         </IonCard>
@@ -287,9 +289,7 @@ const Settings: React.FC = () => {
                 {days.map((day, dayIndex) => (
                   <IonAccordion value={day} key={dayIndex}>
                     <IonItem slot="header" color="light">
-                      <IonLabel>{`${
-                        day.charAt(0).toUpperCase() + day.slice(1)
-                      }`}</IonLabel>
+                      <IonLabel>{tage[dayIndex]}</IonLabel>
                     </IonItem>
                     <div slot="content">
                       {deliverySlots[day].map((vehicleSlots, vehicleIndex) => (
@@ -328,7 +328,7 @@ const Settings: React.FC = () => {
                             {vehicleSlots.slots.map((slot, slotIndex) => (
                               <IonCard>
                                 <IonItem>
-                                  <IonLabel>Slot Time</IonLabel>
+                                  <IonLabel>Zeitslots</IonLabel>
                                   <IonInput
                                     slot="end"
                                     value={slot.hours}
@@ -346,7 +346,7 @@ const Settings: React.FC = () => {
                                   />
                                 </IonItem>
                                 <IonItem>
-                                  <IonLabel>Max. delivery</IonLabel>
+                                  <IonLabel>Maximale Lieferungen</IonLabel>
                                   <IonInput
                                     slot="end"
                                     onInput={(event: any) => {
@@ -427,7 +427,7 @@ const Settings: React.FC = () => {
                                       )
                                     }}
                                   >
-                                    Delete slot
+                                    Slot löschen
                                   </IonButton>
                                 </IonItem>
                               </IonCard>
@@ -441,7 +441,7 @@ const Settings: React.FC = () => {
                                 handleAddSlot(day, vehicleIndex)
                               }}
                             >
-                              Add slot
+                              Slot hinzufügen
                             </IonButton>
                           </IonCardContent>
                         </IonCard>
@@ -455,7 +455,7 @@ const Settings: React.FC = () => {
                             handleAddVehicle(day)
                           }}
                         >
-                          Add vehicle
+                          Fahrzeug hinzufügen
                         </IonButton>
                       </IonItem>
                     </div>

@@ -96,7 +96,24 @@ const getDeliverySlotsManagement = async (shop: string) => {
       $gte: new Date()
     }
   })
-  return deliverySlots
+
+  const sorted = deliverySlots.sort((a: any, b: any) => {
+    if (a.vehicleId > b.vehicleId) {
+      if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {
+        return -1
+      } else {
+        return 1
+      }
+    } else {
+      if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {
+        return 1
+      } else {
+        return -1
+      }
+    }
+  })
+
+  return sorted
 }
 
 const createNackadSlots = async () => {

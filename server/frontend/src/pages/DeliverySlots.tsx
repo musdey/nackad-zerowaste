@@ -1,10 +1,10 @@
-import { IonButton, IonCard, IonChip, IonContent, IonIcon, IonInput, IonItem, IonLabel, IonPage, IonText, IonTextarea, useIonToast } from "@ionic/react"
+import { IonButton, IonCard, IonChip, IonContent, IonIcon, IonImg, IonInput, IonItem, IonLabel, IonPage, IonText, IonTextarea, useIonToast } from "@ionic/react"
 import { useEffect, useState } from "react";
 import { Header } from "../components/Header"
 import { useAuth } from "../lib/use-auth";
 import api from '../lib/api'
 import { Redirect } from "react-router";
-import { close, closeCircle, pin } from 'ionicons/icons';
+import { close, arrowDown } from 'ionicons/icons';
 
 const DeliverySlots: React.FC = () => {
 
@@ -17,7 +17,8 @@ const DeliverySlots: React.FC = () => {
 
     type Slot = {
         _id: string
-        excludedDeliveryAreas: string
+        deliveryAreas: string
+        vehicleId: string
     }
 
     const { loggedIn } = useAuth();
@@ -26,7 +27,6 @@ const DeliverySlots: React.FC = () => {
 
     const fetchDeliverySlots = async () => {
         const data = await api.getDeliverySlots()
-        console.log(data)
         setDeliverySlots(data)
     }
 
@@ -55,10 +55,10 @@ const DeliverySlots: React.FC = () => {
         let updated
         const updatedSlots = deliverySlots.map((slot: Slot) => {
             if (slot._id === slotId) {
-                const split = slot.excludedDeliveryAreas.split(";")
+                const split = slot.deliveryAreas.split(";")
                 const index = split.indexOf(plz)
                 split.splice(index, 1)
-                slot.excludedDeliveryAreas = split.join(";")
+                slot.deliveryAreas = split.join(";")
                 updated = slot
             }
             return slot
@@ -69,7 +69,7 @@ const DeliverySlots: React.FC = () => {
         }
     }
 
-    const handleAddExcludePLZClick = async (slotId: string) => {
+    const handleAddDeliveryAreasClick = async (slotId: string) => {
         const element: any = document.getElementById("plzInput" + slotId)
         const plz = element!.value
         let updated
@@ -78,16 +78,16 @@ const DeliverySlots: React.FC = () => {
         } else {
             const updatedSlots = deliverySlots.map((slot: Slot) => {
                 if (slot._id === slotId) {
-                    if (!slot.excludedDeliveryAreas || slot.excludedDeliveryAreas.length === 0) {
-                        slot.excludedDeliveryAreas = plz
+                    if (!slot.deliveryAreas || slot.deliveryAreas.length === 0) {
+                        slot.deliveryAreas = plz
                         element.value = ""
                     } else {
-                        const split = slot.excludedDeliveryAreas.split(";")
+                        const split = slot.deliveryAreas.split(";")
                         const index = split.indexOf(plz)
                         if (index < 0) {
                             split.push(plz)
                             split.sort()
-                            slot.excludedDeliveryAreas = split.join(";")
+                            slot.deliveryAreas = split.join(";")
                             element.value = ""
                         }
                     }
@@ -112,16 +112,29 @@ const DeliverySlots: React.FC = () => {
                         return -1
                     }
                 }).map((slot: any) =>
-                    <IonCard key={"slotid+" + slot._id}>
+                    <IonCard key={"slotid+" + slot._id} onClick={(e: any) => {
+                        const display = e.target.parentElement.nextSibling
+                        if (display && display.id.includes("plzPart")) {
+                            const style = window.getComputedStyle(display)
+                            if (style.display == "none") {
+                                e.target.parentElement.nextSibling.style = "display: unset"
+                            } else {
+                                e.target.parentElement.nextSibling.style = "display: none"
+                            }
+                        }
+                    }}>
                         <IonItem lines="none">
                             <IonItem>
                                 <IonLabel className="ion-text-wrap">
+                                    <p><b>{slot.vehicleId.toUpperCase()}</b></p>
                                     <p>{new Date(slot.deliveryDay).toLocaleDateString('de-at', options)}</p>
                                     {slot.slotHours}
                                 </IonLabel>
 
                                 <IonLabel slot="end" >
                                     {slot.deliveries.length} / {slot.maxSlotSize}
+                                    <p color="white"> &#160;</p>
+                                    <IonIcon icon={arrowDown}></IonIcon>
                                 </IonLabel>
 
                             </IonItem>
@@ -135,31 +148,33 @@ const DeliverySlots: React.FC = () => {
                             </IonItem>
                         </IonItem>
 
-                        <IonItem lines="none">
-                            <IonItem lines="none" slot="start" >
-                                <IonLabel style={{ color: "grey" }} color={"grey"}>
-                                    Exkludierte Bezirke:
-                                </IonLabel>
-                            </IonItem>
+                        <div id={"plzPart" + slot._id} style={{ display: "none" }}>
+                            <IonItem lines="none" >
+                                <IonItem lines="none" slot="start" >
+                                    <IonLabel style={{ color: "grey" }} color={"grey"}>
+                                        Lieferbezirke:
+                                    </IonLabel>
+                                </IonItem>
 
-                            <IonItem slot="end">
-                                <IonInput id={"plzInput" + slot._id} style={{ width: "50px !important;" }} type="number" inputMode="numeric" maxlength={4} placeholder="PLZ"></IonInput>
-                                <IonButton color={"grey"} onClick={() => handleAddExcludePLZClick(slot._id)}> + </IonButton>
+                                <IonItem slot="end">
+                                    <IonInput id={"plzInput" + slot._id} style={{ width: "50px !important;" }} type="number" inputMode="numeric" maxlength={4} placeholder="PLZ"></IonInput>
+                                    <IonButton color={"grey"} onClick={() => handleAddDeliveryAreasClick(slot._id)}> + </IonButton>
+                                </IonItem>
                             </IonItem>
-                        </IonItem>
-                        {
-                            slot.excludedDeliveryAreas &&
-                            <IonItem>
-                                <div >
-                                    {slot.excludedDeliveryAreas.split(";").map((plz: string) => {
-                                        return <IonChip key={"ChipPlz" + plz} id={plz + "plz"}>
-                                            <IonLabel >{plz}</IonLabel>
-                                            <IonIcon icon={close} onClick={() => handleChipClick(plz, slot._id)}></IonIcon>
-                                        </IonChip>
-                                    })}
-                                </div>
-                            </IonItem>
-                        }
+                            {
+                                slot.deliveryAreas &&
+                                <IonItem>
+                                    <div >
+                                        {slot.deliveryAreas.split(";").map((plz: string) => {
+                                            return <IonChip key={"ChipPlz" + plz} id={plz + "plz"}>
+                                                <IonLabel >{plz}</IonLabel>
+                                                <IonIcon icon={close} onClick={() => handleChipClick(plz, slot._id)}></IonIcon>
+                                            </IonChip>
+                                        })}
+                                    </div>
+                                </IonItem>
+                            }
+                        </div>
                     </IonCard>)}
             </IonContent>
 
