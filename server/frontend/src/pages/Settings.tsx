@@ -108,6 +108,28 @@ const Settings: React.FC = () => {
     }
   }
 
+  const handleAddSlot = (day: string, vehicleIndex: number) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfVehicle = updatedSlots[day][vehicleIndex]
+    deliverySlotsOfVehicle.slots.push({
+      hours: '',
+      deliveryAreas: '',
+      maxDeliveries: 0,
+    })
+    setDeliverySlots(updatedSlots)
+  }
+
+  const handleRemoveSlot = async (
+    day: string,
+    vehicleIndex: number,
+    slotIndex: number
+  ) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfVehicle = updatedSlots[day][vehicleIndex]
+    delete deliverySlotsOfVehicle.slots[slotIndex]
+    setDeliverySlots(updatedSlots)
+  }
+
   const handleUpdateSlotTime = async (
     value: string,
     day: string,
@@ -194,24 +216,6 @@ const Settings: React.FC = () => {
     }
   }
 
-  const handleAddSlot = (day: string) => {
-    // let updatedBigSlots = { ...bigSlots! }
-    // const dayToAddSlot = updatedBigSlots[day]
-    // dayToAddSlot.push({ hours: '' })
-    // setBigSlots(updatedBigSlots)
-  }
-
-  const handleRemoveSlot = (_id: string, day: string) => {
-    // let updatedBigSlots = { ...bigSlots! }
-    // const dayToRemoveSlot = updatedBigSlots[day]
-    // const index = dayToRemoveSlot.findIndex((slot) => slot._id === _id)
-    // if (index > -1) {
-    //   dayToRemoveSlot.splice(index, 1)
-    //   dayToRemoveSlot.sort()
-    //   setBigSlots(updatedBigSlots)
-    // }
-  }
-
   return (
     <IonPage>
       <Header subTitle="Einstellungen" />
@@ -241,17 +245,19 @@ const Settings: React.FC = () => {
           </IonCardContent>
         </IonCard>
         <IonCard>
-          <IonCardHeader>
-            <IonCardTitle>Bezirke</IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent></IonCardContent>
+          <IonCardContent>
+            <IonItem className="ion-no-padding" lines="none">
+              <IonLabel>Hourly slots</IonLabel>
+              <IonLabel slot="end">{useHourlySlots ? 'Yes' : 'No'}</IonLabel>
+            </IonItem>
+          </IonCardContent>
         </IonCard>
         <IonCard>
           <IonCardHeader>
             <IonCardTitle>Lieferzeit</IonCardTitle>
           </IonCardHeader>
           <IonCardContent>
-            {!useHourlySlots && deliverySlots && (
+            {deliverySlots && (
               <IonAccordionGroup>
                 {days.map((day, dayIndex) => (
                   <IonAccordion value={day} key={dayIndex}>
@@ -306,30 +312,31 @@ const Settings: React.FC = () => {
                                 </IonItem>
                                 <IonItem lines="none">
                                   <div>
-                                    {slot.deliveryAreas
-                                      .split(';')
-                                      .sort()
-                                      .map((plz: string) => {
-                                        return (
-                                          <IonChip
-                                            key={'ChipPlz' + plz}
-                                            id={plz + 'plz'}
-                                          >
-                                            <IonLabel>{plz}</IonLabel>
-                                            <IonIcon
-                                              icon={close}
-                                              onClick={() =>
-                                                handleRemovePlz(
-                                                  plz,
-                                                  day,
-                                                  vehicleIndex,
-                                                  slotIndex
-                                                )
-                                              }
-                                            ></IonIcon>
-                                          </IonChip>
-                                        )
-                                      })}
+                                    {slot.deliveryAreas &&
+                                      slot.deliveryAreas
+                                        .split(';')
+                                        .sort()
+                                        .map((plz: string) => {
+                                          return (
+                                            <IonChip
+                                              key={'ChipPlz' + plz}
+                                              id={plz + 'plz'}
+                                            >
+                                              <IonLabel>{plz}</IonLabel>
+                                              <IonIcon
+                                                icon={close}
+                                                onClick={() =>
+                                                  handleRemovePlz(
+                                                    plz,
+                                                    day,
+                                                    vehicleIndex,
+                                                    slotIndex
+                                                  )
+                                                }
+                                              ></IonIcon>
+                                            </IonChip>
+                                          )
+                                        })}
                                   </div>
                                 </IonItem>
                                 <IonItem>
@@ -354,19 +361,36 @@ const Settings: React.FC = () => {
                                     +
                                   </IonButton>
                                 </IonItem>
+                                <IonItem>
+                                  <IonButton
+                                    color="secondary"
+                                    id={'ADD_' + dayIndex}
+                                    size="small"
+                                    style={{ width: '100%' }}
+                                    onClick={() => {
+                                      handleRemoveSlot(
+                                        day,
+                                        vehicleIndex,
+                                        slotIndex
+                                      )
+                                    }}
+                                  >
+                                    Delete slot
+                                  </IonButton>
+                                </IonItem>
                               </IonCard>
                             ))}
-                            {/* <IonButton
+                            <IonButton
                               slot="end"
                               id={'ADD_' + dayIndex}
                               size="small"
                               style={{ width: '100%' }}
                               onClick={() => {
-                                handleAddSlot(day)
+                                handleAddSlot(day, vehicleIndex)
                               }}
                             >
                               Add slot
-                            </IonButton> */}
+                            </IonButton>
                           </IonCardContent>
                         </IonCard>
                       ))}
@@ -376,26 +400,6 @@ const Settings: React.FC = () => {
               </IonAccordionGroup>
             )}
           </IonCardContent>
-        </IonCard>
-        <IonCard>
-          <IonCardHeader>
-            <IonCardTitle>Verfügbare Slots pro Auto</IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent></IonCardContent>
-        </IonCard>
-        <IonCard>
-          <IonCardHeader>
-            <IonCardTitle>Verfügbare Fahrzeuge</IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent></IonCardContent>
-        </IonCard>
-        <IonCard>
-          <IonCardHeader>
-            <IonCardTitle>
-              Extra Slots pro Auto (wenn im selben Bezirk bestellt wird)
-            </IonCardTitle>
-          </IonCardHeader>
-          <IonCardContent></IonCardContent>
         </IonCard>
         <IonCard>
           <IonButton onClick={buttonHandler}>Einstellung übernehmen</IonButton>
