@@ -63,32 +63,23 @@ const Settings: React.FC = () => {
 
   const buttonHandler = async () => {
     let error = false
-    // if (isNaN(vehicles) || isNaN(slotsPerVehicle) || isNaN(extraSlots)) {
-    //   error = true
-    // }
-    // if (useBigSlots) {
-    //   // TODO: validate this ?
-    //   //   try {
-    //   //     JSON.parse(bigSlots)
-    //   //   } catch (err) {
-    //   //     error = true
-    //   //   }
-    // } else {
-    //   // TODO: validate this ?
-    //   // try {
-    //   //   JSON.parse(deliveryHours)
-    //   // } catch (err) {
-    //   //   error = true
-    //   // }
-    // }
-    // deliveryAreas?.split(';').forEach((data: string) => {
-    //   if (data.length !== 4) {
-    //     error = true
-    //   }
-    //   if (isNaN(parseInt(data))) {
-    //     error = true
-    //   }
-    // })
+
+    days.forEach((day) => {
+      deliverySlots![day].forEach((vehicle) => {
+        if (vehicle.vehicle === '' || vehicle.slots.length === 0) {
+          error = true
+        }
+        vehicle.slots.forEach((slot) => {
+          if (
+            !slot.hours ||
+            slot.maxDeliveries === 0 ||
+            slot.deliveryAreas === ''
+          ) {
+            error = true
+          }
+        })
+      })
+    })
 
     if (error) {
       await present('Input validation error.', 2000)
@@ -106,6 +97,40 @@ const Settings: React.FC = () => {
         await present('Fehler beim Update der Einstellungen.', 2000)
       }
     }
+  }
+
+  const handleRemoveVehicle = (day: string, vehicleIndex: number) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfDay = updatedSlots[day]
+    deliverySlotsOfDay.splice(vehicleIndex, 1)
+    setDeliverySlots(updatedSlots)
+  }
+
+  const handleAddVehicle = (day: string) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfDay = updatedSlots[day]
+    deliverySlotsOfDay.push({
+      vehicle: '',
+      slots: [
+        {
+          hours: '',
+          deliveryAreas: '',
+          maxDeliveries: 0,
+        },
+      ],
+    })
+    setDeliverySlots(updatedSlots)
+  }
+
+  const handleVehicleName = async (
+    value: string,
+    day: string,
+    vehicleIndex: number
+  ) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfVehicle = updatedSlots[day][vehicleIndex]
+    deliverySlotsOfVehicle.vehicle = value
+    setDeliverySlots(updatedSlots)
   }
 
   const handleAddSlot = (day: string, vehicleIndex: number) => {
@@ -126,7 +151,7 @@ const Settings: React.FC = () => {
   ) => {
     let updatedSlots = { ...deliverySlots! }
     const deliverySlotsOfVehicle = updatedSlots[day][vehicleIndex]
-    delete deliverySlotsOfVehicle.slots[slotIndex]
+    deliverySlotsOfVehicle.slots.splice(slotIndex, 1)
     setDeliverySlots(updatedSlots)
   }
 
@@ -270,7 +295,34 @@ const Settings: React.FC = () => {
                       {deliverySlots[day].map((vehicleSlots, vehicleIndex) => (
                         <IonCard>
                           <IonCardHeader>
-                            {vehicleSlots.vehicle.toLocaleUpperCase()}
+                            <IonItem>
+                              <IonInput
+                                slot="start"
+                                value={vehicleSlots.vehicle}
+                                key={`${dayIndex}_${vehicleIndex}`}
+                                placeholder="Add vehicle name"
+                                color="dark"
+                                onInput={(event: any) => {
+                                  if (event.target.value)
+                                    handleVehicleName(
+                                      event.target.value,
+                                      day,
+                                      vehicleIndex
+                                    )
+                                }}
+                              />
+                              <IonButton
+                                slot="end"
+                                id={'REMOVE_' + dayIndex + vehicleIndex}
+                                size="small"
+                                color="secondary"
+                                onClick={() => {
+                                  handleRemoveVehicle(day, vehicleIndex)
+                                }}
+                              >
+                                x
+                              </IonButton>
+                            </IonItem>
                           </IonCardHeader>
                           <IonCardContent>
                             {vehicleSlots.slots.map((slot, slotIndex) => (
@@ -394,6 +446,18 @@ const Settings: React.FC = () => {
                           </IonCardContent>
                         </IonCard>
                       ))}
+                      <IonItem>
+                        <IonButton
+                          id={'ADD_' + dayIndex}
+                          size="small"
+                          style={{ width: '100%' }}
+                          onClick={() => {
+                            handleAddVehicle(day)
+                          }}
+                        >
+                          Add vehicle
+                        </IonButton>
+                      </IonItem>
                     </div>
                   </IonAccordion>
                 ))}
