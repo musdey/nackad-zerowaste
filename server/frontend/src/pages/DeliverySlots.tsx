@@ -157,7 +157,7 @@ const DeliverySlots: React.FC = () => {
                                 </IonItem>
 
                                 <IonItem slot="end">
-                                    <IonInput id={"plzInput" + slot._id} style={{ width: "50px !important;" }} type="number" inputMode="numeric" maxlength={4} placeholder="PLZ"></IonInput>
+                                    <IonInput id={"plzInput" + slot._id} style={{ width: "50px !important" }} type="number" inputMode="numeric" maxlength={4} placeholder="PLZ"></IonInput>
                                     <IonButton color={"grey"} onClick={() => handleAddDeliveryAreasClick(slot._id)}> + </IonButton>
                                 </IonItem>
                             </IonItem>

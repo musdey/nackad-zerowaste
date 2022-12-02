@@ -20,6 +20,7 @@ import { useEffect, useState } from 'react'
 import { Header } from '../components/Header'
 import { useAuth } from '../lib/use-auth'
 import api from '../lib/api'
+import { isValidPostalCode, isValidTimeSlot } from '../lib/validator'
 
 const days = [
   'monday',
@@ -51,6 +52,7 @@ const Settings: React.FC = () => {
   const [deliverySlots, setDeliverySlots] = useState<deliverSlotsPerDay>()
   const [useHourlySlots, setUseHourlySlots] = useState(false)
   const [shop, setShop] = useState()
+  const [inputValid, setInputValid] = useState(true)
 
   useEffect(() => {
     const fn = async () => {
@@ -300,7 +302,7 @@ const Settings: React.FC = () => {
                                 slot="start"
                                 value={vehicleSlots.vehicle}
                                 key={`${dayIndex}_${vehicleIndex}`}
-                                placeholder="Add vehicle name"
+                                placeholder="Fahrzeugname"
                                 color="dark"
                                 onInput={(event: any) => {
                                   if (event.target.value)
@@ -335,20 +337,30 @@ const Settings: React.FC = () => {
                                     key={`${dayIndex}_${slotIndex}`}
                                     placeholder="Add slot time"
                                     onInput={(event: any) => {
-                                      if (event.target.value)
-                                        handleUpdateSlotTime(
-                                          event.target.value,
-                                          day,
-                                          vehicleIndex,
-                                          slotIndex
-                                        )
+                                      const data = event.target.value
+                                      if (data) {
+                                        if (!isValidTimeSlot(data)) {
+                                          event.target.style.color = "red"
+                                          setInputValid(false)
+                                        } else {
+                                          setInputValid(true)
+                                          event.target.style.color = "black"
+                                          handleUpdateSlotTime(
+                                            data,
+                                            day,
+                                            vehicleIndex,
+                                            slotIndex
+                                          )
+                                        }
+                                      } else {
+                                        event.target.style.color = "black"
+                                      }
                                     }}
                                   />
                                 </IonItem>
                                 <IonItem>
-                                  <IonLabel>Maximale Lieferungen</IonLabel>
+                                  <IonLabel slot='start'>Max. Lieferungen</IonLabel>
                                   <IonInput
-                                    slot="end"
                                     onInput={(event: any) => {
                                       if (event.target.value)
                                         handleUpdateSlotMaxDeliveries(
@@ -401,8 +413,21 @@ const Settings: React.FC = () => {
                                     }
                                     type="number"
                                     inputMode="numeric"
-                                    maxlength={4}
-                                    placeholder="Add Plz"
+                                    placeholder="PLZ hinzufügen"
+                                    onInput={(event: any) => {
+                                      const data = event.target.value
+                                      if (data) {
+                                        if (!isValidPostalCode(data)) {
+                                          event.target.style.color = "red"
+                                          setInputValid(false)
+                                        } else {
+                                          setInputValid(true)
+                                          event.target.style.color = "black"
+                                        }
+                                      } else {
+                                        event.target.style.color = "black"
+                                      }
+                                    }}
                                   ></IonInput>
                                   <IonButton
                                     color={'grey'}
@@ -466,7 +491,7 @@ const Settings: React.FC = () => {
           </IonCardContent>
         </IonCard>
         <IonCard>
-          <IonButton onClick={buttonHandler}>Einstellung übernehmen</IonButton>
+          <IonButton onClick={buttonHandler} disabled={!inputValid}>Einstellung übernehmen</IonButton>
         </IonCard>
       </IonContent>
     </IonPage>
