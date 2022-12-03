@@ -32,9 +32,9 @@ const UserPage: React.FC = () => {
         setModalState(true)
     }
 
-    const makeAdmin = async () => {
+    const makeManager = async () => {
         if (currentEmployee && currentEmployee.role.name === "EMPLOYEE") {
-            const admin = await api.updateUserRole(currentEmployee._id, 'ADMIN')
+            const admin = await api.updateUserRole(currentEmployee._id, 'MANAGER')
             if (admin !== undefined) {
                 await getEmployees()
                 await present("Erfolgreich!", 2000)
@@ -88,12 +88,12 @@ const UserPage: React.FC = () => {
                     <IonCard>
                         <IonCardHeader>
                             <IonCardTitle color="primary">
-                                Zum Admin hochstufen
+                                Zum Manager hochstufen
                             </IonCardTitle>
                         </IonCardHeader>
                         <IonCardContent>
-                            <IonButton color="secondary" onClick={makeAdmin}>
-                                ADMIN
+                            <IonButton color="secondary" onClick={makeManager}>
+                                Manager
                             </IonButton>
                         </IonCardContent>
                     </IonCard>
@@ -126,7 +126,7 @@ const UserPage: React.FC = () => {
                         Du hast diese Rolle: {user?.role.name}
                     </IonCardContent>
                 </IonCard>
-                {user?.role.name === "MANAGER" &&
+                {(user?.role.name === "MANAGER" || user?.role.name === "ADMIN") &&
                     <><IonCard>
                         <IonCardHeader>
                             <IonCardTitle >

@@ -38,7 +38,24 @@ const getRexeatSlotsPublic = async () => {
     .select('-_id -lastUpdatedFrom')
     .populate('deliveries')
 
-  const sorted = deliverySlots.sort((a: any, b: any) => {
+  let newArr: object[] = []
+
+  deliverySlots.forEach((data) => {
+    //let suggestion: string[] = []
+
+    const newObj = {
+      deliveryDay: data.deliveryDay,
+      deliveryAreas: data.deliveryAreas,
+      slotHours: data.slotHours,
+      maxSlotSize: data.maxSlotSize,
+      available: data.maxSlotSize - data.deliveries!.length
+      // suggestions:
+      //   settings!.extraSlots * settings!.vehicles + data.maxSlotSize - data.deliveries!.length > 0 ? suggestion : []
+    }
+    newArr.push(newObj)
+  })
+
+  const sorted = newArr.sort((a: any, b: any) => {
     if (a.vehicleId > b.vehicleId) {
       if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {
         return -1
@@ -77,9 +94,27 @@ const getDeliverySlotsPublic = async () => {
     deliveryDay: {
       $gte: date
     }
-  }).select('-_id -lastUpdatedFrom -shop')
+  })
+    .select('-_id -lastUpdatedFrom -shop')
+    .populate('deliveries')
 
-  const sorted = deliverySlots.sort((a: any, b: any) => {
+  let newArr: object[] = []
+
+  deliverySlots.forEach((data) => {
+    let suggestion: string[] = []
+
+    const newObj = {
+      deliveryDay: data.deliveryDay,
+      slotHours: data.slotHours,
+      maxSlotSize: data.maxSlotSize,
+      available: data.maxSlotSize - data.deliveries!.length
+      // suggestions:
+      //   settings!.extraSlots * settings!.vehicles + data.maxSlotSize - data.deliveries!.length > 0 ? suggestion : []
+    }
+    newArr.push(newObj)
+  })
+
+  const sorted = newArr.sort((a: any, b: any) => {
     if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {
       return 1
     } else {

@@ -7,8 +7,8 @@ import { DepositStatus } from '../types'
 import usercontroller from './user.controller'
 import rechargeController from './recharge.controller'
 
-const getDepositByUserId = async (userId: string, shop: string) => {
-  const customer = await User.findOne({ _id: userId, mainShop: shop })
+const getDepositByUserId = async (userId: string, mainShop: string) => {
+  const customer = await User.findOne({ _id: userId, mainShop })
   if (!customer) {
     throw new Error('User not found.')
   }
@@ -39,8 +39,8 @@ const getTotalOpenDepositByUserObj = async (user: IUser) => {
   }
 }
 
-const getDepositByShopifyId = async (userId: string) => {
-  const customer = await User.findOne({ shopifyUserId: userId })
+const getDepositByWebShopUserId = async (userId: string) => {
+  const customer = await User.findOne({ $or: [{ shopifyUserId: userId }, { webShopUserId: userId }] })
   if (!customer) {
     throw new Error('User not found.')
   }
@@ -182,10 +182,11 @@ const addNewDeposit = async (
 
 const returnDeposit = async (
   userId: string,
-  deliveryId: string,
   returnedItems: [{ amount: number; id: string; depositTypeId: string; type: string }],
   shop: string
 ) => {
+  console.log(shop)
+  console.log(userId)
   // Get all open deposits by user
   const deposits = await getDepositByUserId(userId, shop)
   // sort by oldest
@@ -273,7 +274,7 @@ const depositcontroller = {
   getAggregatedDepositByUserId,
   getDepositByUserId,
   getDepositById,
-  getDepositByShopifyId,
+  getDepositByWebShopUserId,
   returnDeposit,
   addNewDeposit,
   getDepositTypes,

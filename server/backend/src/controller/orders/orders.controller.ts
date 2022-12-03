@@ -79,7 +79,7 @@ const getById = async (id: string, shop: string) => {
 }
 
 const updateById = async (id: string, order: Order, shop: string) => {
-  const shopifyOrder = await OrderModel.findOne({ id, shop })
+  const shopifyOrder = await OrderModel.findOne({ _id: id, shop })
   if (shopifyOrder) {
     await shopifyOrder.update(order)
     await shopifyOrder.save()

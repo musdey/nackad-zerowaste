@@ -11,7 +11,7 @@ import settings from './lib/db/initalizeShopSettings'
 import rateLimit from 'express-rate-limit'
 import path from 'path'
 import cron from 'node-cron'
-import { updateNackadOrders, updateNackadUsers } from './lib/db/updateNackadUsers'
+import { updateDeliveries, updateNackadOrders, updateNackadUsers } from './lib/db/updateNackadUsers'
 
 dotenv.config()
 
@@ -22,14 +22,19 @@ const mongodbDBName = process.env.MONGO_INITDB_DATABASE || 'nackad-database'
 
 // Connect mongoose
 connectDB(mongodbHost, 27017, mongodbUser, mongodbPw, mongodbDBName, 10000)
-initalizeRoles()
-settings.initializeShops(['REXEAT', 'NACKAD'])
-settings.initializeSettings()
-settings.initalizeDeliverySlots()
-settings.initProducts()
-settings.registerRechargeWebhooks()
-updateNackadUsers()
-updateNackadOrders()
+const startup = async () => {
+  await initalizeRoles()
+  await settings.initializeShops(['REXEAT', 'NACKAD'])
+  await settings.initializeSettings()
+  await settings.initalizeDeliverySlots()
+  await settings.initProducts()
+  await settings.registerRechargeWebhooks()
+  //await updateNackadUsers()
+  //await updateNackadOrders()
+  //await updateDeliveries()
+}
+
+startup()
 
 const app = express()
 const limiter = rateLimit({

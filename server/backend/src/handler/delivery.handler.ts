@@ -23,8 +23,8 @@ const getAllDeliveriesWithGivenStatus: Handler = async (req: Request, res: Respo
 
 const getCurrentOpenDeliveries: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const users = await deliverycontroller.getCurrent(req.mainShop)
-    return res.status(200).send(users)
+    const deliveries = await deliverycontroller.getCurrent(req.mainShop)
+    return res.status(200).send(deliveries)
   } catch (err) {
     return next(err)
   }

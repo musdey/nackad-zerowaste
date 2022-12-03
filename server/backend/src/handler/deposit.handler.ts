@@ -54,16 +54,14 @@ const getDepositByUserId: Handler = async (req: Request, res: Response, next: Ne
   }
 }
 
-const getDepositByShopifyId: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  // TODO: Do input validation
-
-  const shopifyUserId = req.params.shopifyUserId
-  if (!shopifyUserId) {
+const getDepositByWebShopUserId: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  const webShopUserId = req.params.webShopUserId
+  if (!webShopUserId) {
     return res.status(404).send('Userid missing')
   }
 
   try {
-    const deposit = await depositcontroller.getDepositByShopifyId(shopifyUserId)
+    const deposit = await depositcontroller.getDepositByWebShopUserId(webShopUserId)
     return res.status(200).send(deposit)
   } catch (err) {
     return next(err)
@@ -72,18 +70,17 @@ const getDepositByShopifyId: Handler = async (req: Request, res: Response, next:
 
 const returnDeposit: Handler = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.body.userId
-  const deliveryId = req.body.deliveryId
   const returnedItems = req.body.returnedItems
 
   if (!returnedItems) {
     return res.status(404).send('[returnedItems] missing')
   }
 
-  if (!userId && !deliveryId) {
-    return res.status(404).send('One of the params userId or deliveryId must be provided.')
+  if (!userId) {
+    return res.status(404).send('UserId must be provided.')
   }
   try {
-    const result = await depositcontroller.returnDeposit(userId, deliveryId, returnedItems, req.mainShop)
+    const result = await depositcontroller.returnDeposit(userId, returnedItems, req.mainShop)
     return res.status(200).send(result)
   } catch (err) {
     return next(err)
@@ -120,7 +117,7 @@ const depositHandler = {
   getAggregatedDeposit,
   getDepositByUserId,
   getDepositById,
-  getDepositByShopifyId,
+  getDepositByWebShopUserId,
   returnDeposit,
   addNewDeposit,
   getDepositTypes
