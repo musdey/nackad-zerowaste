@@ -29,9 +29,9 @@ const startup = async () => {
   await settings.initalizeDeliverySlots()
   await settings.initProducts()
   await settings.registerRechargeWebhooks()
-  //await updateNackadUsers()
-  //await updateNackadOrders()
-  //await updateDeliveries()
+  await updateNackadUsers()
+  await updateNackadOrders()
+  await updateDeliveries()
 }
 
 startup()
