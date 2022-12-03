@@ -1,55 +1,81 @@
 import { Document, Schema, Model, model } from 'mongoose'
-
-export type DeliveryHours = {
-  monday: string
-  tuesday: string
-  wednesday: string
-  thursday: string
-  friday: string
-  saturday: string
-  sunday: string
-}
-
+import { DeliverySlots } from '../types/shopconfig'
+import { IShop } from './Shop'
 export interface IShopSettings extends Document {
-  // _id let it autogenerate by mongodb
-  deliveryHours: DeliveryHours
-  deliveryAreas: string
-  slotsPerVehicle: number
-  extraSlots: number
-  vehicles: number
+  shop: IShop
+  deliverySlots: DeliverySlots
   showSlotDaysInAdvance: number
+  useHourlySlots: boolean
 }
+
+const SingleSlotSchema = new Schema({
+  hours: String,
+  deliveryAreas: String,
+  maxDeliveries: Number
+})
+
+const VehicleSlot = new Schema({
+  vehicle: String,
+  slots: [SingleSlotSchema]
+})
 
 const ShopSettingsSchema = new Schema(
   {
-    // _id let it autogenerate by mongodb
-    deliveryHours: {
-      monday: { type: String },
-      tuesday: { type: String },
-      wednesday: { type: String },
-      thursday: { type: String },
-      friday: { type: String },
-      saturday: { type: String },
-      sunday: { type: String }
+    shop: {
+      type: Schema.Types.ObjectId,
+      ref: 'Shop'
     },
-    deliveryAreas: {
-      type: [String]
-    },
-    slotsPerVehicle: {
-      type: Number,
-      default: 2
-    },
-    extraSlots: {
-      type: Number,
-      default: 1
-    },
-    vehicles: {
-      type: Number,
-      default: 2
+    deliverySlots: {
+      monday: [
+        {
+          type: Object,
+          of: [VehicleSlot]
+        }
+      ],
+      tuesday: [
+        {
+          type: Object,
+          of: [VehicleSlot]
+        }
+      ],
+      wednesday: [
+        {
+          type: Object,
+          of: [VehicleSlot]
+        }
+      ],
+      thursday: [
+        {
+          type: Object,
+          of: [VehicleSlot]
+        }
+      ],
+      friday: [
+        {
+          type: Object,
+          of: [VehicleSlot]
+        }
+      ],
+      saturday: [
+        {
+          type: Object,
+          of: [VehicleSlot]
+        }
+      ],
+      sunday: [
+        {
+          type: Object,
+          of: [VehicleSlot]
+        }
+      ]
     },
     showSlotDaysInAdvance: {
       type: Number,
       default: 5
+    },
+    useHourlySlots: {
+      type: Boolean,
+      default: false
     }
   },
   { strict: false, versionKey: false }

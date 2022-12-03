@@ -7,12 +7,12 @@ const updateUserRole: Handler = async (req: Request, res: Response, next: NextFu
   const userId = req.body.userId
   const newRole = req.body.role
 
-  if (!newRole || !(newRole == 'ADMIN' || newRole == 'EMPLOYEE' || newRole == 'CUSTOMER')) {
+  if (!newRole || !(newRole == 'MANAGER' || newRole == 'EMPLOYEE' || newRole == 'CUSTOMER')) {
     return res.status(404).send({ message: 'Role not set.' })
   }
 
   try {
-    const user = await usercontroller.updateRole(userId, newRole)
+    const user = await usercontroller.updateRole(userId, newRole, req.mainShop)
 
     return res.status(200).send('User role update successfully. ' + user.email + ' is now a ' + newRole)
   } catch (err) {
@@ -22,14 +22,14 @@ const updateUserRole: Handler = async (req: Request, res: Response, next: NextFu
 
 const getAll: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const users = await usercontroller.getAll()
+    const users = await usercontroller.getAll(req.mainShop)
     return res.status(200).send(users)
   } catch (err) {
     return next(err)
   }
 }
 
-const getSelf: Handler = async (req: Request & { userId?: string }, res: Response, next: NextFunction) => {
+const getSelf: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await usercontroller.getOne(req.userId!)
     return res.status(200).send(user)
@@ -38,14 +38,14 @@ const getSelf: Handler = async (req: Request & { userId?: string }, res: Respons
   }
 }
 
-const searchUser: Handler = async (req: Request & { userId?: string }, res: Response, next: NextFunction) => {
+const searchUser: Handler = async (req: Request, res: Response, next: NextFunction) => {
   const searchString = req.body.searchString
 
   if (!searchString) {
     return res.status(404).send({ message: 'Searchstring not set.' })
   }
   try {
-    const user = await usercontroller.searchUser(searchString)
+    const user = await usercontroller.searchUser(searchString, req.mainShop)
     return res.status(200).send(user)
   } catch (err) {
     return next(err)
@@ -54,7 +54,7 @@ const searchUser: Handler = async (req: Request & { userId?: string }, res: Resp
 
 const getEmployees: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const user = await usercontroller.getUserByRole('EMPLOYEE')
+    const user = await usercontroller.getUserByRole('EMPLOYEE', req.mainShop)
 
     return res.status(200).send(user)
   } catch (err) {
@@ -62,15 +62,5 @@ const getEmployees: Handler = async (req: Request, res: Response, next: NextFunc
   }
 }
 
-const getAdmins: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const user = await usercontroller.getUserByRole('ADMIN')
-
-    return res.status(200).send(user)
-  } catch (err) {
-    return next(err)
-  }
-}
-
-const userHandler = { updateUserRole, getAll, getSelf, searchUser, getEmployees, getAdmins }
+const userHandler = { updateUserRole, getAll, getSelf, searchUser, getEmployees }
 export default userHandler

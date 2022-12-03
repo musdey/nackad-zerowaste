@@ -7,8 +7,8 @@ import { DepositStatus } from '../types'
 import usercontroller from './user.controller'
 import rechargeController from './recharge.controller'
 
-const getDepositByUserId = async (userId: string) => {
-  const customer = await User.findOne({ _id: userId })
+const getDepositByUserId = async (userId: string, mainShop: string) => {
+  const customer = await User.findOne({ _id: userId, mainShop })
   if (!customer) {
     throw new Error('User not found.')
   }
@@ -39,8 +39,8 @@ const getTotalOpenDepositByUserObj = async (user: IUser) => {
   }
 }
 
-const getDepositByShopifyId = async (userId: string) => {
-  const customer = await User.findOne({ shopifyUserId: userId })
+const getDepositByWebShopUserId = async (userId: string) => {
+  const customer = await User.findOne({ $or: [{ shopifyUserId: userId }, { webShopUserId: userId }] })
   if (!customer) {
     throw new Error('User not found.')
   }
@@ -53,8 +53,8 @@ const getDepositById = async (depositId: string) => {
   return deposits
 }
 
-const getDepositTypes = async () => {
-  const depositTypes = await DepositTypeModel.find({})
+const getDepositTypes = async (shop: string) => {
+  const depositTypes = await DepositTypeModel.find({ shop })
   return depositTypes
 }
 
@@ -116,6 +116,7 @@ const addNewDeposit = async (
   userId: string,
   type: string,
   amount: string,
+  shop: string,
   depositTypeId?: string,
   depositId?: string
 ) => {
@@ -137,7 +138,7 @@ const addNewDeposit = async (
         await deposit.depositItems[index].save()
         await deposit.save()
       } else {
-        const depositType = await DepositTypeModel.findOne({ $or: [{ _id: depositTypeId }, { name: type }] })
+        const depositType = await DepositTypeModel.findOne({ shop, $or: [{ _id: depositTypeId }, { name: type }] })
         const newDepositItem = await new DepositItemModel({
           amount,
           type,
@@ -181,11 +182,13 @@ const addNewDeposit = async (
 
 const returnDeposit = async (
   userId: string,
-  deliveryId: string,
-  returnedItems: [{ amount: number; id: string; depositTypeId: string; type: string }]
+  returnedItems: [{ amount: number; id: string; depositTypeId: string; type: string }],
+  shop: string
 ) => {
+  console.log(shop)
+  console.log(userId)
   // Get all open deposits by user
-  const deposits = await getDepositByUserId(userId)
+  const deposits = await getDepositByUserId(userId, shop)
   // sort by oldest
   const sorted = deposits.sort((a: IDeposit, b: IDeposit) => {
     if (new Date(a.orderDate) < new Date(b.orderDate)) {
@@ -271,7 +274,7 @@ const depositcontroller = {
   getAggregatedDepositByUserId,
   getDepositByUserId,
   getDepositById,
-  getDepositByShopifyId,
+  getDepositByWebShopUserId,
   returnDeposit,
   addNewDeposit,
   getDepositTypes,

@@ -1,4 +1,17 @@
+import { IRole } from '../models/Role'
+
 export as namespace myTypes
+
+declare global {
+  namespace Express {
+    export interface Request {
+      userId?: string
+      mainShop: string
+      role: IRole
+      access?: string[]
+    }
+  }
+}
 
 export const enum MailType {
   OTP = 'OTP',

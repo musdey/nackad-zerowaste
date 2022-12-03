@@ -1,8 +1,10 @@
 import { Document, Schema, Model, model } from 'mongoose'
+import { IShop } from './Shop'
 
 export interface IProduct extends Document {
   // _id let it autogenerate by mongodb
-  shopifyId: string
+  webShopId: string
+  webShop: IShop
   title: string
   packaging?: string
   deposit?: string
@@ -13,8 +15,12 @@ export interface IProduct extends Document {
 const ProductSchema = new Schema(
   {
     // _id let it autogenerate by mongodb
-    shopifyId: {
+    webShopId: {
       type: String
+    },
+    webShop: {
+      type: Schema.Types.ObjectId,
+      ref: 'Shop'
     },
     title: {
       type: String

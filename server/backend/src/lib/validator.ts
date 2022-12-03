@@ -19,6 +19,10 @@ const UserValidator: Validator = new Validator({
   email: {
     type: String,
     required: true
+  },
+  shop: {
+    type: String,
+    required: true
   }
   // phoneNumber: {
   //   type: String

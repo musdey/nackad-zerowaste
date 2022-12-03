@@ -1,4 +1,7 @@
+import { IShop } from '../models/Shop'
+
 type Order = {
+  shop?: IShop
   deliveryDay?: Date
   timeslot?: string
   id?: number

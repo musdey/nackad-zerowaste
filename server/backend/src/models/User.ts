@@ -1,12 +1,20 @@
 import { Document, Schema, Model, model } from 'mongoose'
 import Address from '../types/address'
 import Role, { IRole } from './Role'
+import { IShop } from './Shop'
+
+export type access = {
+  role: IRole
+  shop: IShop
+}
 
 export interface IUser extends Document {
   // _id let it autogenerate by mongodb
-  shopifyUserId?: string
+  webShopUserId?: string
   username?: string
+  mainShop: IShop
   role: IRole
+  extraAccess: [access]
   address: Address
   password?: string
   firstName: string
@@ -22,7 +30,23 @@ export interface IUser extends Document {
 const UserSchema = new Schema(
   {
     // _id let it autogenerate by mongodb
-    shopifyUserId: {
+    extraAccess: [
+      {
+        role: {
+          type: Schema.Types.ObjectId,
+          ref: 'Role'
+        },
+        shop: {
+          type: Schema.Types.ObjectId,
+          ref: 'Shop'
+        }
+      }
+    ],
+    mainShop: {
+      type: Schema.Types.ObjectId,
+      ref: 'Shop'
+    },
+    webShopUserId: {
       type: String
     },
     role: {

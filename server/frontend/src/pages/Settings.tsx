@@ -1,176 +1,501 @@
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonInput, IonPage, IonText, IonTextarea, useIonToast } from "@ionic/react"
-import { useEffect, useState } from "react";
-import { Header } from "../components/Header"
-import { useAuth } from "../lib/use-auth";
+import {
+  IonButton,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCardTitle,
+  IonContent,
+  IonInput,
+  IonItem,
+  IonPage,
+  useIonToast,
+  IonLabel,
+  IonAccordionGroup,
+  IonAccordion,
+  IonChip,
+  IonIcon,
+} from '@ionic/react'
+import { close } from 'ionicons/icons'
+import { useEffect, useState } from 'react'
+import { Header } from '../components/Header'
+import { useAuth } from '../lib/use-auth'
 import api from '../lib/api'
+import { isValidPostalCode, isValidTimeSlot } from '../lib/validator'
+
+const days = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+]
+
+const tage = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]
+
+type SingleSlot = {
+  hours: string
+  deliveryAreas: string
+  maxDeliveries: number
+}
+
+type deliverySlotsPerVehicle = { vehicle: string; slots: SingleSlot[] }
+
+type deliverSlotsPerDay = Record<string, deliverySlotsPerVehicle[]>
 
 const Settings: React.FC = () => {
+  const { user } = useAuth()
+  const [showSlotDaysInAdvance, setSlotDaysInAdvance] = useState(0)
 
-    const { user } = useAuth();
-    const [deliveryAreas, setDeliveryAreas] = useState('')
-    // const [deliveryHours, setDeliveryHours] = useState({
-    //     monday: '',
-    //     tuesday: '',
-    //     wednesday: '',
-    //     thursday: '',
-    //     friday: '',
-    //     saturday: '',
-    //     sunday: ''
-    // })
-    const [deliveryHours, setDeliveryHours] = useState('')
-    const [extraSlots, setExtraSlots] = useState(0)
-    const [showSlotDaysInAdvance, setSlotDaysInAdvance] = useState(0)
-    const [slotsPerVehicle, setSlotsPerVehicle] = useState(0)
-    const [vehicles, setVehicles] = useState(0)
-    const [present] = useIonToast();
+  const [present] = useIonToast()
+  const [deliverySlots, setDeliverySlots] = useState<deliverSlotsPerDay>()
+  const [useHourlySlots, setUseHourlySlots] = useState(false)
+  const [shop, setShop] = useState()
+  const [inputValid, setInputValid] = useState(true)
 
-
-    useEffect(() => {
-        const fn = async () => {
-            const data = await api.getSettings()
-            setDeliveryAreas(data.deliveryAreas.toString())
-            setDeliveryHours(JSON.stringify(data.deliveryHours))
-            setExtraSlots(data.extraSlots)
-            setSlotsPerVehicle(data.slotsPerVehicle)
-            setVehicles(data.vehicles)
-            setSlotDaysInAdvance(data.showSlotDaysInAdvance)
-        }
-        fn()
-    }, [])
-
-    const buttonHandler = async () => {
-
-
-        let error = false
-        if (isNaN(vehicles) || isNaN(slotsPerVehicle) || isNaN(extraSlots)) {
-            error = true
-        }
-        try {
-            JSON.parse(deliveryHours)
-        } catch (err) {
-            error = true
-        }
-        deliveryAreas.split(';').forEach((data: string) => {
-            if (data.length !== 4) {
-                error = true
-            }
-            if (isNaN(parseInt(data))) {
-                error = true
-            }
-        })
-
-        if (error) {
-            await present("Input validation error.", 2000)
-        } else {
-            const obj = {
-                deliveryAreas: [deliveryAreas],
-                deliveryHours: JSON.parse(deliveryHours),
-                vehicles: vehicles,
-                slotsPerVehicle: slotsPerVehicle,
-                extraSlots: extraSlots,
-                showSlotDaysInAdvance: showSlotDaysInAdvance
-            }
-
-            const result = await api.updateSettings(obj)
-            if (result) {
-                await present("Erfolgreich upgedated.", 2000)
-            } else {
-                await present("Fehler beim Update der Einstellungen.", 2000)
-            }
-        }
+  useEffect(() => {
+    const fn = async () => {
+      const data = await api.getSettings()
+      setShop(data.shop.name)
+      setSlotDaysInAdvance(data.showSlotDaysInAdvance)
+      setDeliverySlots(data.deliverySlots)
+      setUseHourlySlots(data.useHourlySlots)
     }
+    fn()
+  }, [])
 
-    return (
-        <IonPage>
-            <Header subTitle="Einstellungen" />
-            <IonContent fullscreen>
-                <IonCard>
-                    <IonCardHeader>
-                        <IonCardTitle color="primary">
-                            Hallo, {user?.firstName}
-                        </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                        Du hast diese Rolle: {user?.role.name}
-                    </IonCardContent>
-                </IonCard>
-                <IonCard >
-                    <IonCardHeader>
-                        <IonCardTitle>
-                            Lieferslots Tage im Voraus anzeigen
-                        </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent style={{ display: "flex" }}>
-                        <IonInput style={{ width: '50%' }} onInput={(e: any) => setSlotDaysInAdvance(e.target.value)} color="black" type="number" value={showSlotDaysInAdvance} >
-                        </IonInput>
-                        <IonInput disabled style={{ width: '50%' }}>Tage</IonInput>
-                    </IonCardContent>
-                </IonCard>
-                <IonCard >
-                    <IonCardHeader>
-                        <IonCardTitle>
-                            Bezirke
-                        </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent >
-                        <IonTextarea onInput={(e: any) => setDeliveryAreas(e.target.value)} rows={2} cols={20} color="black" value={deliveryAreas} >
-                        </IonTextarea>
-                    </IonCardContent>
-                </IonCard>
-                <IonCard >
-                    <IonCardHeader>
-                        <IonCardTitle>
-                            Lieferzeit
-                        </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                        <IonTextarea onInput={(e: any) => setDeliveryHours(e.target.value)} rows={6} cols={20} color="black" value={deliveryHours}>
-                        </IonTextarea>
-                    </IonCardContent>
-                </IonCard>
-                <IonCard >
-                    <IonCardHeader>
-                        <IonCardTitle>
-                            Verfügbare Slots pro Auto
-                        </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                        <IonInput onInput={(e: any) => setSlotsPerVehicle(e.target.value)} color="black" type="number" value={slotsPerVehicle} >
-                        </IonInput>
-                    </IonCardContent>
-                </IonCard>
-                <IonCard >
-                    <IonCardHeader>
-                        <IonCardTitle>
-                            Verfügbare Fahrzeuge
-                        </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                        <IonInput onInput={(e: any) => setVehicles(e.target.value)} color="black" type="number" value={vehicles} >
-                        </IonInput>
-                    </IonCardContent>
-                </IonCard>
-                <IonCard >
-                    <IonCardHeader>
-                        <IonCardTitle>
-                            Extra Slots pro Auto (wenn im selben Bezirk bestellt wird)
-                        </IonCardTitle>
-                    </IonCardHeader>
-                    <IonCardContent>
-                        <IonInput onInput={(e: any) => setExtraSlots(e.target.value)} color="black" type="number" value={extraSlots} >
-                        </IonInput>
-                    </IonCardContent>
-                </IonCard>
-                <IonCard>
-                    <IonButton onClick={buttonHandler}>
-                        Einstellung übernehmen
-                    </IonButton>
-                </IonCard>
+  const buttonHandler = async () => {
+    let error = false
 
-            </IonContent>
+    days.forEach((day) => {
+      deliverySlots![day].forEach((vehicle) => {
+        if (vehicle.vehicle === '' || vehicle.slots.length === 0) {
+          error = true
+        }
+        vehicle.slots.forEach((slot) => {
+          if (
+            !slot.hours ||
+            slot.maxDeliveries === 0 ||
+            slot.deliveryAreas === ''
+          ) {
+            error = true
+          }
+        })
+      })
+    })
 
-        </IonPage>
+    if (error) {
+      await present('Eingabe nicht gültig.', 2000)
+    } else {
+      const obj = {
+        deliverySlots: deliverySlots,
+        showSlotDaysInAdvance: showSlotDaysInAdvance,
+        useHourlySlots: useHourlySlots,
+      }
+
+      const result = await api.updateSettings(obj)
+      if (result) {
+        await present('Erfolgreich upgedated.', 2000)
+      } else {
+        await present('Fehler beim Update der Einstellungen.', 2000)
+      }
+    }
+  }
+
+  const handleRemoveVehicle = (day: string, vehicleIndex: number) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfDay = updatedSlots[day]
+    deliverySlotsOfDay.splice(vehicleIndex, 1)
+    setDeliverySlots(updatedSlots)
+  }
+
+  const handleAddVehicle = (day: string) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfDay = updatedSlots[day]
+    deliverySlotsOfDay.push({
+      vehicle: '',
+      slots: [
+        {
+          hours: '',
+          deliveryAreas: '',
+          maxDeliveries: 0,
+        },
+      ],
+    })
+    setDeliverySlots(updatedSlots)
+  }
+
+  const handleVehicleName = async (
+    value: string,
+    day: string,
+    vehicleIndex: number
+  ) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfVehicle = updatedSlots[day][vehicleIndex]
+    deliverySlotsOfVehicle.vehicle = value
+    setDeliverySlots(updatedSlots)
+  }
+
+  const handleAddSlot = (day: string, vehicleIndex: number) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfVehicle = updatedSlots[day][vehicleIndex]
+    deliverySlotsOfVehicle.slots.push({
+      hours: '',
+      deliveryAreas: '',
+      maxDeliveries: 0,
+    })
+    setDeliverySlots(updatedSlots)
+  }
+
+  const handleRemoveSlot = async (
+    day: string,
+    vehicleIndex: number,
+    slotIndex: number
+  ) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfVehicle = updatedSlots[day][vehicleIndex]
+    deliverySlotsOfVehicle.slots.splice(slotIndex, 1)
+    setDeliverySlots(updatedSlots)
+  }
+
+  const handleUpdateSlotTime = async (
+    value: string,
+    day: string,
+    vehicleIndex: number,
+    slotIndex: number
+  ) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfVehicle = updatedSlots[day][vehicleIndex]
+    deliverySlotsOfVehicle.slots[slotIndex].hours = value
+    setDeliverySlots(updatedSlots)
+  }
+
+  const handleUpdateSlotMaxDeliveries = async (
+    value: number,
+    day: string,
+    vehicleIndex: number,
+    slotIndex: number
+  ) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfVehicle = updatedSlots[day][vehicleIndex]
+    deliverySlotsOfVehicle.slots[slotIndex].maxDeliveries = value
+    setDeliverySlots(updatedSlots)
+  }
+
+  const handleAddPlz = async (
+    day: string,
+    vehicleIndex: number,
+    slotIndex: number
+  ) => {
+    const element: any = document.getElementById(
+      'plzInput' + day + vehicleIndex + slotIndex
     )
+    const plz = element!.value
+    if (plz.length !== 4) {
+      await present('Bitte eine gültige Postleitzahl eingeben', 3000)
+    } else {
+      let updatedSlots = { ...deliverySlots! }
+      const deliverySlotsOfVehicle = updatedSlots[day][vehicleIndex]
+      if (!deliverySlotsOfVehicle.slots[slotIndex].deliveryAreas) {
+        deliverySlotsOfVehicle.slots[slotIndex].deliveryAreas = plz
+        setDeliverySlots(updatedSlots)
+        element.value = ''
+      } else {
+        if (
+          !deliverySlotsOfVehicle.slots[slotIndex].deliveryAreas
+            .split(';')
+            .includes(plz)
+        ) {
+          const areasArray =
+            deliverySlotsOfVehicle.slots[slotIndex].deliveryAreas.split(';')
+          const index = areasArray.indexOf(plz)
+          if (index < 0) {
+            areasArray.push(plz)
+            areasArray.sort()
+            deliverySlotsOfVehicle.slots[slotIndex].deliveryAreas =
+              areasArray.join(';')
+            setDeliverySlots(updatedSlots)
+            element.value = ''
+          }
+        } else {
+          await present('Bitte eine gültige Postleitzahl eingeben', 3000)
+        }
+      }
+    }
+  }
+
+  const handleRemovePlz = (
+    plz: string,
+    day: string,
+    vehicleIndex: number,
+    slotIndex: number
+  ) => {
+    let updatedSlots = { ...deliverySlots! }
+    const deliverySlotsOfVehicle = updatedSlots[day][vehicleIndex]
+    const areasArray =
+      deliverySlotsOfVehicle.slots[slotIndex].deliveryAreas.split(';')
+    const index = areasArray.indexOf(plz)
+    if (index > -1 && areasArray.length > 1) {
+      areasArray.splice(index, 1)
+      areasArray.sort()
+      deliverySlotsOfVehicle.slots[slotIndex].deliveryAreas =
+        areasArray.join(';')
+      setDeliverySlots(updatedSlots)
+    }
+  }
+
+  return (
+    <IonPage>
+      <Header subTitle="Einstellungen" />
+      <IonContent fullscreen>
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle color="primary">
+              Einstellungen für {shop} ändern
+            </IonCardTitle>
+          </IonCardHeader>
+        </IonCard>
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Lieferslots Tage im Voraus anzeigen</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent style={{ display: 'flex' }}>
+            <IonInput
+              style={{ width: '50%' }}
+              onInput={(e: any) => setSlotDaysInAdvance(e.target.value)}
+              color="black"
+              type="number"
+              value={showSlotDaysInAdvance}
+            ></IonInput>
+            <IonInput disabled style={{ width: '50%' }}>
+              Tage
+            </IonInput>
+          </IonCardContent>
+        </IonCard>
+        <IonCard>
+          <IonCardContent>
+            <IonItem className="ion-no-padding" lines="none">
+              <IonLabel>Stundenslots</IonLabel>
+              <IonLabel slot="end">{useHourlySlots ? 'Ja' : 'Nein'}</IonLabel>
+            </IonItem>
+          </IonCardContent>
+        </IonCard>
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Lieferzeit</IonCardTitle>
+          </IonCardHeader>
+          <IonCardContent>
+            {deliverySlots && (
+              <IonAccordionGroup>
+                {days.map((day, dayIndex) => (
+                  <IonAccordion value={day} key={dayIndex}>
+                    <IonItem slot="header" color="light">
+                      <IonLabel>{tage[dayIndex]}</IonLabel>
+                    </IonItem>
+                    <div slot="content">
+                      {deliverySlots[day].map((vehicleSlots, vehicleIndex) => (
+                        <IonCard>
+                          <IonCardHeader>
+                            <IonItem>
+                              <IonInput
+                                slot="start"
+                                value={vehicleSlots.vehicle}
+                                key={`${dayIndex}_${vehicleIndex}`}
+                                placeholder="Fahrzeugname"
+                                color="dark"
+                                onInput={(event: any) => {
+                                  if (event.target.value)
+                                    handleVehicleName(
+                                      event.target.value,
+                                      day,
+                                      vehicleIndex
+                                    )
+                                }}
+                              />
+                              <IonButton
+                                slot="end"
+                                id={'REMOVE_' + dayIndex + vehicleIndex}
+                                size="small"
+                                color="secondary"
+                                onClick={() => {
+                                  handleRemoveVehicle(day, vehicleIndex)
+                                }}
+                              >
+                                x
+                              </IonButton>
+                            </IonItem>
+                          </IonCardHeader>
+                          <IonCardContent>
+                            {vehicleSlots.slots.map((slot, slotIndex) => (
+                              <IonCard>
+                                <IonItem>
+                                  <IonLabel>Zeitslots</IonLabel>
+                                  <IonInput
+                                    slot="end"
+                                    value={slot.hours}
+                                    key={`${dayIndex}_${slotIndex}`}
+                                    placeholder="Add slot time"
+                                    onInput={(event: any) => {
+                                      const data = event.target.value
+                                      if (data) {
+                                        if (!isValidTimeSlot(data)) {
+                                          event.target.style.color = "red"
+                                          setInputValid(false)
+                                        } else {
+                                          setInputValid(true)
+                                          event.target.style.color = "black"
+                                          handleUpdateSlotTime(
+                                            data,
+                                            day,
+                                            vehicleIndex,
+                                            slotIndex
+                                          )
+                                        }
+                                      } else {
+                                        event.target.style.color = "black"
+                                      }
+                                    }}
+                                  />
+                                </IonItem>
+                                <IonItem>
+                                  <IonLabel slot='start'>Max. Lieferungen</IonLabel>
+                                  <IonInput
+                                    onInput={(event: any) => {
+                                      if (event.target.value)
+                                        handleUpdateSlotMaxDeliveries(
+                                          event.target.value,
+                                          day,
+                                          vehicleIndex,
+                                          slotIndex
+                                        )
+                                    }}
+                                    type="number"
+                                    value={slot.maxDeliveries}
+                                  />
+                                </IonItem>
+                                <IonItem lines="none">
+                                  <div>
+                                    {slot.deliveryAreas &&
+                                      slot.deliveryAreas
+                                        .split(';')
+                                        .sort()
+                                        .map((plz: string) => {
+                                          return (
+                                            <IonChip
+                                              key={'ChipPlz' + plz}
+                                              id={plz + 'plz'}
+                                            >
+                                              <IonLabel>{plz}</IonLabel>
+                                              <IonIcon
+                                                icon={close}
+                                                onClick={() =>
+                                                  handleRemovePlz(
+                                                    plz,
+                                                    day,
+                                                    vehicleIndex,
+                                                    slotIndex
+                                                  )
+                                                }
+                                              ></IonIcon>
+                                            </IonChip>
+                                          )
+                                        })}
+                                  </div>
+                                </IonItem>
+                                <IonItem>
+                                  <IonInput
+                                    id={
+                                      'plzInput' +
+                                      day +
+                                      vehicleIndex +
+                                      slotIndex
+                                    }
+                                    type="number"
+                                    inputMode="numeric"
+                                    placeholder="PLZ hinzufügen"
+                                    onInput={(event: any) => {
+                                      const data = event.target.value
+                                      if (data) {
+                                        if (!isValidPostalCode(data)) {
+                                          event.target.style.color = "red"
+                                          setInputValid(false)
+                                        } else {
+                                          setInputValid(true)
+                                          event.target.style.color = "black"
+                                        }
+                                      } else {
+                                        event.target.style.color = "black"
+                                      }
+                                    }}
+                                  ></IonInput>
+                                  <IonButton
+                                    color={'grey'}
+                                    onClick={() =>
+                                      handleAddPlz(day, vehicleIndex, slotIndex)
+                                    }
+                                  >
+                                    +
+                                  </IonButton>
+                                </IonItem>
+                                <IonItem>
+                                  <IonButton
+                                    color="secondary"
+                                    id={'ADD_' + dayIndex}
+                                    size="small"
+                                    style={{ width: '100%' }}
+                                    onClick={() => {
+                                      handleRemoveSlot(
+                                        day,
+                                        vehicleIndex,
+                                        slotIndex
+                                      )
+                                    }}
+                                  >
+                                    Slot löschen
+                                  </IonButton>
+                                </IonItem>
+                              </IonCard>
+                            ))}
+                            <IonButton
+                              slot="end"
+                              id={'ADD_' + dayIndex}
+                              size="small"
+                              style={{ width: '100%' }}
+                              onClick={() => {
+                                handleAddSlot(day, vehicleIndex)
+                              }}
+                            >
+                              Slot hinzufügen
+                            </IonButton>
+                          </IonCardContent>
+                        </IonCard>
+                      ))}
+                      <IonItem>
+                        <IonButton
+                          id={'ADD_' + dayIndex}
+                          size="small"
+                          style={{ width: '100%' }}
+                          onClick={() => {
+                            handleAddVehicle(day)
+                          }}
+                        >
+                          Fahrzeug hinzufügen
+                        </IonButton>
+                      </IonItem>
+                    </div>
+                  </IonAccordion>
+                ))}
+              </IonAccordionGroup>
+            )}
+          </IonCardContent>
+        </IonCard>
+        <IonCard>
+          <IonButton onClick={buttonHandler} disabled={!inputValid}>Einstellung übernehmen</IonButton>
+        </IonCard>
+      </IonContent>
+    </IonPage>
+  )
 }
 
 export default Settings

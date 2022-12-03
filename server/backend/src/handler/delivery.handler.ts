@@ -3,7 +3,7 @@ import deliverycontroller from '../controller/delivery.controller'
 
 const getAllDeliveries: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const users = await deliverycontroller.getAll()
+    const users = await deliverycontroller.getAll(req.mainShop)
     return res.status(200).send(users)
   } catch (err) {
     return next(err)
@@ -14,7 +14,7 @@ const getAllDeliveriesWithGivenStatus: Handler = async (req: Request, res: Respo
   try {
     // TODO: do input validation
     const status = req.body.status
-    const deliveries = await deliverycontroller.getAllWithStatus(status)
+    const deliveries = await deliverycontroller.getAllWithStatus(status, req.mainShop)
     return res.status(200).send(deliveries)
   } catch (err) {
     return next(err)
@@ -23,8 +23,8 @@ const getAllDeliveriesWithGivenStatus: Handler = async (req: Request, res: Respo
 
 const getCurrentOpenDeliveries: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const users = await deliverycontroller.getCurrent()
-    return res.status(200).send(users)
+    const deliveries = await deliverycontroller.getCurrent(req.mainShop)
+    return res.status(200).send(deliveries)
   } catch (err) {
     return next(err)
   }
@@ -32,7 +32,7 @@ const getCurrentOpenDeliveries: Handler = async (req: Request, res: Response, ne
 
 const getTodaysDeliveries: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const users = await deliverycontroller.getCurrent()
+    const users = await deliverycontroller.getCurrent(req.mainShop)
     return res.status(200).send(users)
   } catch (err) {
     return next(err)
@@ -42,7 +42,7 @@ const getTodaysDeliveries: Handler = async (req: Request, res: Response, next: N
 const searchDelivery: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const query = req.body.query
-    const users = await deliverycontroller.search(query)
+    const users = await deliverycontroller.search(query, req.mainShop)
     return res.status(200).send(users)
   } catch (err) {
     return next(err)

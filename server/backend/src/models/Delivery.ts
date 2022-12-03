@@ -2,12 +2,14 @@ import { Document, Schema, Model, model } from 'mongoose'
 import Address from '../types/address'
 import Order from '../types/order'
 import { IDeliverySlot } from './DeliverySlots'
+import { IShop } from './Shop'
 import { IUser } from './User'
 
 export interface IDelivery extends Document {
   // _id let it autogenerate by mongodb
-  shopifyOrder: Order
-  shopifyOrderId: string
+  shop: IShop
+  webShopOrder: Order
+  webShopOrderId: string
   status: string
   updates: [object]
   address: Address
@@ -21,15 +23,19 @@ export interface IDelivery extends Document {
 const DeliverySchema = new Schema(
   {
     // _id let it autogenerate by mongodb
-    shopifyOrder: {
+    webShopOrder: {
       type: Schema.Types.ObjectId,
       ref: 'Order'
+    },
+    shop: {
+      type: Schema.Types.ObjectId,
+      ref: 'Shop'
     },
     type: {
       type: String,
       default: 'DELIVERY'
     },
-    shopifyOrderId: {
+    webShopOrderId: {
       type: String
     },
     address: {

@@ -92,7 +92,7 @@ describe('Test local pickup: Creating order and deposit items', () => {
     // expect(deposit.totalPrice).toEqual('980')
     // expect(deposit.depositItems.length).toEqual(2)
 
-    const delivery = await DeliveryModel.find({ shopifyOrderId: order.id }).populate('deliverySlot')
+    const delivery = await DeliveryModel.find({ webShopOrderId: order.id }).populate('deliverySlot')
 
     console.log('DELIVERY------------')
     console.log(delivery)

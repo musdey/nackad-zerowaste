@@ -8,11 +8,10 @@ import errorHandler from './middleware/error-handler'
 import connectDB from './lib/db/connect'
 import initalizeRoles from './lib/db/initalizeRoles'
 import settings from './lib/db/initalizeShopSettings'
-import deliverySlotController from './controller/deliveryslot.controller'
 import rateLimit from 'express-rate-limit'
 import path from 'path'
-import dbNotUp from './middleware/db-not-up'
 import cron from 'node-cron'
+import { updateDeliveries, updateNackadOrders, updateNackadUsers } from './lib/db/updateNackadUsers'
 
 dotenv.config()
 
@@ -23,10 +22,19 @@ const mongodbDBName = process.env.MONGO_INITDB_DATABASE || 'nackad-database'
 
 // Connect mongoose
 connectDB(mongodbHost, 27017, mongodbUser, mongodbPw, mongodbDBName, 10000)
-initalizeRoles()
-settings.initializeSettings()
-settings.initProducts()
-settings.registerRechargeWebhooks()
+const startup = async () => {
+  await initalizeRoles()
+  await settings.initializeShops(['REXEAT', 'NACKAD'])
+  await settings.initializeSettings()
+  await settings.initalizeDeliverySlots()
+  await settings.initProducts()
+  await settings.registerRechargeWebhooks()
+  await updateNackadUsers()
+  await updateNackadOrders()
+  await updateDeliveries()
+}
+
+startup()
 
 const app = express()
 const limiter = rateLimit({
@@ -57,7 +65,7 @@ app.use(
 )
 
 cron.schedule('0 1 * * *', async () => {
-  await deliverySlotController.createDeliverySlots()
+  await settings.initalizeDeliverySlots()
   console.log('DeliverySlots created')
 })
 

@@ -1,7 +1,9 @@
 import { Document, Schema, Model, model } from 'mongoose'
+import { IShop } from './Shop'
 
 export interface IDepositType extends Document {
   // _id let it autogenerate by mongodb
+  shop: IShop
   _id: string
   name: string
   price: string
@@ -18,6 +20,10 @@ const DepositTypeScheme = new Schema(
     // _id let it autogenerate by mongodb
     name: {
       type: String
+    },
+    shop: {
+      type: Schema.Types.ObjectId,
+      ref: 'Shop'
     },
     shape: {
       type: String

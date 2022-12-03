@@ -19,6 +19,8 @@ import {
     IonText,
     IonRouterLink,
     useIonToast,
+    IonSelect,
+    IonSelectOption,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
 import { Redirect } from "react-router";
@@ -35,6 +37,7 @@ const Signup: React.FC<LoginProps> = () => {
     const [password, setPassword] = useState('')
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
+    const [shop, setShop] = useState('NACKAD')
     const [pin, setPin] = useState('')
     const [present] = useIonToast();
 
@@ -75,7 +78,7 @@ const Signup: React.FC<LoginProps> = () => {
     const handleSignup = async () => {
         if (!error) {
             // await signin();
-            const result = await api.signup(firstName, lastName, email, pin, password)
+            const result = await api.signup(firstName, lastName, email, pin, password, shop)
             if (result.status === 200) {
                 await present(result.body.message, 2000)
                 await signin(email, password)
@@ -84,8 +87,6 @@ const Signup: React.FC<LoginProps> = () => {
             }
         }
     };
-
-
 
     return (
         <IonPage>
@@ -98,6 +99,15 @@ const Signup: React.FC<LoginProps> = () => {
                         <IonCardSubtitle>Gib deine Daten an, um eine neues Benutzerkonto zu erstellen :)</IonCardSubtitle>
                     </IonCardHeader>
                     <IonItemDivider></IonItemDivider>
+                    <IonItem>
+                        <IonCardContent >
+                            <IonLabel position="fixed">Shop:</IonLabel>
+                        </IonCardContent>
+                        <IonSelect interface="popover" value={shop} onIonChange={(data) => { setShop(data.detail.value || '') }} placeholder="Shop auswählen">
+                            <IonSelectOption>NACKAD</IonSelectOption>
+                            <IonSelectOption>REXEAT</IonSelectOption>
+                        </IonSelect>
+                    </IonItem>
                     <IonItem>
                         <IonCardContent>
                             <IonLabel position="floating">Vorname:</IonLabel>

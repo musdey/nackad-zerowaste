@@ -15,11 +15,13 @@ const initalizeRoles = async function () {
 const createRoles = async function () {
   const userRole = new Role({ name: 'CUSTOMER' })
   const moderatorRole = new Role({ name: 'EMPLOYEE' })
+  const managerRole = new Role({ name: 'MANAGER' })
   const adminRole = new Role({ name: 'ADMIN' })
 
   try {
     await userRole.save()
     await moderatorRole.save()
+    await managerRole.save()
     await adminRole.save()
   } catch (err) {
     console.log(err)

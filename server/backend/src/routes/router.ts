@@ -15,6 +15,7 @@ import depositHandler from '../handler/deposit.handler'
 import rechargeWebhookRouter from './rechargeWebhooks'
 import verifyRechargeWebhook from '../middleware/verifyRechargeWebhook'
 import passwordController from '../controller/pw.controller'
+import createNewNackadOrder from '../controller/orders/nackad.orders'
 const router = express.Router()
 
 router.post('*', verifyBody)
@@ -22,13 +23,12 @@ router.post('*', verifyBody)
 // User Management
 router.post('/auth/signup', verifySignUp.checkDuplicateUsernameOrEmail, authHandler.signup)
 router.post('/auth/signin', authHandler.signin)
-router.post('/auth/updateUserRole', [authJwt.verifyToken, authJwt.isAdmin], userHandler.updateUserRole)
-router.get('/user/all', [authJwt.verifyToken, authJwt.isAdmin], userHandler.getAll)
-router.get('/user/employees', [authJwt.verifyToken, authJwt.isAdmin], userHandler.getEmployees)
-router.get('/user/admins', [authJwt.verifyToken, authJwt.isAdmin], userHandler.getAdmins)
+
+router.get('/user/all', [authJwt.verifyToken, authJwt.isManager], userHandler.getAll)
+router.get('/user/employees', [authJwt.verifyToken, authJwt.isEmployee], userHandler.getEmployees)
 router.post('/user/search', [authJwt.verifyToken, authJwt.isEmployee], userHandler.searchUser)
 router.get('/user', [authJwt.verifyToken, authJwt.isCustomer], userHandler.getSelf)
-router.post('/user/update', [authJwt.verifyToken, authJwt.isAdmin], userHandler.updateUserRole)
+router.post('/user/update', [authJwt.verifyToken, authJwt.isManager], userHandler.updateUserRole)
 
 router.post('/pw/reset-pw-request', passwordController.passwordResetRequest)
 router.get('/pw/reset-pw-check/:token', passwordController.passwordResetCheckToken)
@@ -36,9 +36,9 @@ router.post('/pw/reset-pw', passwordController.passwordReset)
 
 // Open routes
 router.get('/settings', settingsHandler.getSettingsHandler)
-router.get('/settings/admin', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.getSettingsAdminHandler)
-router.get('/deliveryslots', deliverySlotHandler.getAllPublic)
-router.get('/opendeposit/:shopifyUserId', depositHandler.getDepositByShopifyId)
+router.get('/deliveryslots', deliverySlotHandler.getNackadPublic)
+router.get('/deliveryslots/rexeat', deliverySlotHandler.getRexeatPublic)
+router.get('/opendeposit/:webShopUserId', depositHandler.getDepositByWebShopUserId)
 
 // Delivery Management ACHTUNG EMPLOYEE
 router.get('/user/:id/deposit', [authJwt.verifyToken, authJwt.isEmployee], depositHandler.getDepositByUserId)
@@ -50,9 +50,10 @@ router.post('/deposit/add', [authJwt.verifyToken, authJwt.isEmployee, depositHan
 router.post('/delivery/search', [authJwt.verifyToken, authJwt.isEmployee, deliveryHandler.searchDelivery])
 router.get('/delivery/open', [authJwt.verifyToken, authJwt.isEmployee], deliveryHandler.getCurrentOpenDeliveries)
 router.get('/delivery/all', [authJwt.verifyToken, authJwt.isEmployee], deliveryHandler.getAllDeliveries)
+router.post('/deliveryslot/:id', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.updateDeliverySlotById)
 router.get('/deliveryslots/detail', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.getAllManagement)
-router.post('/deliveryslot/add', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.addSlot)
-router.post('/deliveryslot/remove', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.removeSlot)
+router.post('/deliveryslot/:id/add', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.addSlot)
+router.post('/deliveryslot/:id/remove', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.removeSlot)
 router.get('/orders/today', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getToday)
 router.get('/orders/future', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getFuture)
 router.get('/orders/all', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getAll)
@@ -63,13 +64,14 @@ router.post('/order/:id', [authJwt.verifyToken, authJwt.isEmployee], orderHandle
 // Shopify Webhooks & Product Database
 router.get('/update-products', productsController.triggerUpdateProductsHandler)
 router.post('/update-products-handler', productsController.handleIncomingProductsHandler)
-
 router.use('/webhooks', verifyWebhook, webhookRouter)
 router.use('/recharge-webhooks', verifyRechargeWebhook, rechargeWebhookRouter)
 
-// Admin routes
-router.post('/settings/update', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.updateSettingsHandler)
-router.get('/statistics', [authJwt.verifyToken, authJwt.isAdmin], settingsHandler.getStatistics)
-router.post('/test/webhook/new-order', orderHandler.createNewOrder)
+// Manager routes
+router.get('/settings/admin', [authJwt.verifyToken, authJwt.isManager], settingsHandler.getSettingsAdminHandler)
+router.post('/settings/update', [authJwt.verifyToken, authJwt.isManager], settingsHandler.updateSettingsHandler)
+router.get('/statistics', [authJwt.verifyToken, authJwt.isManager], settingsHandler.getStatistics)
+router.get('/auth/createpin', [authJwt.verifyToken, authJwt.isManager], authHandler.requestSignupOTP)
+router.post('/test/webhook/new-order', createNewNackadOrder)
 
 export default router

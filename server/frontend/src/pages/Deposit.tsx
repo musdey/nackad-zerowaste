@@ -42,7 +42,7 @@ const Deposit: React.FC = (props) => {
             _id: "",
             address: {
                 address1: '', address2: '', city: '', zip: '', province: '', email: "", emailIsVerified: false, firstName: "", lastName: ""
-                , phoneNumber: "", shopifyUserId: "", _id: ""
+                , phoneNumber: "", shopifyUserId: "", _id: "", webShopUserId: ""
             }
         }
     })

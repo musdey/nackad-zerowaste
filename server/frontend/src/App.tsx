@@ -61,8 +61,8 @@ const App: React.FC = () => {
           <Route path="/order/:orderId" component={Order} exact />
           <Route path="/deposit/:userId" component={Deposit} exact />
           <Route path="/depositdetail/:depositId" component={DepositDetail} exact />
-          <Route path="/orderdetail/:shopifyOrderId" component={OrderDetail} exact />
-          <Route path="/customerdetail/:shopifyOrderId" component={CustomerDetail} exact />
+          <Route path="/orderdetail/:webShopOrderId" component={OrderDetail} exact />
+          <Route path="/customerdetail/:webShopOrderId" component={CustomerDetail} exact />
 
         </ProvideAuth>
         {/* </IonRouterOutlet> */}
