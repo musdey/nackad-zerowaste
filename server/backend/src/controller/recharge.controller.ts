@@ -87,16 +87,29 @@ const updateDepositPrice = async (userId: string) => {
   const user = await User.findOne({ _id: userId })
   if (user) {
     const price = await depositcontroller.getTotalOpenDepositByUserObj(user)
-    const result = await fetch(MAIN_URL + 'subscriptions/' + user.rechargeSubscriptionId, {
-      method: 'PUT',
-      headers: {
-        'X-Recharge-Access-Token': API_TOKEN,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ price: price })
-    })
-    console.log(result.status)
-    console.log('Subscription from ' + user.email + ' has been set to EUR ' + price)
+    console.log('updatedepositprice: ', price)
+    if (price <= 0) {
+      const result = await fetch(MAIN_URL + 'subscriptions/' + user.rechargeSubscriptionId, {
+        method: 'DELETE',
+        headers: {
+          'X-Recharge-Access-Token': API_TOKEN,
+          'Content-Type': 'application/json'
+        }
+      })
+      console.log(result.status)
+      console.log('Subscription from ' + user.email + ' has been removed')
+    } else {
+      const result = await fetch(MAIN_URL + 'subscriptions/' + user.rechargeSubscriptionId, {
+        method: 'PUT',
+        headers: {
+          'X-Recharge-Access-Token': API_TOKEN,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ price: price })
+      })
+      console.log(result.status)
+      console.log('Subscription from ' + user.email + ' has been set to EUR ' + price)
+    }
   }
 }
 
@@ -109,7 +122,7 @@ const subscriptionCreated: Handler = async (req: Request, res: Response, next: N
     if (user) {
       // Update new subscription
       const price = await depositcontroller.getTotalOpenDepositByUserObj(user)
-      console.log(price)
+      console.log('Subscription price is: ' + price + '; data.id is: ' + data.id)
       const result = await fetch(MAIN_URL + 'subscriptions/' + data.id, {
         method: 'PUT',
         headers: {
