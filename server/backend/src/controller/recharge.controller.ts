@@ -89,15 +89,19 @@ const updateDepositPrice = async (userId: string) => {
     const price = await depositcontroller.getTotalOpenDepositByUserObj(user)
     console.log('updatedepositprice: ', price)
     if (price <= 0) {
-      const result = await fetch(MAIN_URL + 'subscriptions/' + user.rechargeSubscriptionId, {
-        method: 'DELETE',
+      const result = await fetch(MAIN_URL + 'subscriptions/' + user.rechargeSubscriptionId + '/cancel', {
+        method: 'POST',
         headers: {
           'X-Recharge-Access-Token': API_TOKEN,
           'Content-Type': 'application/json'
-        }
+        },
+        body: JSON.stringify({ cancellation_reason: 'Deposit fully returned' })
       })
-      console.log(result.status)
-      console.log('Subscription from ' + user.email + ' has been removed')
+      if (result.status == 200) {
+        console.log('Subscription from ' + user.email + ' has been cancelled')
+      } else {
+        console.log('Error cancelling subscription from ' + user.email)
+      }
     } else {
       const result = await fetch(MAIN_URL + 'subscriptions/' + user.rechargeSubscriptionId, {
         method: 'PUT',
