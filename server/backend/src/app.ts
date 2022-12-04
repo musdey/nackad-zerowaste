@@ -11,8 +11,6 @@ import settings from './lib/db/initalizeShopSettings'
 import rateLimit from 'express-rate-limit'
 import path from 'path'
 import cron from 'node-cron'
-import { updateDeliveries, updateNackadOrders, updateNackadUsers } from './lib/db/updateNackadUsers'
-
 dotenv.config()
 
 const mongodbHost = process.env.MONGODB_HOST || 'localhost'
@@ -29,9 +27,6 @@ const startup = async () => {
   await settings.initalizeDeliverySlots()
   await settings.initProducts()
   await settings.registerRechargeWebhooks()
-  await updateNackadUsers()
-  await updateNackadOrders()
-  await updateDeliveries()
 }
 
 startup()

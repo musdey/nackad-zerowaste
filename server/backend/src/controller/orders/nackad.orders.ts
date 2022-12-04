@@ -46,7 +46,7 @@ const createNewNackadOrder = async (newOrder: Order) => {
   const billingAddress = newOrder.billing_address as Address
 
   let user = await UserModel.findOne({
-    $or: [{ shopifyUserId: newOrder.customer?.id }, { webShopUserId: newOrder.customer?.id }]
+    $or: [{ shopifyUserId: newOrder.customer?.id + '' }, { webShopUserId: newOrder.customer?.id + '' }]
   })
   const mainShop = await Shop.findOne({ name: 'NACKAD' })
   if (!user) {
