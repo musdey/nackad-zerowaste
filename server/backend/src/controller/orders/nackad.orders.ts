@@ -78,7 +78,7 @@ const createNewNackadOrder = async (newOrder: Order) => {
   await Promise.all(
     newOrder.line_items!.map(async (item) => {
       // Get DepositTypes for each ordered product
-      const product = await Product.findOne({ shopifyId: item.product_id })
+      const product = await Product.findOne({ shopifyId: item.product_id + '' })
       let depositName = 'Deposit not set yet.'
       let depositPrice = '0'
       if (product?.imgUrl) {
