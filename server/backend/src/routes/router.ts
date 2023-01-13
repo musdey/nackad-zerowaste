@@ -16,6 +16,7 @@ import rechargeWebhookRouter from './rechargeWebhooks'
 import verifyRechargeWebhook from '../middleware/verifyRechargeWebhook'
 import passwordController from '../controller/pw.controller'
 import createNewNackadOrder from '../controller/orders/nackad.orders'
+import verifyRexeatWebhook from '../middleware/verifyRexeatWebhook'
 const router = express.Router()
 
 router.post('*', verifyBody)
@@ -64,6 +65,8 @@ router.post('/order/:id', [authJwt.verifyToken, authJwt.isEmployee], orderHandle
 // Shopify Webhooks & Product Database
 router.get('/update-products', productsController.triggerUpdateProductsHandler)
 router.post('/update-products-handler', productsController.handleIncomingProductsHandler)
+router.post('/webhooks/new-rexeat-order', verifyRexeatWebhook, orderHandler.createNewRexeatOrderHandler)
+
 router.use('/webhooks', verifyWebhook, webhookRouter)
 router.use('/recharge-webhooks', verifyRechargeWebhook, rechargeWebhookRouter)
 
