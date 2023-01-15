@@ -1,4 +1,5 @@
 import { Handler, NextFunction, Request, Response } from 'express'
+import deliveryController from '../controller/delivery.controller'
 import deliverycontroller from '../controller/delivery.controller'
 
 const getAllDeliveries: Handler = async (req: Request, res: Response, next: NextFunction) => {
@@ -49,7 +50,19 @@ const searchDelivery: Handler = async (req: Request, res: Response, next: NextFu
   }
 }
 
+const updateDeliveryStatus: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  const status = req.body.status
+
+  if (!status) {
+    return res.status(400).send('Input missing')
+  }
+
+  const shopifyOrder = await deliveryController.updateStatusById(req.params.id, status, req.mainShop)
+  return res.status(200).send(shopifyOrder)
+}
+
 const deliveryHandler = {
+  updateDeliveryStatus,
   getAllDeliveries,
   getAllDeliveriesWithGivenStatus,
   getCurrentOpenDeliveries,

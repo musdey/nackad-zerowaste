@@ -63,6 +63,9 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
   customer.last_name = shopWareUser.lastname
   customer.email = shopWareUser.email
   customer.phone = billingAddr.phone || shippingaddr.phone
+  customer.default_address = billingAddress
+
+  order.customer = customer
 
   // Set up purcheased products obj
 
@@ -85,13 +88,13 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
 
   // Add missing data
   order.shop = mainShop!
-  order.deliveryDay = new Date(newOrder.deliveryDay)
   order.timeslot = newOrder.slotHours
   order.webShopOrderId =
     newOrder.Shopware.sOrderVariables.sBasket.content[0].ordernumber ||
     newOrder.Shopware.sOrderVariables.sBasketProportional.content[0].ordernumber
   order.webShopOrderNumber = order.webShopOrderId
   order.note = newOrder.userComment
+  order.name = order.webShopOrderNumber
 
   // Return if order already exists
 
@@ -134,6 +137,7 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
   const dateParts = newOrder.deliveryDay.split('.')
   deliveryDay = new Date(+dateParts[2], parseInt(dateParts[1]) - 1, +dateParts[0])
   deliveryDay.setHours(parseInt(newOrder.slotHours.split('-')[0].split(':')[0]), 0, 0)
+  order.deliveryDay = deliveryDay
 
   const deliverySlot = await DeliverySlotModel.findOne({
     shop: mainShop,
@@ -148,6 +152,7 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
   if (shippingAddress) {
     delivery = await new DeliveryModel({
       shop: mainShop,
+      status: 'OPEN',
       user,
       webShopOrder: orderDatabase,
       address: shippingAddress,
@@ -156,6 +161,7 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
   } else {
     delivery = await new DeliveryModel({
       shop: mainShop,
+      status: 'OPEN',
       user,
       type: 'PICKUP',
       webShopOrder: orderDatabase,

@@ -569,7 +569,31 @@ const updateDeliverySlots = async (
   }
 };
 
+const updateDeliveryStatus = async (
+  id: string,
+  status: "OPEN" | "PACKED" | "DELIVERED"
+): Promise<any> => {
+  const url = Config.Delivery.UPDATESTATUS;
+  try {
+    const result = await fetch(url + id + "/status", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify({ status }),
+    });
+    const body = await result.json();
+
+    return body;
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
 const apiObj = {
+  updateDeliveryStatus,
   signin,
   signup,
   getUser,

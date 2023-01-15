@@ -13,6 +13,9 @@ import {
     IonLabel,
     IonCard,
     IonSearchbar,
+    IonItemSliding,
+    IonItemOptions,
+    IonItemOption,
 } from "@ionic/react";
 import { useAuth } from "../lib/use-auth";
 import { Redirect } from "react-router";
@@ -73,6 +76,16 @@ const Overview: React.FC = () => {
         }
     }
 
+    const updateDeliveryStatus = async (index: number, id: string, status: 'OPEN' | 'PACKED' | 'DELIVERED') => {
+        await api.updateDeliveryStatus(id, status)
+        await document.querySelector("ion-item-sliding")?.closeOpened();
+
+        const values: any = [...deliveries]
+        values[index].status = status
+        console.log(values)
+        setDeliveries(values);
+    }
+
     return (
         <IonPage>
             <Header subTitle="Übersicht Lieferung/Abholung" />
@@ -105,21 +118,30 @@ const Overview: React.FC = () => {
                             let value = isSearch === true ? 1 : -1
                             return value
                         }
-                    }).map((obj: any, i) =>
-                        <OverviewListItem
-                            type={obj.type}
-                            key={obj.shopifyOrder || obj.webShopOrder || ""}
-                            firstName={(obj.type === 'DELIVERY' ? obj.address?.first_name : obj.user.firstName) || "First Name"}
-                            lastName={(obj.type === 'DELIVERY' ? obj.address?.last_name : obj.user.lastName) || "Last Name"}
-                            address={{ address1: obj.address?.address1 || "", address2: obj.address?.address2 || "", zip: obj.address?.zip || "", city: obj.address?.city || "" }}
-                            orderId={obj.webShopOrder || obj.shopifyOrder || ""}
-                            deliveryStatus={obj.status || "OPEN"}
-                            timeslot={obj.deliverySlot?.slotHours || obj.slotHours || 'unknown'}
-                            deliveryDay={obj.deliverySlot?.deliveryDay || obj.deliveryDay || 'unknown'}
-                            user={obj.user || {}}
-                            deliveryId={obj._id || ""}
-                        >
-                        </OverviewListItem>
+                    }).map((obj: any, index) =>
+                        <IonItemSliding>
+                            <IonItemOptions id={"slider-" + obj._id + "-top"} side="start" >
+                                <IonItemOption onClick={() => updateDeliveryStatus(index, obj._id, "OPEN")} color="primary">Offen</IonItemOption>
+                            </IonItemOptions>
+                            <OverviewListItem
+                                type={obj.type}
+                                key={obj.shopifyOrder || obj.webShopOrder || ""}
+                                firstName={(obj.type === 'DELIVERY' ? obj.address?.first_name : obj.user.firstName) || "First Name"}
+                                lastName={(obj.type === 'DELIVERY' ? obj.address?.last_name : obj.user.lastName) || "Last Name"}
+                                address={{ address1: obj.address?.address1 || "", address2: obj.address?.address2 || "", zip: obj.address?.zip || "", city: obj.address?.city || "" }}
+                                orderId={obj.webShopOrder || obj.shopifyOrder || ""}
+                                deliveryStatus={obj.status || "OPEN"}
+                                timeslot={obj.deliverySlot?.slotHours || obj.slotHours || 'unknown'}
+                                deliveryDay={obj.deliverySlot?.deliveryDay || obj.deliveryDay || 'unknown'}
+                                user={obj.user || {}}
+                                deliveryId={obj._id || ""}
+                            >
+                            </OverviewListItem>
+                            <IonItemOptions side="end">
+                                <IonItemOption id={"slider-" + obj._id + "-top"} onClick={() => updateDeliveryStatus(index, obj._id, "PACKED")} color="danger">Verpackt</IonItemOption>
+                                <IonItemOption id={"slider-" + obj._id + "-top"} onClick={() => updateDeliveryStatus(index, obj._id, "DELIVERED")} color="secondary">Zugestellt</IonItemOption>
+                            </IonItemOptions>
+                        </IonItemSliding>
                     )}
                 </IonList>
             </IonContent>

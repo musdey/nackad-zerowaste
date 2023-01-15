@@ -1,6 +1,6 @@
 let HOST;
 if (process.env.NODE_ENV === "development") {
-  HOST = "http://192.168.0.123:3000/api/v1/";
+  HOST = "http://localhost:3000/api/v1/";
 } else {
   HOST = "https://app.nackad.at/api/v1/";
 }
@@ -31,6 +31,7 @@ const Config = {
     SLOTADD: HOST + "deliveryslot", // /:id/add
     SLOTREMOVE: HOST + "deliveryslot", // /:id/remove
     UPDATESLOT: HOST + "deliveryslot",
+    UPDATESTATUS: HOST + "delivery/",
   },
   Deposit: {
     RETURN: HOST + "deposit/return",
