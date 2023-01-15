@@ -82,7 +82,6 @@ const Overview: React.FC = () => {
 
         const values: any = [...deliveries]
         values[index].status = status
-        console.log(values)
         setDeliveries(values);
     }
 
