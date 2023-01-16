@@ -1,5 +1,4 @@
 import { Handler, NextFunction, Request, Response } from 'express'
-import deliveryController from '../controller/delivery.controller'
 import deliverycontroller from '../controller/delivery.controller'
 
 const getAllDeliveries: Handler = async (req: Request, res: Response, next: NextFunction) => {
