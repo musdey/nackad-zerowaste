@@ -27,6 +27,9 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
 
   shippingAddress.address1 = shippingaddr.street
   shippingAddress.address2 = shippingaddr.additionalAddressLine1 || shippingaddr.additional_address_line1 || null
+  if (shippingaddr.additionalAddressLine2 || shippingaddr.additional_address_line2) {
+    shippingAddress.address2 += ' ' + shippingaddr.additionalAddressLine2 || ' ' + shippingaddr.additional_address_line2
+  }
   shippingAddress.city = shippingaddr.city
   shippingAddress.zip = shippingaddr.zipcode
   shippingAddress.company = shippingaddr.company
@@ -89,17 +92,15 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
   // Add missing data
   order.shop = mainShop!
   order.timeslot = newOrder.slotHours
-  order.webShopOrderId =
-    newOrder.Shopware.sOrderVariables.sBasket.content[0].ordernumber ||
-    newOrder.Shopware.sOrderVariables.sBasketProportional.content[0].ordernumber
-  order.webShopOrderNumber = order.webShopOrderId
+  order.webShopOrderId = newOrder.orderNumber
+  order.webShopOrderNumber = newOrder.orderNumber
   order.note = newOrder.userComment
   order.name = order.webShopOrderNumber
 
   // Return if order already exists
 
   const exists = await OrderModel.exists({
-    $and: [{ shop: mainShop }, { webShopOrderNumber: newOrder.Shopware.sOrderVariables.sBasket.content[0].ordernumber }]
+    $and: [{ shop: mainShop }, { webShopOrderNumber: newOrder.orderNumber }]
   })
 
   console.log('Rexeat order with given number already exists', exists)
@@ -134,9 +135,9 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
   // Choose deliverySlot
 
   let deliveryDay = new Date()
-  const dateParts = newOrder.deliveryDay.split('.')
+  const dateParts = newOrder.deliveryDay!.split('.')
   deliveryDay = new Date(+dateParts[2], parseInt(dateParts[1]) - 1, +dateParts[0])
-  deliveryDay.setHours(parseInt(newOrder.slotHours.split('-')[0].split(':')[0]), 0, 0)
+  deliveryDay.setHours(parseInt(newOrder.slotHours!.split('-')[0].split(':')[0]), 0, 0)
   order.deliveryDay = deliveryDay
 
   const deliverySlot = await DeliverySlotModel.findOne({

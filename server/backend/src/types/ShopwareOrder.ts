@@ -5,7 +5,8 @@ export type ShopwareOrder = {
   _sf2_meta: { u: number; c: number; l: number }
   deliveryDay: string
   slotHours: string
-  userComment: string
+  userComment?: string
+  orderNumber?: string
 }
 
 type Shopware = {
