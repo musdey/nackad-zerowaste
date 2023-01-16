@@ -5,6 +5,7 @@ import createNewRexEatOrder from '../controller/orders/rexeat.orders'
 import Cancellation from '../types/cancellation'
 import DeliveryUpdate from '../types/deliveryupdate'
 import Order from '../types/order'
+import { ShopwareOrder } from '../types/ShopwareOrder'
 
 // Webhook that is called when a new order is created on NACKAD webshop
 const createNewNackadOrderHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
@@ -22,7 +23,7 @@ const createNewNackadOrderHandler: Handler = async (req: Request, res: Response,
 // Webhook that is called when a new order is created on Rexeat webshop
 const createNewRexeatOrderHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
   console.log('Congratulations, a new order has been made!')
-  const newOrder = req.body as Order
+  const newOrder = req.body as ShopwareOrder
   try {
     await createNewRexEatOrder(newOrder)
     return res.status(200).send('Public Content.')

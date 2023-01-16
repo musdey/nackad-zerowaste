@@ -55,6 +55,7 @@ export type DepositProp = {
 };
 
 export type ShopifyOrder = {
+  webShopOrderId?: string;
   deliveryDay?: Date;
   timeslot?: string;
   _id?: number;
@@ -235,6 +236,25 @@ export type ShopifyOrder = {
     sms_marketing_consent?: string | null;
     admin_graphql_api_id?: string;
     default_address?: {
+      id?: number;
+      customer_id?: number;
+      first_name?: string;
+      last_name?: string;
+      company?: string;
+      address1?: string;
+      address2?: string;
+      city?: string;
+      province?: string | null;
+      country?: string;
+      zip?: string;
+      phone?: string;
+      name?: string;
+      province_code?: string | null;
+      country_code?: string;
+      country_name?: string;
+      default?: boolean;
+    };
+    billing_address?: {
       id?: number;
       customer_id?: number;
       first_name?: string;

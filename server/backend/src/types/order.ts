@@ -1,12 +1,22 @@
 import { IShop } from '../models/Shop'
 
 type Order = {
+  webShopOrderId?: string
+  webShopOrderNumber?: string
   shop?: IShop
   deliveryDay?: Date
   timeslot?: string
   id?: number
   email?: string
   closed_at?: string | null
+  client_details?: {
+    accepted_language: string
+    browser_height: number
+    browser_ip: string
+    browser_width: number
+    session_hash: string
+    user_agent: string
+  }
   created_at?: string
   updated_at?: string
   number?: number
@@ -100,6 +110,7 @@ type Order = {
     presentment_money?: { amount?: string; currency_code?: string }
   }
   line_items?: {
+    thumbnail?: string
     imgUrl?: string
     deposit?: {
       depositName: string
@@ -196,8 +207,8 @@ type Order = {
     last_name?: string
     address2?: string
     company?: string
-    latitude?: number | null
-    longitude?: number | null
+    latitude?: string | null
+    longitude?: string | null
     name?: string
     country_code?: string
     province_code?: string | null

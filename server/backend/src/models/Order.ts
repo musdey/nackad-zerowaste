@@ -7,6 +7,7 @@ export interface IOrder extends Document {
   user: IUser
   shop: IShop
   webShopOrderId?: string
+  webShopOrderNumber?: string
   deliveryDay: Date
   timeslot: string
   created_at: Date
@@ -22,6 +23,9 @@ const OrderSchema = new Schema(
   {
     // _id let it autogenerate by mongodb
     webShopOrderId: {
+      type: String
+    },
+    webShopOrderNumber: {
       type: String
     },
     shop: {

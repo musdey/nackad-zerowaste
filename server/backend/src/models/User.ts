@@ -11,6 +11,7 @@ export type access = {
 export interface IUser extends Document {
   // _id let it autogenerate by mongodb
   webShopUserId?: string
+  webShopCustomerNumber?: string
   username?: string
   mainShop: IShop
   role: IRole
@@ -46,7 +47,10 @@ const UserSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Shop'
     },
-    webShopUserId: {
+    webShopCustomerNumber: {
+      type: String
+    },
+    customerNumber: {
       type: String
     },
     role: {
@@ -64,8 +68,7 @@ const UserSchema = new Schema(
     },
     email: {
       type: String,
-      required: true,
-      unique: true
+      required: true
     },
     address: {
       address1: { type: String },

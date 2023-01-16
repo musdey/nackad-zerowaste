@@ -161,6 +161,7 @@ const createNewNackadOrder = async (newOrder: Order) => {
     delivery = await new DeliveryModel({
       shop: mainShop,
       user,
+      status: 'OPEN',
       webShopOrder: orderDatabase,
       address: shippingAddress,
       webShopOrderId: newOrder.id
@@ -170,6 +171,7 @@ const createNewNackadOrder = async (newOrder: Order) => {
       shop: mainShop,
       user,
       type: 'PICKUP',
+      status: 'OPEN',
       webShopOrder: orderDatabase,
       webShopOrderId: newOrder.id
     })

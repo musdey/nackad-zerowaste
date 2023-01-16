@@ -60,6 +60,15 @@ const search = async (query: string, shop: string) => {
   return delivery
 }
 
-const deliveryController = { search, getAll, getAllWithStatus, getCurrent, getTodays }
+const updateStatusById = async (id: string, status: 'OPEN' | 'PACKED' | 'INDELIVERY' | 'DELIVERED', shop: string) => {
+  const delivery = await DeliveryModel.findOne({ _id: id, shop })
+  if (delivery) {
+    delivery.status = status
+    await delivery.save()
+  }
+  return delivery
+}
+
+const deliveryController = { updateStatusById, search, getAll, getAllWithStatus, getCurrent, getTodays }
 
 export default deliveryController

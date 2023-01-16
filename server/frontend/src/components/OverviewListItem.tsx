@@ -18,7 +18,7 @@ interface OverviewListItemProps {
         city: string
     }
     orderId: string
-    deliveryStatus: 'OPEN' | 'INDELIVERY' | 'DELIVERED' | 'CANCELLED'
+    deliveryStatus: 'OPEN' | 'PACKED' | 'INDELIVERY' | 'DELIVERED' | 'CANCELLED'
     timeslot: string
     deliveryDay: string
     user: {
@@ -71,7 +71,7 @@ const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
         <IonItem onClick={handleClick} detail={false}>
             {listData.deliveryStatus === 'OPEN' ? <IonImg class='overviewitemimg' src='./assets/images/green-circle.png' />
                 :
-                listData.deliveryStatus === 'INDELIVERY' ? <IonImg class='overviewitemimg' src='./assets/images/orange-circle.png' />
+                listData.deliveryStatus === 'PACKED' ? <IonImg class='overviewitemimg' src='./assets/images/orange2-circle.png' />
                     :
                     <IonImg class='overviewitemimg' src='./assets/images/violet-circle.png' />
             }

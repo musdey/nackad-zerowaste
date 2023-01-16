@@ -46,7 +46,7 @@ const DeliverySchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['OPEN', 'INDELIVERY', 'DELIVERED', 'CANCELLED'],
+      enum: ['OPEN', 'PACKED', 'INDELIVERY', 'DELIVERED', 'CANCELLED'],
       default: 'OPEN'
     },
     deliverySlot: {

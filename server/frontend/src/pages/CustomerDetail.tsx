@@ -123,9 +123,6 @@ const CustomerDetail: React.FC = (props) => {
                                 <IonRow>
                                     <IonText><b>{order?.customer?.first_name} {order?.customer?.last_name}</b></IonText>
                                 </IonRow>
-                                <IonRow>
-                                    <IonText><b>{order?.customer?.phone} </b></IonText>
-                                </IonRow>
                                 <IonRow  >
                                     <IonText>
                                         <p> {order?.shipping_address?.address1} <br></br>
@@ -149,7 +146,7 @@ const CustomerDetail: React.FC = (props) => {
                                     </IonButton>
                                 </IonRow>
                                 <IonRow>
-                                    <IonText></IonText>
+                                    <IonText><a href={"tel:" + order?.billing_address?.phone}> {order?.billing_address?.phone} </a></IonText>
                                 </IonRow>
 
                             </IonGrid>

@@ -139,14 +139,14 @@ const OrderDetail: React.FC = (props) => {
                 </IonFooter>
 
             </IonModal>
-            <Header subTitle={"Bestelldetails " + order?._id} />
+            <Header subTitle={"Bestelldetails " + (order?.webShopOrderId || order?._id)} />
             <IonContent fullscreen>
                 <IonCard>
                     <IonCardContent>
                         <IonItem>
                             <IonGrid>
                                 <IonRow>
-                                    <IonText><b>Bestellung {order?.name}</b></IonText>
+                                    <IonText><b>Bestellung {order?.webShopOrderId || order?.name}</b></IonText>
                                 </IonRow>
 
                                 <IonRow>
