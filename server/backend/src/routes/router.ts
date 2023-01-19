@@ -29,7 +29,8 @@ router.get('/user/all', [authJwt.verifyToken, authJwt.isManager], userHandler.ge
 router.get('/user/employees', [authJwt.verifyToken, authJwt.isEmployee], userHandler.getEmployees)
 router.post('/user/search', [authJwt.verifyToken, authJwt.isEmployee], userHandler.searchUser)
 router.get('/user', [authJwt.verifyToken, authJwt.isCustomer], userHandler.getSelf)
-router.post('/user/update', [authJwt.verifyToken, authJwt.isManager], userHandler.updateUserRole)
+router.post('/user/role/update', [authJwt.verifyToken, authJwt.isManager], userHandler.updateUserRole)
+router.post('/user/update', [authJwt.verifyToken, authJwt.isEmployee], userHandler.updateUser)
 
 router.post('/pw/reset-pw-request', passwordController.passwordResetRequest)
 router.get('/pw/reset-pw-check/:token', passwordController.passwordResetCheckToken)
@@ -74,6 +75,8 @@ router.use('/recharge-webhooks', verifyRechargeWebhook, rechargeWebhookRouter)
 // Manager routes
 router.get('/settings/admin', [authJwt.verifyToken, authJwt.isManager], settingsHandler.getSettingsAdminHandler)
 router.post('/settings/update', [authJwt.verifyToken, authJwt.isManager], settingsHandler.updateSettingsHandler)
+router.post('/settings/sms', [authJwt.verifyToken, authJwt.isManager], settingsHandler.updateSMSSettings)
+router.get('/settings/sms', [authJwt.verifyToken, authJwt.isManager], settingsHandler.getSMSSettings)
 router.get('/statistics', [authJwt.verifyToken, authJwt.isManager], settingsHandler.getStatistics)
 router.get('/auth/createpin', [authJwt.verifyToken, authJwt.isManager], authHandler.requestSignupOTP)
 router.post('/test/webhook/new-order', createNewNackadOrder)

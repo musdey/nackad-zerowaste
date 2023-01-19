@@ -10,6 +10,7 @@ export type access = {
 
 export interface IUser extends Document {
   // _id let it autogenerate by mongodb
+  cloudSMS?: boolean
   webShopUserId?: string
   webShopCustomerNumber?: string
   username?: string
@@ -26,6 +27,7 @@ export interface IUser extends Document {
   otpActivated?: boolean
   rechargeSubscriptionId?: number
   rechargeCustomerId?: number
+  smsText?: string
 }
 
 const UserSchema = new Schema(
@@ -99,6 +101,9 @@ const UserSchema = new Schema(
     },
     rechargeCustomerId: {
       type: Number
+    },
+    cloudSMS: {
+      type: Boolean
     }
   },
   { strict: false, versionKey: false }

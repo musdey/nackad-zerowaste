@@ -46,6 +46,31 @@ const updateSettingsHandler: Handler = async (req: Request, res: Response, next:
   }
 }
 
+const getSMSSettings: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const settings = await settingsController.getSMSSettings(req.mainShop)
+
+    return res.status(200).send(settings)
+  } catch (err) {
+    return next(err)
+  }
+}
+
+const updateSMSSettings: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  const body = req.body
+  if (!body || !body.smsText) {
+    return res.status(404).send('Missing Body')
+  }
+
+  try {
+    const settings = await settingsController.updateSMSSetting(body.smsText, req.mainShop)
+
+    return res.status(200).send(settings)
+  } catch (err) {
+    return next(err)
+  }
+}
+
 const getStatistics: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await settingsController.getStatistics(req.mainShop)
@@ -56,5 +81,12 @@ const getStatistics: Handler = async (req: Request, res: Response, next: NextFun
   }
 }
 
-const settingsHandler = { getSettingsHandler, updateSettingsHandler, getSettingsAdminHandler, getStatistics }
+const settingsHandler = {
+  getSMSSettings,
+  updateSMSSettings,
+  getSettingsHandler,
+  updateSettingsHandler,
+  getSettingsAdminHandler,
+  getStatistics
+}
 export default settingsHandler

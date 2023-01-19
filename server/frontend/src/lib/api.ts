@@ -1,5 +1,6 @@
 import Config from "../Config";
 import { ShopifyOrder } from "./types";
+import { User } from "./use-auth";
 
 const getUserData = async (): Promise<{ success: boolean; data: any }> => {
   const url = Config.User.SELF_URL;
@@ -299,6 +300,62 @@ const getSettings = async (): Promise<any> => {
   }
 };
 
+const updateUser = async (user: User): Promise<any> => {
+  const url = Config.User.UPDATE;
+  try {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify(user),
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const getSMSSettings = async (): Promise<any> => {
+  const url = Config.Settings.SMS;
+  try {
+    const result = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const updateSMSSettings = async (text: string): Promise<any> => {
+  const url = Config.Settings.SMS;
+  try {
+    const result = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify({ "smsText": text }),
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
 const updateSettings = async (obj: any): Promise<any> => {
   const url = Config.Settings.POST;
   try {
@@ -593,6 +650,8 @@ const updateDeliveryStatus = async (
 };
 
 const apiObj = {
+  getSMSSettings,
+  updateSMSSettings,
   updateDeliveryStatus,
   signin,
   signup,
@@ -623,5 +682,6 @@ const apiObj = {
   chekPWToken,
   createPin,
   updateShopifyOrder,
+  updateUser
 };
 export default apiObj;

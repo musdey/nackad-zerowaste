@@ -6,6 +6,7 @@ export interface IShopSettings extends Document {
   deliverySlots: DeliverySlots
   showSlotDaysInAdvance: number
   useHourlySlots: boolean
+  smsText: string
 }
 
 const SingleSlotSchema = new Schema({
@@ -76,6 +77,9 @@ const ShopSettingsSchema = new Schema(
     useHourlySlots: {
       type: Boolean,
       default: false
+    },
+    smsText: {
+      type: String,
     }
   },
   { strict: false, versionKey: false }

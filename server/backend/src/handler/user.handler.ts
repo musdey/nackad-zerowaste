@@ -1,5 +1,17 @@
 import { Handler, NextFunction, Request, Response } from 'express'
 import usercontroller from '../controller/user.controller'
+import { IUser } from '../models/User'
+
+const updateUser: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  const user = req.body as IUser
+  try {
+    const result = await usercontroller.update(user)
+    return res.status(200).send(result)
+  } catch (err) {
+    next(err)
+  }
+
+}
 
 const updateUserRole: Handler = async (req: Request, res: Response, next: NextFunction) => {
   // TODO: do input validation
@@ -62,5 +74,5 @@ const getEmployees: Handler = async (req: Request, res: Response, next: NextFunc
   }
 }
 
-const userHandler = { updateUserRole, getAll, getSelf, searchUser, getEmployees }
+const userHandler = { updateUser, updateUserRole, getAll, getSelf, searchUser, getEmployees }
 export default userHandler

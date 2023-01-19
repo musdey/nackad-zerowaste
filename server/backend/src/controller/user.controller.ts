@@ -1,5 +1,7 @@
 import Role from '../models/Role'
-import User from '../models/User'
+import Shop from '../models/Shop'
+import User, { IUser } from '../models/User'
+import settingsController from './settings.controller'
 
 const updateRole = async (userId: string, newRole: string, shop: string) => {
   const user = await User.findOne({ _id: userId, mainShop: shop })
@@ -8,6 +10,16 @@ const updateRole = async (userId: string, newRole: string, shop: string) => {
     throw new Error('User Not found.')
   }
   user.role = role!
+  const newUser = await user.save()
+  return newUser
+}
+
+const update = async (incoming: IUser) => {
+  const user = await User.findOne({ _id: incoming._id })
+  if (!user) {
+    throw new Error('User Not found.')
+  }
+  user.cloudSMS = incoming.cloudSMS
   const newUser = await user.save()
   return newUser
 }
@@ -29,8 +41,19 @@ const getAll = async (shop: string) => {
 }
 
 const getOne = async (userId: string) => {
-  const user = await User.findOne({ _id: userId }).populate({ path: 'role', select: 'name -_id' }).select('-password')
-  return user
+  const user = await User.findOne({ _id: userId })
+    .populate({ path: 'role mainShop', select: 'name -_id' })
+    .select('-password')
+
+  const returnedUser = user.toObject()
+  if (user) {
+    const shop = await Shop.findOne({ name: user.mainShop.name })
+    const smsText = await settingsController.getSMSSettings(shop)
+    if (smsText) {
+      returnedUser.smsText = smsText.smsText
+    }
+  }
+  return returnedUser
 }
 
 const searchUser = async (searchString: string, shop: string) => {
@@ -47,5 +70,5 @@ const searchUser = async (searchString: string, shop: string) => {
   return user
 }
 
-const usercontroller = { updateRole, getAll, getOne, searchUser, getUserByRole }
+const usercontroller = { update, updateRole, getAll, getOne, searchUser, getUserByRole }
 export default usercontroller
