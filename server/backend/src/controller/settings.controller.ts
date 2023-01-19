@@ -15,6 +15,31 @@ const getSettingsAdmin = async (shop: string) => {
   return settings
 }
 
+const getSMSSettings = async (
+  shop: string
+) => {
+  const setting = await ShopSettings.findOne({ shop })
+  if (!setting) {
+    return 'No Settings existent'
+  }
+
+  return { "smsText": setting.smsText || 'empty' }
+}
+
+const updateSMSSetting = async (
+  smsText: string,
+  shop: string
+) => {
+  const setting = await ShopSettings.findOne({ shop })
+  if (!setting) {
+    return 'No Settings existent'
+  }
+  setting.smsText = smsText
+
+  const updated = await setting.save()
+  return updated
+}
+
 const updateSettings = async (
   useHourlySlots: boolean,
   deliverySlots: DeliverySlots,
@@ -80,5 +105,5 @@ const getStatistics = async (shop: any) => {
   return aggregatedData
 }
 
-const settingsController = { getSettings, updateSettings, getSettingsAdmin, getStatistics }
+const settingsController = { getSMSSettings, updateSMSSetting, getSettings, updateSettings, getSettingsAdmin, getStatistics }
 export default settingsController

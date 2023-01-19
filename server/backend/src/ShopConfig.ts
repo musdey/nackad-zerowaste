@@ -3,6 +3,7 @@ import { ShopConfig } from './types/shopconfig'
 const NackadConfig = {
   useHourlySlots: true,
   showSlotDaysInAdvance: 5,
+  smsText: "Hallo lieber Rex Eater, \n \n Wir sind mit deiner Bestellung auf dem Weg zu dir. \n Wir sind in den nächsten 15 min bei dir.Bitte bereite schon mal deine leeren Gläser für den Austausch vor. Dankeschön.\n \n Wenn du irgendwelche Fragen hast bitte melden dich in unserem Büro unter + 43 676 5418945 oder schrieb uns eine Email an office @rex-eat.at \n \n Bis gleich, \n Dein Rex Eat Team",
   deliverySlots: {
     monday: [
       {
@@ -45,6 +46,7 @@ const NackadConfig = {
 
 const RexeatConfig = {
   useHourlySlots: false,
+  smsText: "Hallo lieber Rex Eater, \n \n Wir sind mit deiner Bestellung auf dem Weg zu dir. \n Wir sind in den nächsten 15 min bei dir.Bitte bereite schon mal deine leeren Gläser für den Austausch vor. Dankeschön.\n \n Wenn du irgendwelche Fragen hast bitte melden dich in unserem Büro unter + 43 676 5418945 oder schrieb uns eine Email an office @rex-eat.at \n \n Bis gleich, \n Dein Rex Eat Team",
   deliverySlots: {
     monday: [
       {

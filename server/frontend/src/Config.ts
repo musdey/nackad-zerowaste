@@ -20,6 +20,7 @@ const Config = {
     EMPLOYEES: HOST + "user/employees",
     ADMINS: HOST + "user/admins",
     UPDATE: HOST + "user/update",
+    UPDATE_ROLE: HOST + "user/role/update",
     SEARCH: HOST + "user/search",
   },
   Delivery: {
@@ -43,6 +44,7 @@ const Config = {
     GET: HOST + "settings/admin",
     STATISTICS: HOST + "statistics",
     POST: HOST + "settings/update",
+    SMS: HOST + "settings/sms",
   },
   Order: {
     GET: HOST + "order/",

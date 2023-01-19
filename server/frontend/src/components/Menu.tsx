@@ -19,6 +19,7 @@ import {
   settingsOutline,
   barChartSharp,
   trailSignOutline,
+  mailOutline,
 } from 'ionicons/icons'
 import { Redirect, useHistory } from 'react-router'
 
@@ -52,6 +53,12 @@ export const Menu: React.FC = () => {
     await history.push('/settings')
   }
 
+  const smsSettingsHandler = async () => {
+    const menu: HTMLElement & { toggle?: Function } = document.getElementById('first')!
+    await menu.toggle!()
+    await history.push('/smssettings')
+  }
+
   const statisticsHandler = async () => {
     const menu: HTMLElement & { toggle?: Function } = document.getElementById('first')!
     await menu.toggle!()
@@ -79,11 +86,15 @@ export const Menu: React.FC = () => {
                 <IonIcon icon={personCircle} slot='start'></IonIcon>
                 <IonLabel>Userdetails anzeigen</IonLabel>
               </IonItem>
+              <IonItem onClick={smsSettingsHandler}>
+                <IonIcon icon={mailOutline} slot='start'></IonIcon>
+                <IonLabel>SMS Einstellungen</IonLabel>
+              </IonItem>
               {(user?.role.name === 'ADMIN' || user?.role.name === 'MANAGER') && (
                 <>
                   <IonItem onClick={settignsHandler}>
                     <IonIcon icon={settingsOutline} slot='start'></IonIcon>
-                    <IonLabel>Einstellungen anzeigen</IonLabel>
+                    <IonLabel>Slot Einstellungen</IonLabel>
                   </IonItem>
                   <IonItem onClick={statisticsHandler}>
                     <IonIcon icon={barChartSharp} slot='start'></IonIcon>

@@ -7,6 +7,27 @@ const useProvideAuth = (): AuthContextInterface => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const history = useHistory();
 
+
+  const updateUserSMSMethod = async (cloudSMS: boolean): Promise<{ success: boolean; error?: Error }> => {
+    return new Promise(async (resolve, reject) => {
+
+      if (user) {
+        const userToUpdate = user
+        userToUpdate.cloudSMS = cloudSMS
+
+        api.updateUser(userToUpdate).then(() => {
+          setUser(userToUpdate)
+          resolve({ success: true });
+        }).catch((err) => {
+          resolve({ success: false, error: err });
+        });
+
+      } else {
+        resolve({ success: false, error: new Error("undefined error") })
+      }
+    })
+  }
+
   const signout = async (): Promise<void> => {
     setLoggedIn(false);
     setUser(undefined);
@@ -61,6 +82,7 @@ const useProvideAuth = (): AuthContextInterface => {
     user,
     loggedIn,
     getUserWithToken,
+    updateUserSMSMethod
   };
 };
 const AuthContext = createContext({} as AuthContextInterface);
@@ -78,11 +100,14 @@ export const useAuth = (): AuthContextInterface => useContext(AuthContext);
 
 export type User = {
   firstName: string;
-  mainShop: string;
+  mainShop: {
+    name: string
+  };
   lastName: string;
   address: string;
   email: string;
   phoneNumber: string;
+  cloudSMS: boolean;
   _id: string;
   role: {
     name: string;
@@ -98,4 +123,5 @@ interface AuthContextInterface {
   getUserWithToken: () => Promise<{ success: boolean; error?: Error }>;
   user?: User;
   loggedIn: boolean;
+  updateUserSMSMethod: (cloudSMS: boolean) => Promise<{ success: boolean; error?: Error }>;
 }

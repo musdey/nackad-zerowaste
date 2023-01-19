@@ -17,6 +17,7 @@ export type UserOrderProp = {
   location?: {
     state?: {
       state?: {
+        smsSent: boolean;
         firstName: string;
         lastName: string;
         address: {
