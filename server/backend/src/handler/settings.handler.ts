@@ -47,7 +47,6 @@ const updateSettingsHandler: Handler = async (req: Request, res: Response, next:
 }
 
 const getSMSSettings: Handler = async (req: Request, res: Response, next: NextFunction) => {
-
   try {
     const settings = await settingsController.getSMSSettings(req.mainShop)
 
@@ -57,7 +56,6 @@ const getSMSSettings: Handler = async (req: Request, res: Response, next: NextFu
   }
 }
 
-
 const updateSMSSettings: Handler = async (req: Request, res: Response, next: NextFunction) => {
   const body = req.body
   if (!body || !body.smsText) {
@@ -65,17 +63,13 @@ const updateSMSSettings: Handler = async (req: Request, res: Response, next: Nex
   }
 
   try {
-    const settings = await settingsController.updateSMSSetting(
-      body.smsText,
-      req.mainShop
-    )
+    const settings = await settingsController.updateSMSSetting(body.smsText, req.mainShop)
 
     return res.status(200).send(settings)
   } catch (err) {
     return next(err)
   }
 }
-
 
 const getStatistics: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -87,5 +81,12 @@ const getStatistics: Handler = async (req: Request, res: Response, next: NextFun
   }
 }
 
-const settingsHandler = { getSMSSettings, updateSMSSettings, getSettingsHandler, updateSettingsHandler, getSettingsAdminHandler, getStatistics }
+const settingsHandler = {
+  getSMSSettings,
+  updateSMSSettings,
+  getSettingsHandler,
+  updateSettingsHandler,
+  getSettingsAdminHandler,
+  getStatistics
+}
 export default settingsHandler

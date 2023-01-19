@@ -27,6 +27,7 @@ export interface IUser extends Document {
   otpActivated?: boolean
   rechargeSubscriptionId?: number
   rechargeCustomerId?: number
+  smsText?: string
 }
 
 const UserSchema = new Schema(

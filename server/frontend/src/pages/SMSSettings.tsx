@@ -5,7 +5,6 @@ import {
   IonCardHeader,
   IonCardTitle,
   IonContent,
-  IonInput,
   IonPage,
   IonSegment,
   IonSegmentButton,
@@ -44,6 +43,7 @@ const SMSSettings: React.FC = () => {
   const handleBtnClick = async () => {
     const result = await apiObj.updateSMSSettings(smsContent)
     if (result) {
+      user!.smsText = result.smsText
       await present('SMS Text aktualisiert!', 2000)
     }
     setShowBtn(false)

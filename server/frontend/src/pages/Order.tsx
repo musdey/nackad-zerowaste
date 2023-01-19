@@ -24,7 +24,7 @@ import { cubeOutline, newspaperOutline, personCircleOutline, mailOutline } from 
 const Order: React.FC = (props) => {
   const history = useHistory()
   const params = useParams<{ orderId: string }>()
-  const { loggedIn } = useAuth()
+  const { loggedIn, user } = useAuth()
   const [order, setOrder] = useState({
     smsSent: false,
     firstName: 'No',
@@ -190,9 +190,9 @@ const Order: React.FC = (props) => {
             <IonLabel>Pfand anzeigen</IonLabel>
           </IonItem>
           <IonItem
-            href={`sms://${order.user.phoneNumber};?&body=${encodeURI('This is a test sms')}`}
+            href={`sms://${order.user.phoneNumber};?&body=${encodeURI(user!.smsText)}`}
             lines='full'
-            disabled={order.smsSent}
+            disabled={order.smsSent || new Date(order.deliveryDay) < new Date()}
             onClick={handleSMSClick}
           >
             <IonIcon icon={mailOutline} slot='start'></IonIcon>

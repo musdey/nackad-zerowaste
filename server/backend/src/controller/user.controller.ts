@@ -1,5 +1,7 @@
 import Role from '../models/Role'
+import Shop from '../models/Shop'
 import User, { IUser } from '../models/User'
+import settingsController from './settings.controller'
 
 const updateRole = async (userId: string, newRole: string, shop: string) => {
   const user = await User.findOne({ _id: userId, mainShop: shop })
@@ -22,7 +24,6 @@ const update = async (incoming: IUser) => {
   return newUser
 }
 
-
 const getUserByRole = async (desiredRole: string, shop: string) => {
   const role = await Role.findOne({ name: desiredRole })
   const user = await User.find({ role: role, mainShop: shop })
@@ -40,8 +41,19 @@ const getAll = async (shop: string) => {
 }
 
 const getOne = async (userId: string) => {
-  const user = await User.findOne({ _id: userId }).populate({ path: 'role mainShop', select: 'name -_id' }).select('-password')
-  return user
+  const user = await User.findOne({ _id: userId })
+    .populate({ path: 'role mainShop', select: 'name -_id' })
+    .select('-password')
+
+  const returnedUser = user.toObject()
+  if (user) {
+    const shop = await Shop.findOne({ name: user.mainShop.name })
+    const smsText = await settingsController.getSMSSettings(shop)
+    if (smsText) {
+      returnedUser.smsText = smsText.smsText
+    }
+  }
+  return returnedUser
 }
 
 const searchUser = async (searchString: string, shop: string) => {

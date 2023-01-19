@@ -7,26 +7,34 @@ const useProvideAuth = (): AuthContextInterface => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const history = useHistory();
 
-
-  const updateUserSMSMethod = async (cloudSMS: boolean): Promise<{ success: boolean; error?: Error }> => {
+  const updateUserSMSMethod = async (
+    cloudSMS: boolean
+  ): Promise<{ success: boolean; error?: Error }> => {
     return new Promise(async (resolve, reject) => {
-
       if (user) {
-        const userToUpdate = user
-        userToUpdate.cloudSMS = cloudSMS
+        const userToUpdate = user;
+        userToUpdate.cloudSMS = cloudSMS;
 
-        api.updateUser(userToUpdate).then(() => {
-          setUser(userToUpdate)
-          resolve({ success: true });
-        }).catch((err) => {
-          resolve({ success: false, error: err });
-        });
-
+        api
+          .updateUser(userToUpdate)
+          .then(() => {
+            setUser(userToUpdate);
+            resolve({ success: true });
+          })
+          .catch((err) => {
+            resolve({ success: false, error: err });
+          });
       } else {
-        resolve({ success: false, error: new Error("undefined error") })
+        resolve({ success: false, error: new Error("undefined error") });
       }
-    })
-  }
+    });
+  };
+
+  const updateSMSText = (smsText: string) => {
+    const newUser = user;
+    newUser!.smsText = smsText;
+    setUser(newUser);
+  };
 
   const signout = async (): Promise<void> => {
     setLoggedIn(false);
@@ -82,7 +90,8 @@ const useProvideAuth = (): AuthContextInterface => {
     user,
     loggedIn,
     getUserWithToken,
-    updateUserSMSMethod
+    updateUserSMSMethod,
+    updateSMSText,
   };
 };
 const AuthContext = createContext({} as AuthContextInterface);
@@ -99,9 +108,10 @@ export function ProvideAuth({
 export const useAuth = (): AuthContextInterface => useContext(AuthContext);
 
 export type User = {
+  smsText: string;
   firstName: string;
   mainShop: {
-    name: string
+    name: string;
   };
   lastName: string;
   address: string;
@@ -123,5 +133,8 @@ interface AuthContextInterface {
   getUserWithToken: () => Promise<{ success: boolean; error?: Error }>;
   user?: User;
   loggedIn: boolean;
-  updateUserSMSMethod: (cloudSMS: boolean) => Promise<{ success: boolean; error?: Error }>;
+  updateUserSMSMethod: (
+    cloudSMS: boolean
+  ) => Promise<{ success: boolean; error?: Error }>;
+  updateSMSText: (smsText: string) => void;
 }
