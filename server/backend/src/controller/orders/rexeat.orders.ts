@@ -21,7 +21,7 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
 
   // Setting up shipping address obj
 
-  //console.log(newOrder)
+  // console.log(newOrder)
 
   const shippingaddr = newOrder.Shopware.sOrderVariables.sUserData.shippingaddress
 
@@ -142,6 +142,7 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
 
   const deliverySlot = await DeliverySlotModel.findOne({
     shop: mainShop,
+    deliveryAreas: { $regex: shippingAddress.zip },
     deliveryDay: {
       $gte: deliveryDay!.setHours(2, 0, 0),
       $lte: deliveryDay!.setHours(23, 0, 0)
