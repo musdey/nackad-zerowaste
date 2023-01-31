@@ -5,7 +5,7 @@ import ShopSettings from '../models/ShopSettings'
 import User from '../models/User'
 import { SlotDetails, VehicleConfig } from '../types/shopconfig'
 
-const getRexeatSlotsPublic = async () => {
+const getDeliverySlotsPublic = async (shopName: string) => {
   // Show deliveryslots from friday to friday for the week after
   let startDate = new Date()
   const today = startDate.getDay() // 5 is friday
@@ -19,15 +19,13 @@ const getRexeatSlotsPublic = async () => {
     // Until friday 11am show next week
     // Show next week
     endDate.setDate(endDate.getDate() + 7)
-    console.log(startDate)
-    console.log(endDate)
   } else {
     // After friday 12pm (midday) show the week after next week
     // Show week after next week
     startDate.setDate(startDate.getDate() + 7)
     endDate.setDate(endDate.getDate() + 14)
   }
-  const shop = await Shop.findOne({ name: 'REXEAT' })
+  const shop = await Shop.findOne({ name: shopName })
   const deliverySlots = await DeliverySlotModel.find({
     shop,
     deliveryDay: {
@@ -75,7 +73,7 @@ const getRexeatSlotsPublic = async () => {
 }
 
 // Get Nackad deliveryslots
-const getDeliverySlotsPublic = async () => {
+const getHourlyDeliverySlotsPublic = async () => {
   const shop = await Shop.findOne({ name: 'NACKAD' })
   const settings = await ShopSettings.findOne({ shop })
 
@@ -249,8 +247,8 @@ const createNackadSlots = async () => {
   return 'ok'
 }
 
-const createRexeatSlots = async () => {
-  const shop = await Shop.findOne({ name: 'REXEAT' })
+const createDeliverySlots = async (shopName: string) => {
+  const shop = await Shop.findOne({ name: shopName })
   const settingObj = await ShopSettings.findOne({ shop: shop!._id })
 
   if (!settingObj) {
@@ -370,11 +368,10 @@ const updateById = async (id: string, deliverySlot: IDeliverySlot, shop: string)
 }
 
 const deliverySlotController = {
-  getRexeatSlotsPublic,
-  createNackadSlots,
-  createRexeatSlots,
-  getDeliverySlotsManagement,
   getDeliverySlotsPublic,
+  createNackadSlots,
+  createDeliverySlots,
+  getDeliverySlotsManagement,
   updateSlot,
   updateById
 }

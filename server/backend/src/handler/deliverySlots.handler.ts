@@ -4,7 +4,7 @@ import { IDeliverySlot } from '../models/DeliverySlots'
 
 const getNackadPublic: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const deliverySlots = await deliverySlotController.getDeliverySlotsPublic()
+    const deliverySlots = await deliverySlotController.getDeliverySlotsPublic('NACKAD')
     return res.status(200).send(deliverySlots)
   } catch (err) {
     return next(err)
@@ -13,7 +13,7 @@ const getNackadPublic: Handler = async (req: Request, res: Response, next: NextF
 
 const getRexeatPublic: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const deliverySlots = await deliverySlotController.getRexeatSlotsPublic()
+    const deliverySlots = await deliverySlotController.getDeliverySlotsPublic('REXEAT')
     return res.status(200).send(deliverySlots)
   } catch (err) {
     return next(err)
