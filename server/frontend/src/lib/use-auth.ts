@@ -70,7 +70,6 @@ const useProvideAuth = (): AuthContextInterface => {
       await api
         .getUserData()
         .then(async (data) => {
-          console.log(data);
           if (!data.success) {
             return resolve(data);
           }

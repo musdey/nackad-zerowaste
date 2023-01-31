@@ -4,8 +4,9 @@ import User, { IUser } from '../models/User'
 import Role, { IRole } from '../models/Role'
 import UserLoginOTP from '../models/UserLoginOTP'
 import sendSMS from '../lib/smsService'
-import { IShop } from '../models/Shop'
+import Shop, { IShop } from '../models/Shop'
 import SignupOTP from '../models/SingupOTP'
+import settingsController from './settings.controller'
 
 const secret = process.env.JWT_SECRET || 'someRandomTestString'
 const EXPIRYTIME = 10 * 60 * 1000 // 10 minutes
@@ -27,7 +28,7 @@ const signup = async (email: string, password: string, firstName: string, lastNa
 }
 
 const signin = async (email: string, password: string) => {
-  const user = await User.findOne({ email }).populate('mainShop')
+  const user = await User.findOne({ email }).populate('mainShop role')
   if (!user) {
     throw new Error('User Not found.')
   }
@@ -51,16 +52,15 @@ const signin = async (email: string, password: string) => {
     }
   )
 
-  return {
-    _id: user._id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    username: user.username,
-    email: user.email,
-    accessToken: token,
-    role: role,
-    extraAccess: user.extraAccess
+  const returnedUser: any = user.toObject()
+  returnedUser.accessToken = token
+  returnedUser.password = ''
+  const shop = await Shop.findOne({ name: user.mainShop.name })
+  const smsText = await settingsController.getSMSSettings(shop)
+  if (smsText) {
+    returnedUser.smsText = smsText.smsText
   }
+  return returnedUser
 }
 
 const createSignupOTP = async (user: IUser, shop: IShop) => {
