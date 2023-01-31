@@ -346,7 +346,7 @@ const updateSMSSettings = async (text: string): Promise<any> => {
         "Content-Type": "application/json",
         Authorization: "Token " + localStorage.getItem("TOKEN"),
       },
-      body: JSON.stringify({ "smsText": text }),
+      body: JSON.stringify({ smsText: text }),
     });
     if (result.ok) {
       return result.json();
@@ -408,7 +408,7 @@ const getAdmins = async (): Promise<any> => {
 };
 
 const updateUserRole = async (userId: string, role: string): Promise<any> => {
-  const url = Config.User.UPDATE;
+  const url = Config.User.UPDATE_ROLE;
   try {
     const result = await fetch(url, {
       method: "POST",
@@ -682,6 +682,6 @@ const apiObj = {
   chekPWToken,
   createPin,
   updateShopifyOrder,
-  updateUser
+  updateUser,
 };
 export default apiObj;

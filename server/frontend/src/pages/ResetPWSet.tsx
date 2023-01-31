@@ -85,7 +85,7 @@ const ResetPWSet: React.FC = () => {
     return (
 
         <IonPage>
-            <Header subTitle="Set new password" />
+            <Header subTitle="Neues Passwort" />
             {tokenIsValid ?
                 <IonContent fullscreen>
                     <IonCard>

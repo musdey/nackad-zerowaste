@@ -10,7 +10,6 @@ const updateUser: Handler = async (req: Request, res: Response, next: NextFuncti
   } catch (err) {
     next(err)
   }
-
 }
 
 const updateUserRole: Handler = async (req: Request, res: Response, next: NextFunction) => {
@@ -26,7 +25,14 @@ const updateUserRole: Handler = async (req: Request, res: Response, next: NextFu
   try {
     const user = await usercontroller.updateRole(userId, newRole, req.mainShop)
 
-    return res.status(200).send('User role update successfully. ' + user.email + ' is now a ' + newRole)
+    return res
+      .status(200)
+      .send(
+        JSON.stringify({
+          success: true,
+          message: 'User role update successfully. ' + user.email + ' is now a ' + newRole
+        })
+      )
   } catch (err) {
     return next(err)
   }
@@ -67,8 +73,10 @@ const searchUser: Handler = async (req: Request, res: Response, next: NextFuncti
 const getEmployees: Handler = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await usercontroller.getUserByRole('EMPLOYEE', req.mainShop)
+    const user2 = await usercontroller.getUserByRole('MANAGER', req.mainShop)
+    const result = user.concat(user2)
 
-    return res.status(200).send(user)
+    return res.status(200).send(result)
   } catch (err) {
     return next(err)
   }

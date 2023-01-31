@@ -26,7 +26,7 @@ router.post('/auth/signup', verifySignUp.checkDuplicateUsernameOrEmail, authHand
 router.post('/auth/signin', authHandler.signin)
 
 router.get('/user/all', [authJwt.verifyToken, authJwt.isManager], userHandler.getAll)
-router.get('/user/employees', [authJwt.verifyToken, authJwt.isEmployee], userHandler.getEmployees)
+router.get('/user/employees', [authJwt.verifyToken, authJwt.isManager], userHandler.getEmployees)
 router.post('/user/search', [authJwt.verifyToken, authJwt.isEmployee], userHandler.searchUser)
 router.get('/user', [authJwt.verifyToken, authJwt.isCustomer], userHandler.getSelf)
 router.post('/user/role/update', [authJwt.verifyToken, authJwt.isManager], userHandler.updateUserRole)
