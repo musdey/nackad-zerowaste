@@ -192,7 +192,7 @@ const Order: React.FC = (props) => {
           <IonItem
             href={`sms://${order.user.phoneNumber};?&body=${encodeURI(user!.smsText)}`}
             lines='full'
-            disabled={order.smsSent || new Date(order.deliveryDay) < new Date()}
+            disabled={order.smsSent || new Date(order.deliveryDay) <= new Date()}
             onClick={handleSMSClick}
           >
             <IonIcon icon={mailOutline} slot='start'></IonIcon>
