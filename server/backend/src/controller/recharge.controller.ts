@@ -4,6 +4,7 @@ import User from '../models/User'
 import { DepositStatus } from '../types'
 import { Charge, Subscription, Webhook, WebhookCallResult } from '../types/recharge-types'
 import depositcontroller from './deposit.controller'
+import deliveryController from './delivery.controller'
 
 const WEBHOOK_URL = 'https://api.rechargeapps.com/webhooks'
 const MAIN_URL = 'https://api.rechargeapps.com/'
@@ -52,6 +53,23 @@ const registerWebhooks = async () => {
       }
     })
   }
+}
+
+const updateSubscriptionChargeDate = async (subscriptionId: number, date: Date) => {
+  // {"date": "2021-08-05"}
+  const result = await fetch(MAIN_URL + 'subscriptions/' + subscriptionId + '/set_next_charge_date', {
+    method: 'POST',
+    headers: {
+      'X-Recharge-Access-Token': API_TOKEN,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ date: date.toISOString().split('T')[0] })
+  })
+  console.log('Updating next subscription charge date:')
+  console.log(result.status)
+  console.log(result.statusText)
+  console.log(result.body)
+  console.log('----------------------------------')
 }
 
 const chargePaid: Handler = async (req: Request, res: Response, next: NextFunction) => {
@@ -135,12 +153,22 @@ const subscriptionCreated: Handler = async (req: Request, res: Response, next: N
         },
         body: JSON.stringify({ price: price, quantity: 1 })
       })
+      console.log('Updating next subscription charge date:')
+      console.log(result.status)
+      console.log(result.statusText)
+      console.log(result.body)
+      console.log('----------------------------------')
       if (result.ok) {
         console.log('Subscription from ' + data.email + ' has been set to EUR ' + price)
       } else {
         console.log('Error setting subsription price of ' + data.email)
       }
-
+      const orderDate = await deliveryController.getNextDeliveryDateForUser(user)
+      if (orderDate) {
+        await updateSubscriptionChargeDate(data.id, orderDate)
+      } else {
+        console.log('orderDate could not be retrieved')
+      }
       // Cancel old subscription
       const allSubscriptionsByUserId = await fetch(
         MAIN_URL + 'subscriptions?customer_id=' + data.customer_id + '&status=ACTIVE',

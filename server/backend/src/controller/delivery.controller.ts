@@ -1,6 +1,6 @@
 import DeliveryModel from '../models/Delivery'
 import { IShop } from '../models/Shop'
-import User from '../models/User'
+import User, { IUser } from '../models/User'
 
 const getAll = async (shop: string) => {
   const delivery = await DeliveryModel.find({ shop }).populate('deliverySlot user')
@@ -69,6 +69,19 @@ const updateStatusById = async (id: string, status: 'OPEN' | 'PACKED' | 'INDELIV
   return delivery
 }
 
-const deliveryController = { updateStatusById, search, getAll, getAllWithStatus, getCurrent, getTodays }
+const getNextDeliveryDateForUser = async (user: IUser) => {
+  const delivery = await DeliveryModel.findOne({ user, deliveryDay: { $gt: new Date().toISOString() } })
+  return delivery?.deliveryDay
+}
+
+const deliveryController = {
+  getNextDeliveryDateForUser,
+  updateStatusById,
+  search,
+  getAll,
+  getAllWithStatus,
+  getCurrent,
+  getTodays
+}
 
 export default deliveryController
