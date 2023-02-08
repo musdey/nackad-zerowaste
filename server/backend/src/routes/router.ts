@@ -63,6 +63,7 @@ router.get('/orders/current', [authJwt.verifyToken, authJwt.isEmployee], orderHa
 router.get('/order/:id', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getShopifyOrderById)
 router.post('/order/:id', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.updateShopifyOrderById)
 router.post('/delivery/:id/status', [authJwt.verifyToken, authJwt.isEmployee], deliveryHandler.updateDeliveryStatus)
+router.get('/delivery/:id', [authJwt.verifyToken, authJwt.isEmployee], deliveryHandler.getDelivery)
 
 // Shopify Webhooks & Product Database
 router.get('/update-products', productsController.triggerUpdateProductsHandler)

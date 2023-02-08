@@ -60,12 +60,22 @@ const updateDeliveryStatus: Handler = async (req: Request, res: Response, next: 
   return res.status(200).send(shopifyOrder)
 }
 
+const getDelivery: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const users = await deliveryController.getOne(req.params.id, req.mainShop)
+    return res.status(200).send(users)
+  } catch (err) {
+    return next(err)
+  }
+}
+
 const deliveryHandler = {
   updateDeliveryStatus,
   getAllDeliveries,
   getAllDeliveriesWithGivenStatus,
   getCurrentOpenDeliveries,
   getTodaysDeliveries,
-  searchDelivery
+  searchDelivery,
+  getDelivery
 }
 export default deliveryHandler

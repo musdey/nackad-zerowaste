@@ -69,6 +69,11 @@ const updateStatusById = async (id: string, status: 'OPEN' | 'PACKED' | 'INDELIV
   return delivery
 }
 
-const deliveryController = { updateStatusById, search, getAll, getAllWithStatus, getCurrent, getTodays }
+const getOne = async (id: string, shop: string) => {
+  const delivery = await DeliveryModel.findOne({ _id: id, shop })
+  return delivery
+}
+
+const deliveryController = { updateStatusById, search, getAll, getAllWithStatus, getCurrent, getTodays, getOne }
 
 export default deliveryController
