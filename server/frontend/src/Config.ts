@@ -33,6 +33,7 @@ const Config = {
     SLOTREMOVE: HOST + "deliveryslot", // /:id/remove
     UPDATESLOT: HOST + "deliveryslot",
     UPDATESTATUS: HOST + "delivery/",
+    GET: HOST + "delivery/", // /:id
   },
   Deposit: {
     RETURN: HOST + "deposit/return",

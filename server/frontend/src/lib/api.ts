@@ -649,6 +649,25 @@ const updateDeliveryStatus = async (
   }
 };
 
+const getDelivery = async (id: string): Promise<any> => {
+  const url = Config.Delivery.GET;
+  try {
+    const result = await fetch(url + id, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+    });
+    const body = await result.json();
+
+    return body;
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
 const apiObj = {
   getSMSSettings,
   updateSMSSettings,
@@ -683,5 +702,6 @@ const apiObj = {
   createPin,
   updateShopifyOrder,
   updateUser,
+  getDelivery,
 };
 export default apiObj;
