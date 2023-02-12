@@ -668,6 +668,26 @@ const getDelivery = async (id: string): Promise<any> => {
   }
 };
 
+const sendImage = async (id: string, file: any): Promise<any> => {
+  const url = Config.Delivery.IMAGE;
+  const formData = new FormData();
+  formData.append("file", file);
+  try {
+    const result = await fetch(url + id + "/add", {
+      method: "POST",
+      headers: {
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: formData,
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
 const apiObj = {
   getSMSSettings,
   updateSMSSettings,
@@ -703,5 +723,6 @@ const apiObj = {
   updateShopifyOrder,
   updateUser,
   getDelivery,
+  sendImage,
 };
 export default apiObj;
