@@ -17,6 +17,7 @@ const Images: React.FC = (props) => {
   const { loggedIn } = useAuth();
   const params = useParams<{ deliveryId: string }>();
   const [images, setImages] = useState<Array<string> | undefined>();
+  const [source, setSource] = useState("");
 
   useEffect(() => {
     const fn = async () => {
@@ -30,7 +31,18 @@ const Images: React.FC = (props) => {
     const url = "/login";
     return <Redirect to={url} />;
   }
-
+  const setImage = (_event: any) => {
+    if (_event.target.files && _event.target.files.length !== 0) {
+      let file = _event.target.files![0];
+      console.log(file);
+      const newUrl = URL.createObjectURL(file);
+      setSource(newUrl);
+      api.sendImage(params.deliveryId, file);
+    }
+  };
+  const openFileDialog = () => {
+    (document as any).getElementById("icon-button-file").click();
+  };
   return (
     <IonPage>
       <Header subTitle={"Images " + params.deliveryId} />
@@ -42,13 +54,20 @@ const Images: React.FC = (props) => {
             width: "100%",
             justifyContent: "center",
           }}>
-          <IonButton>Upload</IonButton>
+          <input
+            style={{ display: "none" }}
+            accept="image/*"
+            id="icon-button-file"
+            type="file"
+            capture="environment"
+            onChange={setImage}
+          />
+          <label onClick={openFileDialog} htmlFor="icon-button-file">
+            <IonButton>Upload</IonButton>
+          </label>
         </div>
         <IonCard>
-          <img
-            alt="Silhouette of mountains"
-            src="https://ionicframework.com/docs/img/demos/card-media.png"
-          />
+          <img alt="uploaded_image" src={source} />
           <IonButton fill="clear">Delete</IonButton>
         </IonCard>
       </IonContent>
