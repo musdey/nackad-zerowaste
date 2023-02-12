@@ -11,6 +11,7 @@ import settings from './lib/db/initalizeShopSettings'
 import rateLimit from 'express-rate-limit'
 import path from 'path'
 import cron from 'node-cron'
+import multer from 'multer'
 dotenv.config()
 
 const mongodbHost = process.env.MONGODB_HOST || 'localhost'
@@ -63,6 +64,9 @@ cron.schedule('0 1 * * *', async () => {
   await settings.initalizeDeliverySlots()
   console.log('DeliverySlots created')
 })
+
+const upload = multer()
+app.use(upload.single('file'))
 
 app.use('/api/v1', routerV1)
 // Setup routes
