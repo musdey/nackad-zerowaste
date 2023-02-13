@@ -11,7 +11,7 @@ import DeliverySlotModel from '../../models/DeliverySlots'
 import DeliveryModel from '../../models/Delivery'
 
 const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
-  console.log(newOrder)
+  console.log(JSON.stringify(newOrder, null, 5))
 
   const mainShop = await Shop.findOne({ name: 'REXEAT' })
 
@@ -82,8 +82,10 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
     newLine.id = Number.parseInt(product.id)
     newLine.quantity = Number.parseInt(product.quantity)
     newLine.price = product.price
-    const url = new URL(product.image.source)
-    newLine.imgUrl = url.href
+    if (product.image) {
+      const url = new URL(product.image?.source)
+      newLine.imgUrl = url.href
+    }
     const thumbnail = new URL(product.image.thumbnails[0].source)
     newLine.thumbnail = thumbnail.href
     items.push(newLine)
