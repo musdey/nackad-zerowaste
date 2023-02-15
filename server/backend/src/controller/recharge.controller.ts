@@ -136,12 +136,9 @@ const updateDepositPrice = async (userId: string) => {
 }
 
 const subscriptionCreated: Handler = async (req: Request, res: Response, next: NextFunction) => {
-
   console.log('Subscription created webhook received!')
   try {
-    console.log("Waiting for 5 seconds..")
     setTimeout(async () => {
-      console.log("Executing subscriptioncreated.")
       const data: Subscription = await req.body.subscription
 
       const user = await User.findOne({ email: data.email })
@@ -169,7 +166,8 @@ const subscriptionCreated: Handler = async (req: Request, res: Response, next: N
         }
         const orderDate = await deliveryController.getNextDeliveryDateForUser(user)
         if (orderDate) {
-          await updateSubscriptionChargeDate(data.id, orderDate)
+          const futureRechargeDate = new Date(orderDate.setDate(orderDate.getDate() + 21))
+          await updateSubscriptionChargeDate(data.id, futureRechargeDate)
         } else {
           console.log('orderDate could not be retrieved')
         }

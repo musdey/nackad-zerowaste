@@ -85,9 +85,9 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
     if (product.image) {
       const url = new URL(product.image?.source)
       newLine.imgUrl = url.href
+      const thumbnail = new URL(product.image.thumbnails[0].source)
+      newLine.thumbnail = thumbnail.href
     }
-    const thumbnail = new URL(product.image.thumbnails[0].source)
-    newLine.thumbnail = thumbnail.href
     items.push(newLine)
   })
 
