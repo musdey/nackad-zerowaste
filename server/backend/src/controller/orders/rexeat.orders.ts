@@ -11,7 +11,7 @@ import DeliverySlotModel from '../../models/DeliverySlots'
 import DeliveryModel from '../../models/Delivery'
 
 const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
-  console.log(JSON.stringify(newOrder, null, 3))
+  console.log('Rexeat Order create called')
 
   const mainShop = await Shop.findOne({ name: 'REXEAT' })
 
