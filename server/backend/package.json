@@ -27,6 +27,7 @@
     "@types/node-fetch": "^2.5.12",
     "@types/nodemailer": "^6.4.4",
     "@types/shopify-buy": "^2.10.8",
+    "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^5.8.0",
     "@typescript-eslint/parser": "^5.8.0",
     "eslint": "^8.5.0",
@@ -58,6 +59,7 @@
     "shopify-buy": "^2.13.0",
     "shopify-graphql-client": "^0.0.26",
     "shopify-graphql-node": "^0.0.0-semantic-release",
+    "uuid": "^9.0.0",
     "validate": "^5.2.0"
   }
 }

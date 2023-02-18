@@ -74,6 +74,36 @@ const getOne = async (id: string, shop: string) => {
   return delivery
 }
 
-const deliveryController = { updateStatusById, search, getAll, getAllWithStatus, getCurrent, getTodays, getOne }
+const addImageToDelivery = async (id: string, imagePath: string, shop: string) => {
+  const delivery = await DeliveryModel.findOne({ _id: id, shop })
+  if (delivery) {
+    delivery.images.push(imagePath)
+    await delivery.save()
+  }
+  return delivery
+}
+
+const removeImageFromDelivery = async (id: string, imagePath: string, shop: string) => {
+  const delivery = await DeliveryModel.findOne({ _id: id, shop })
+  if (delivery) {
+    const index = delivery.images.findIndex((image) => image === imagePath)
+    if (!index) return delivery
+    delivery.images.splice(index, 1)
+    await delivery.save()
+  }
+  return delivery
+}
+
+const deliveryController = {
+  updateStatusById,
+  search,
+  getAll,
+  getAllWithStatus,
+  getCurrent,
+  getTodays,
+  getOne,
+  addImageToDelivery,
+  removeImageFromDelivery
+}
 
 export default deliveryController
