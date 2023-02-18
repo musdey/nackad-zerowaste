@@ -18,6 +18,7 @@ export interface IDelivery extends Document {
   slotHours: string
   deliveryDay: Date
   type: 'PICKUP' | 'DELIVERY'
+  images: [string]
 }
 
 const DeliverySchema = new Schema(
@@ -62,6 +63,9 @@ const DeliverySchema = new Schema(
     },
     slotHours: {
       type: String
+    },
+    images: {
+      type: [String]
     }
   },
   { strict: false, versionKey: false }
