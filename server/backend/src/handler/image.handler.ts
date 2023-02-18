@@ -43,11 +43,7 @@ const getImage: Handler = async (req: Request, res: Response, next: NextFunction
       return res.status(400).send('File not found')
     }
     const buffer = await file.getContent()
-    const localFilePath = path.join(__dirname, imageId as string)
-    fs.writeFileSync(localFilePath, buffer)
-    return res.status(200).sendFile(localFilePath, () => {
-      fs.unlinkSync(localFilePath)
-    })
+    return res.status(200).send(buffer)
   } catch (err) {
     return next(err)
   }
