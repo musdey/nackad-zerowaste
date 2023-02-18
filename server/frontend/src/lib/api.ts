@@ -673,7 +673,7 @@ const sendImage = async (id: string, file: any): Promise<any> => {
   const formData = new FormData();
   formData.append("file", file);
   try {
-    const result = await fetch(url + id + "/add", {
+    const result = await fetch(url + "/" + id + "/add", {
       method: "POST",
       headers: {
         Authorization: "Token " + localStorage.getItem("TOKEN"),
@@ -682,6 +682,27 @@ const sendImage = async (id: string, file: any): Promise<any> => {
     });
     if (result.ok) {
       return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const getImage = async (deliveryId: string, imageId: string): Promise<any> => {
+  const url = Config.Delivery.IMAGE;
+  try {
+    const result = await fetch(
+      url + `?deliveryId=${deliveryId}&imageId=${imageId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Token " + localStorage.getItem("TOKEN"),
+        },
+      }
+    );
+    if (result.ok) {
+      const blob = await result.blob();
+      return blob;
     }
   } catch (err) {
     return undefined;
@@ -724,5 +745,6 @@ const apiObj = {
   updateUser,
   getDelivery,
   sendImage,
+  getImage,
 };
 export default apiObj;

@@ -34,7 +34,7 @@ const Config = {
     UPDATESLOT: HOST + "deliveryslot",
     UPDATESTATUS: HOST + "delivery/",
     GET: HOST + "delivery/", // /:id
-    IMAGE: HOST + "images/",
+    IMAGE: HOST + "images",
   },
   Deposit: {
     RETURN: HOST + "deposit/return",
