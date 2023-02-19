@@ -77,7 +77,7 @@ const getOne = async (id: string, shop: string) => {
 const addImageToDelivery = async (id: string, imagePath: string, shop: string) => {
   const delivery = await DeliveryModel.findOne({ _id: id, shop })
   if (delivery) {
-    delivery.images.push(imagePath)
+    delivery.images.unshift(imagePath)
     await delivery.save()
   }
   return delivery
