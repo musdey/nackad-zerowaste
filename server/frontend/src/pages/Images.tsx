@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   IonContent,
   IonPage,
@@ -9,11 +9,17 @@ import {
   IonButton,
   IonImg,
   IonSpinner,
+  IonModal,
+  IonHeader,
+  IonButtons,
+  IonToolbar,
 } from "@ionic/react";
+import { OverlayEventDetail } from "@ionic/core/components";
 import { useAuth } from "../lib/use-auth";
 import { Redirect, useParams } from "react-router";
 import { Header } from "../components/Header";
 import api from "../lib/api";
+import Webcam from "react-webcam";
 
 type ImageCardProps = {
   deliveryId: string;
@@ -36,7 +42,7 @@ const ImageCard: React.FC<ImageCardProps> = (props: ImageCardProps) => {
         <div>
           <IonImg alt="uploaded_image" src={source} />
           <IonButton
-            disabled
+            // disabled
             fill="clear"
             onClick={() => api.deleteImage(props.deliveryId, props.imageId)}>
             Delete
@@ -54,6 +60,28 @@ const Images: React.FC = () => {
   const params = useParams<{ deliveryId: string }>();
   const [images, setImages] = useState<Array<string> | undefined>();
   const [uploading, setUploading] = useState<boolean>(false);
+  const modal = useRef<HTMLIonModalElement>(null);
+  const webcamRef = React.useRef<Webcam>(null);
+  const [imgSrc, setImgSrc] = React.useState<string | null>(null);
+
+  const capture = React.useCallback(() => {
+    const imageSrc = webcamRef.current?.getScreenshot();
+    setImgSrc(imageSrc!);
+  }, [webcamRef, setImgSrc]);
+
+  function confirm() {
+    modal.current?.dismiss(imgSrc, "confirm");
+  }
+
+  function onWillDismiss(ev: CustomEvent<OverlayEventDetail>) {
+    if (ev.detail.role === "confirm") {
+      setUploading(true);
+      api.sendImage(params.deliveryId, ev.detail.data).then(() => {
+        setUploading(false);
+        getDelivery();
+      });
+    }
+  }
 
   const getDelivery = async () => {
     const result = await api.getDelivery(params.deliveryId);
@@ -104,8 +132,41 @@ const Images: React.FC = () => {
           <label onClick={openFileDialog} htmlFor="icon-button-file">
             <IonButton>Upload</IonButton>
           </label>
+          <IonButton id="open-modal" expand="block">
+            Click
+          </IonButton>
           {uploading && <IonSpinner name="crescent"></IonSpinner>}
         </div>
+        <IonModal
+          ref={modal}
+          trigger="open-modal"
+          onWillDismiss={(ev) => onWillDismiss(ev)}>
+          <IonHeader>
+            <IonToolbar>
+              <IonButtons slot="start">
+                <IonButton onClick={() => modal.current?.dismiss()}>
+                  Cancel
+                </IonButton>
+              </IonButtons>
+              <IonButtons slot="end">
+                <IonButton strong={true} onClick={() => confirm()}>
+                  Upload
+                </IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding ion-border-xl">
+            <>
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+              />
+              <IonButton onClick={capture}>Capture photo</IonButton>
+              {imgSrc && <IonImg src={imgSrc} />}
+            </>
+          </IonContent>
+        </IonModal>
         {images &&
           images.map((image) => (
             <ImageCard
