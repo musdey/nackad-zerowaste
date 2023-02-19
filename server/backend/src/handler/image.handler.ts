@@ -2,8 +2,6 @@ import Client, { Server } from 'nextcloud-node-client'
 import { Handler, NextFunction, Request, Response } from 'express'
 import deliveryController from '../controller/delivery.controller'
 import { v4 as uuidv4 } from 'uuid'
-import fs from 'fs'
-import path from 'path'
 
 const nextServer = new Server({
   basicAuth: {
@@ -49,9 +47,28 @@ const getImage: Handler = async (req: Request, res: Response, next: NextFunction
   }
 }
 
+const deleteImage: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  const { deliveryId, imageId } = req.body
+  if (!deliveryId || !imageId) {
+    return res.status(400).send('Missing body parameters')
+  }
+  try {
+    const file = await nextClient.getFile(`/deliveries/${deliveryId}/${imageId}`)
+    if (!file) {
+      return res.status(400).send('File not found')
+    }
+    await file.delete()
+    await deliveryController.removeImageFromDelivery(deliveryId, imageId, req.mainShop)
+    return res.status(200).send({ fileName: file.baseName })
+  } catch (err) {
+    return next(err)
+  }
+}
+
 const imageHandler = {
   uploadImage,
-  getImage
+  getImage,
+  deleteImage
 }
 
 export default imageHandler

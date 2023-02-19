@@ -87,8 +87,7 @@ const removeImageFromDelivery = async (id: string, imagePath: string, shop: stri
   const delivery = await DeliveryModel.findOne({ _id: id, shop })
   if (delivery) {
     const index = delivery.images.findIndex((image) => image === imagePath)
-    if (!index) return delivery
-    delivery.images.splice(index, 1)
+    if (index > -1) delivery.images.splice(index, 1)
     await delivery.save()
   }
   return delivery

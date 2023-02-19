@@ -709,6 +709,28 @@ const getImage = async (deliveryId: string, imageId: string): Promise<any> => {
   }
 };
 
+const deleteImage = async (
+  deliveryId: string,
+  imageId: string
+): Promise<any> => {
+  const url = Config.Delivery.IMAGE;
+  try {
+    const result = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify({ deliveryId, imageId }),
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
 const apiObj = {
   getSMSSettings,
   updateSMSSettings,
@@ -746,5 +768,6 @@ const apiObj = {
   getDelivery,
   sendImage,
   getImage,
+  deleteImage,
 };
 export default apiObj;

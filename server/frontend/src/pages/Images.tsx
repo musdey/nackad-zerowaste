@@ -35,7 +35,12 @@ const ImageCard: React.FC<ImageCardProps> = (props: ImageCardProps) => {
       {source ? (
         <div>
           <IonImg alt="uploaded_image" src={source} />
-          <IonButton fill="clear">Delete</IonButton>
+          <IonButton
+            disabled
+            fill="clear"
+            onClick={() => api.deleteImage(props.deliveryId, props.imageId)}>
+            Delete
+          </IonButton>
         </div>
       ) : (
         <IonSpinner name="crescent"></IonSpinner>
@@ -103,7 +108,11 @@ const Images: React.FC = () => {
         </div>
         {images &&
           images.map((image) => (
-            <ImageCard deliveryId={params.deliveryId} imageId={image} />
+            <ImageCard
+              key={image}
+              deliveryId={params.deliveryId}
+              imageId={image}
+            />
           ))}
       </IonContent>
       <IonFooter>
