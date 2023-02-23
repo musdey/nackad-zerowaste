@@ -60,9 +60,13 @@ const signin: Handler = async (req: Request, res: Response, next: NextFunction) 
 const requestSignupOTP: Handler = async (req: any, res: Response, next: NextFunction) => {
   try {
     const user = await User.findById(req.userId).populate('mainShop').exec()
-    const pin = await authController.createSignupOTP(user, user.mainShop)
+    if (user) {
+      const pin = await authController.createSignupOTP(user, user.mainShop)
+      return res.status(200).send({ pin })
+    } else {
+      return res.status(400).send({ message: "User not found!" })
+    }
 
-    return res.status(200).send({ pin })
   } catch (err) {
     return next(err)
   }

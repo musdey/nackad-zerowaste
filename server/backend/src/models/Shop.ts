@@ -35,5 +35,5 @@ const ShopSchema = new Schema(
   { strict: false, versionKey: false }
 )
 
-const Shop: Model<IShop> = model('Shop', ShopSchema)
+const Shop: Model<IShop> = model<IShop>('Shop', ShopSchema)
 export default Shop

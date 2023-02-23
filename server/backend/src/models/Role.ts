@@ -17,5 +17,5 @@ const RoleSchema = new Schema(
   { strict: false, versionKey: false }
 )
 
-const Role: Model<IRole> = model('Role', RoleSchema)
+const Role: Model<IRole> = model<IRole>('Role', RoleSchema)
 export default Role

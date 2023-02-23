@@ -43,5 +43,5 @@ const OrderSchema = new Schema(
   { strict: false, versionKey: false }
 )
 
-const OrderModel: Model<IOrder> = model('Order', OrderSchema)
+const OrderModel: Model<IOrder> = model<IOrder>('Order', OrderSchema)
 export default OrderModel

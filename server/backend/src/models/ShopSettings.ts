@@ -85,5 +85,5 @@ const ShopSettingsSchema = new Schema(
   { strict: false, versionKey: false }
 )
 
-const ShopSettings: Model<IShopSettings> = model('ShopSettings', ShopSettingsSchema)
+const ShopSettings: Model<IShopSettings> = model<IShopSettings>('ShopSettings', ShopSettingsSchema)
 export default ShopSettings

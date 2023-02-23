@@ -60,5 +60,5 @@ const DepositItemSchema = new Schema(
   { strict: false, versionKey: false }
 )
 
-const DepositItemModel: Model<IDepositItem> = model('DepositItem', DepositItemSchema)
+const DepositItemModel: Model<IDepositItem> = model<IDepositItem>('DepositItem', DepositItemSchema)
 export default DepositItemModel

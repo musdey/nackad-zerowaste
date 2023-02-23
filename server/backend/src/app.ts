@@ -11,6 +11,7 @@ import settings from './lib/db/initalizeShopSettings'
 import rateLimit from 'express-rate-limit'
 import path from 'path'
 import cron from 'node-cron'
+import initializeTestUser from './lib/db/initalizeTestUser'
 dotenv.config()
 
 const mongodbHost = process.env.MONGODB_HOST || 'localhost'
@@ -27,6 +28,9 @@ const startup = async () => {
   await settings.initalizeDeliverySlots()
   await settings.initProducts()
   await settings.registerRechargeWebhooks()
+  if (process.env.NODE_ENV === 'development') {
+    await initializeTestUser()
+  }
 }
 
 startup()
