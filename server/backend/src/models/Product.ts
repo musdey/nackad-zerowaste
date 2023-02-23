@@ -41,5 +41,5 @@ const ProductSchema = new Schema(
   { strict: false, versionKey: false }
 )
 
-const Product: Model<IProduct> = model('Product', ProductSchema)
+const Product: Model<IProduct> = model<IProduct>('Product', ProductSchema)
 export default Product

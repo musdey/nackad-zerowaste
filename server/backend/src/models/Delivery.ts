@@ -67,5 +67,5 @@ const DeliverySchema = new Schema(
   { strict: false, versionKey: false }
 )
 
-const DeliveryModel: Model<IDelivery> = model('Delivery', DeliverySchema)
+const DeliveryModel: Model<IDelivery> = model<IDelivery>('Delivery', DeliverySchema)
 export default DeliveryModel

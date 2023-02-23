@@ -45,15 +45,17 @@ const getOne = async (userId: string) => {
     .populate({ path: 'role mainShop', select: 'name -_id' })
     .select('-password')
 
-  const returnedUser = user.toObject()
   if (user) {
+    const returnedUser = user.toObject()
     const shop = await Shop.findOne({ name: user.mainShop.name })
     const smsText = await settingsController.getSMSSettings(shop)
     if (smsText) {
       returnedUser.smsText = smsText.smsText
     }
+    return returnedUser
+  } else {
+    return null
   }
-  return returnedUser
 }
 
 const searchUser = async (searchString: string, shop: string) => {

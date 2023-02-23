@@ -34,6 +34,6 @@ const ResetUserPasswordSchema = new Schema(
   { strict: false, versionKey: false }
 )
 
-const ResetUserPassword: Model<IResetUserPassword> = model('ResetUserPassword', ResetUserPasswordSchema)
+const ResetUserPassword: Model<IResetUserPassword> = model<IResetUserPassword>('ResetUserPassword', ResetUserPasswordSchema)
 
 export default ResetUserPassword

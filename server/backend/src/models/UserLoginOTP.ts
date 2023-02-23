@@ -32,5 +32,5 @@ const UserLoginOTPSchema = new Schema(
   { strict: false, versionKey: false }
 )
 
-const UserLoginOTP: Model<IUserLoginOTP> = model('UserLoginOTP', UserLoginOTPSchema)
+const UserLoginOTP: Model<IUserLoginOTP> = model<IUserLoginOTP>('UserLoginOTP', UserLoginOTPSchema)
 export default UserLoginOTP

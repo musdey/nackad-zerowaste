@@ -39,5 +39,5 @@ const SingupOTPSchema = new Schema(
   { strict: false, versionKey: false }
 )
 
-const SignupOTP: Model<ISignupOTP> = model('SignupOTP', SingupOTPSchema)
+const SignupOTP: Model<ISignupOTP> = model<ISignupOTP>('SignupOTP', SingupOTPSchema)
 export default SignupOTP
