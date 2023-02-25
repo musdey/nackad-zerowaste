@@ -1,6 +1,6 @@
 import DeliveryModel from '../models/Delivery'
 import { IShop } from '../models/Shop'
-import User from '../models/User'
+import User, { IUser } from '../models/User'
 
 const getAll = async (shop: string) => {
   const delivery = await DeliveryModel.find({ shop }).populate('deliverySlot user')
@@ -93,7 +93,13 @@ const removeImageFromDelivery = async (id: string, imagePath: string, shop: stri
   return delivery
 }
 
+const getNextDeliveryDateForUser = async (user: IUser) => {
+  const delivery = await DeliveryModel.findOne({ user, deliveryDay: { $gt: new Date().toISOString() } })
+  return delivery?.deliveryDay
+}
+
 const deliveryController = {
+  getNextDeliveryDateForUser,
   updateStatusById,
   search,
   getAll,

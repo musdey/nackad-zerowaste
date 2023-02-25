@@ -11,6 +11,8 @@ import DeliverySlotModel from '../../models/DeliverySlots'
 import DeliveryModel from '../../models/Delivery'
 
 const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
+  console.log('Rexeat Order create called')
+
   const mainShop = await Shop.findOne({ name: 'REXEAT' })
 
   const order: Order = {}
@@ -80,10 +82,12 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
     newLine.id = Number.parseInt(product.id)
     newLine.quantity = Number.parseInt(product.quantity)
     newLine.price = product.price
-    const url = new URL(product.image.source)
-    newLine.imgUrl = url.href
-    const thumbnail = new URL(product.image.thumbnails[0].source)
-    newLine.thumbnail = thumbnail.href
+    if (product.image) {
+      const url = new URL(product.image?.source)
+      newLine.imgUrl = url.href
+      const thumbnail = new URL(product.image.thumbnails[0].source)
+      newLine.thumbnail = thumbnail.href
+    }
     items.push(newLine)
   })
 
@@ -103,8 +107,8 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
     $and: [{ shop: mainShop }, { webShopOrderNumber: newOrder.orderNumber }]
   })
 
-  console.log('Rexeat order with given number already exists', exists)
   if (exists) {
+    console.log('Rexeat order with given number already exists', exists)
     return
   }
 

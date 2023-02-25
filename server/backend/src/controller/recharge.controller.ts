@@ -4,6 +4,7 @@ import User from '../models/User'
 import { DepositStatus } from '../types'
 import { Charge, Subscription, Webhook, WebhookCallResult } from '../types/recharge-types'
 import depositcontroller from './deposit.controller'
+import deliveryController from './delivery.controller'
 
 const WEBHOOK_URL = 'https://api.rechargeapps.com/webhooks'
 const MAIN_URL = 'https://api.rechargeapps.com/'
@@ -52,6 +53,23 @@ const registerWebhooks = async () => {
       }
     })
   }
+}
+
+const updateSubscriptionChargeDate = async (subscriptionId: number, date: Date) => {
+  // {"date": "2021-08-05"}
+  const result = await fetch(MAIN_URL + 'subscriptions/' + subscriptionId + '/set_next_charge_date', {
+    method: 'POST',
+    headers: {
+      'X-Recharge-Access-Token': API_TOKEN,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ date: date.toISOString().split('T')[0] })
+  })
+  console.log('Updating next subscription charge date:')
+  console.log(result.status)
+  console.log(result.statusText)
+  console.log(result.body)
+  console.log('----------------------------------')
 }
 
 const chargePaid: Handler = async (req: Request, res: Response, next: NextFunction) => {
@@ -120,72 +138,84 @@ const updateDepositPrice = async (userId: string) => {
 const subscriptionCreated: Handler = async (req: Request, res: Response, next: NextFunction) => {
   console.log('Subscription created webhook received!')
   try {
-    const data: Subscription = await req.body.subscription
+    setTimeout(async () => {
+      const data: Subscription = await req.body.subscription
 
-    const user = await User.findOne({ email: data.email })
-    if (user) {
-      // Update new subscription
-      const price = await depositcontroller.getTotalOpenDepositByUserObj(user)
-      console.log('Subscription price is: ' + price + '; data.id is: ' + data.id)
-      const result = await fetch(MAIN_URL + 'subscriptions/' + data.id, {
-        method: 'PUT',
-        headers: {
-          'X-Recharge-Access-Token': API_TOKEN,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ price: price, quantity: 1 })
-      })
-      if (result.ok) {
-        console.log('Subscription from ' + data.email + ' has been set to EUR ' + price)
-      } else {
-        console.log('Error setting subsription price of ' + data.email)
-      }
-
-      // Cancel old subscription
-      const allSubscriptionsByUserId = await fetch(
-        MAIN_URL + 'subscriptions?customer_id=' + data.customer_id + '&status=ACTIVE',
-        {
-          method: 'GET',
-          headers: {
-            'X-Recharge-Access-Token': API_TOKEN,
-            'Content-Type': 'application/json'
-          }
-        }
-      )
-      const body = await allSubscriptionsByUserId.json()
-      const allSubscriptions: Subscription[] = body.subscriptions
-
-      let subscriptionToCancel: Subscription | undefined
-      allSubscriptions.forEach((subscription) => {
-        if (!subscriptionToCancel) {
-          subscriptionToCancel = subscription
-        } else {
-          if (new Date(subscriptionToCancel.created_at) > new Date(subscription.created_at)) {
-            subscriptionToCancel = subscription
-          }
-        }
-      })
-      if (subscriptionToCancel && subscriptionToCancel.id !== data.id) {
-        const removedResult = await fetch(MAIN_URL + 'subscriptions/' + subscriptionToCancel?.id + '/cancel', {
-          method: 'POST',
+      const user = await User.findOne({ email: data.email })
+      if (user) {
+        // Update new subscription
+        const price = await depositcontroller.getTotalOpenDepositByUserObj(user)
+        console.log('Subscription price is: ' + price + '; data.id is: ' + data.id)
+        const result = await fetch(MAIN_URL + 'subscriptions/' + data.id, {
+          method: 'PUT',
           headers: {
             'X-Recharge-Access-Token': API_TOKEN,
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ cancellation_reason: 'New Subscription created', send_email: false })
+          body: JSON.stringify({ price: price, quantity: 1 })
         })
-        if (removedResult.ok) {
-          console.log('Cancel subscription with id ' + subscriptionToCancel?.id + '. Result:' + removedResult.status)
+        console.log('Updating next subscription charge date:')
+        console.log(result.status)
+        console.log(result.statusText)
+        console.log(result.body)
+        console.log('----------------------------------')
+        if (result.ok) {
+          console.log('Subscription from ' + data.email + ' has been set to EUR ' + price)
         } else {
-          console.log('Error occured cancelling old subscription')
+          console.log('Error setting subsription price of ' + data.email)
         }
+        const orderDate = await deliveryController.getNextDeliveryDateForUser(user)
+        if (orderDate) {
+          const futureRechargeDate = new Date(orderDate.setDate(orderDate.getDate() + 21))
+          await updateSubscriptionChargeDate(data.id, futureRechargeDate)
+        } else {
+          console.log('orderDate could not be retrieved')
+        }
+        // Cancel old subscription
+        const allSubscriptionsByUserId = await fetch(
+          MAIN_URL + 'subscriptions?customer_id=' + data.customer_id + '&status=ACTIVE',
+          {
+            method: 'GET',
+            headers: {
+              'X-Recharge-Access-Token': API_TOKEN,
+              'Content-Type': 'application/json'
+            }
+          }
+        )
+        const body = await allSubscriptionsByUserId.json()
+        const allSubscriptions: Subscription[] = body.subscriptions
+
+        let subscriptionToCancel: Subscription | undefined
+        allSubscriptions.forEach((subscription) => {
+          if (!subscriptionToCancel) {
+            subscriptionToCancel = subscription
+          } else {
+            if (new Date(subscriptionToCancel.created_at) > new Date(subscription.created_at)) {
+              subscriptionToCancel = subscription
+            }
+          }
+        })
+        if (subscriptionToCancel && subscriptionToCancel.id !== data.id) {
+          const removedResult = await fetch(MAIN_URL + 'subscriptions/' + subscriptionToCancel?.id + '/cancel', {
+            method: 'POST',
+            headers: {
+              'X-Recharge-Access-Token': API_TOKEN,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ cancellation_reason: 'New Subscription created', send_email: false })
+          })
+          if (removedResult.ok) {
+            console.log('Cancel subscription with id ' + subscriptionToCancel?.id + '. Result:' + removedResult.status)
+          } else {
+            console.log('Error occured cancelling old subscription')
+          }
+        }
+
+        user.rechargeSubscriptionId = data.id
+        user.rechargeCustomerId = data.customer_id
+        await user.save()
       }
-
-      user.rechargeSubscriptionId = data.id
-      user.rechargeCustomerId = data.customer_id
-      await user.save()
-    }
-
+    }, 5000)
     return res.status(200).end()
   } catch (err) {
     return next(err)

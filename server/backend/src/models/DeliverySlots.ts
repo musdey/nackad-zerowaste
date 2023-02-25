@@ -61,5 +61,5 @@ const DeliverySlotSchema = new Schema(
   { strict: false, versionKey: false }
 )
 
-const DeliverySlotModel: Model<IDeliverySlot> = model('Deliveryslot', DeliverySlotSchema)
+const DeliverySlotModel: Model<IDeliverySlot> = model<IDeliverySlot>('Deliveryslot', DeliverySlotSchema)
 export default DeliverySlotModel

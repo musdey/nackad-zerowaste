@@ -50,5 +50,5 @@ const DepositTypeScheme = new Schema(
   { strict: false, versionKey: false }
 )
 
-const DepositTypeModel: Model<IDepositType> = model('DepositType', DepositTypeScheme)
+const DepositTypeModel: Model<IDepositType> = model<IDepositType>('DepositType', DepositTypeScheme)
 export default DepositTypeModel
