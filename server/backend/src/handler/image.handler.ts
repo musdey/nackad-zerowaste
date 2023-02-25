@@ -8,7 +8,7 @@ const nextServer = new Server({
     password: process.env.NEXTCLOUD_PASSWORD || 'password',
     username: process.env.NEXTCLOUD_USERNAME || 'username'
   },
-  url: `https://${process.env.NEXTCLOUD_URL || 'localhost'}`
+  url: process.env.NEXTCLOUD_URL || 'localhost' // no https://
 })
 const nextClient = new Client(nextServer)
 
