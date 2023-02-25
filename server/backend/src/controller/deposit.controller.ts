@@ -26,12 +26,19 @@ const getDepositByRechargeUserId = async (rechargeUserId: number) => {
 }
 
 const getTotalOpenDepositByUserObj = async (user: IUser) => {
-  const deposits = await DepositModel.find({ $and: [{ customer: user }, { status: { $ne: 'RETURNED' } }] })
+  const data = await getAggregatedDepositByUserId(user._id)
   let total = 0
-  deposits.forEach((deposit: IDeposit) => {
-    total +=
-      (parseInt(deposit.totalPrice) | 0) - (parseInt(deposit.returnedDeposit) | 0) + (parseInt(deposit.paidDeposit) | 0)
+
+  data.output.forEach((elem) => {
+    total += parseInt(elem.pricePerItem) * (elem.amount - elem.returned)
   })
+  // const deposits = await DepositModel.find({ $and: [{ customer: user }, { status: { $ne: 'RETURNED' } }] })
+  // let total = 0
+  // console.log(deposits)
+  // deposits.forEach((deposit: IDeposit) => {
+  //   total += (parseInt(deposit.totalPrice) | 0) - (parseInt(deposit.returnedDeposit) | 0)
+  // })
+
   if (total > 0) {
     return total / 100
   } else {
