@@ -70,13 +70,24 @@ const Images: React.FC = () => {
   }, [webcamRef, setImgSrc]);
 
   function confirm() {
+    console.log("confirmcalled");
     modal.current?.dismiss(imgSrc, "confirm");
+  }
+
+  function dataURLtoFile(dataurl: any, filename: any) {
+    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
   }
 
   function onWillDismiss(ev: CustomEvent<OverlayEventDetail>) {
     if (ev.detail.role === "confirm") {
+      const data = dataURLtoFile(ev.detail.data, "image")
       setUploading(true);
-      api.sendImage(params.deliveryId, ev.detail.data).then(() => {
+      api.sendImage(params.deliveryId, data).then(() => {
         setUploading(false);
         getDelivery();
       });
@@ -107,6 +118,9 @@ const Images: React.FC = () => {
     }
   };
   const openFileDialog = () => {
+    (document as any).getElementById("icon-button-camera").click();
+  };
+  const openFileDialog2 = () => {
     (document as any).getElementById("icon-button-file").click();
   };
   return (
@@ -124,17 +138,34 @@ const Images: React.FC = () => {
           <input
             style={{ display: "none" }}
             accept="image/*"
-            id="icon-button-file"
+            id="icon-button-camera"
             type="file"
             capture="environment"
             onChange={setImage}
           />
-          <label onClick={openFileDialog} htmlFor="icon-button-file">
-            <IonButton>Upload</IonButton>
+          <label onClick={openFileDialog} htmlFor="icon-button-camera">
+            <IonButton>Foto schießen</IonButton>
           </label>
-          <IonButton id="open-modal" expand="block">
-            Click
-          </IonButton>
+          {uploading && <IonSpinner name="crescent"></IonSpinner>}
+        </div>
+        <div
+          style={{
+            paddingTop: "8px",
+            display: "flex",
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <input
+            style={{ display: "none" }}
+            accept="image/png, image/jpeg"
+            id="icon-button-file"
+            type="file"
+            onChange={setImage}
+          />
+          <label onClick={openFileDialog2} htmlFor="icon-button-file">
+            <IonButton>Galerie</IonButton>
+          </label>
           {uploading && <IonSpinner name="crescent"></IonSpinner>}
         </div>
         <IonModal
@@ -160,6 +191,7 @@ const Images: React.FC = () => {
               <Webcam
                 audio={false}
                 ref={webcamRef}
+                width={'100%'}
                 screenshotFormat="image/jpeg"
               />
               <IonButton onClick={capture}>Capture photo</IonButton>
