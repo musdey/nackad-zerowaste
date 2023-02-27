@@ -117,7 +117,7 @@ const Overview: React.FC = () => {
             </IonCard>
           )}
           {deliveries.map((obj: any, index) => (
-            <IonItemSliding>
+            <IonItemSliding key={index}>
               <IonItemOptions id={'slider-' + obj._id + '-top'} side='start'>
                 <IonItemOption onClick={() => updateDeliveryStatus(index, obj._id, 'OPEN')} color='primary'>
                   Offen

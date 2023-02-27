@@ -17,6 +17,8 @@ import verifyRechargeWebhook from '../middleware/verifyRechargeWebhook'
 import passwordController from '../controller/pw.controller'
 import createNewNackadOrder from '../controller/orders/nackad.orders'
 import verifyRexeatWebhook from '../middleware/verifyRexeatWebhook'
+import imageHandler from '../handler/image.handler'
+
 const router = express.Router()
 
 router.post('*', verifyBody)
@@ -63,6 +65,10 @@ router.get('/orders/current', [authJwt.verifyToken, authJwt.isEmployee], orderHa
 router.get('/order/:id', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getShopifyOrderById)
 router.post('/order/:id', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.updateShopifyOrderById)
 router.post('/delivery/:id/status', [authJwt.verifyToken, authJwt.isEmployee], deliveryHandler.updateDeliveryStatus)
+router.get('/delivery/:id', [authJwt.verifyToken, authJwt.isEmployee], deliveryHandler.getDelivery)
+router.post('/images/:id/add', [authJwt.verifyToken, authJwt.isEmployee], imageHandler.uploadImage)
+router.get('/images', [authJwt.verifyToken, authJwt.isEmployee], imageHandler.getImage)
+router.delete('/images', [authJwt.verifyToken, authJwt.isEmployee], imageHandler.deleteImage)
 
 // Shopify Webhooks & Product Database
 router.get('/update-products', productsController.triggerUpdateProductsHandler)

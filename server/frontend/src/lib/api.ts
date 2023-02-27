@@ -649,6 +649,88 @@ const updateDeliveryStatus = async (
   }
 };
 
+const getDelivery = async (id: string): Promise<any> => {
+  const url = Config.Delivery.GET;
+  try {
+    const result = await fetch(url + id, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+    });
+    const body = await result.json();
+
+    return body;
+  } catch (err) {
+    console.log(err);
+    return undefined;
+  }
+};
+
+const sendImage = async (id: string, file: any): Promise<any> => {
+  const url = Config.Delivery.IMAGE;
+  const formData = new FormData();
+  formData.append("file", file);
+  try {
+    const result = await fetch(url + "/" + id + "/add", {
+      method: "POST",
+      headers: {
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: formData,
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const getImage = async (deliveryId: string, imageId: string): Promise<any> => {
+  const url = Config.Delivery.IMAGE;
+  try {
+    const result = await fetch(
+      url + `?deliveryId=${deliveryId}&imageId=${imageId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Token " + localStorage.getItem("TOKEN"),
+        },
+      }
+    );
+    if (result.ok) {
+      const blob = await result.blob();
+      return blob;
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const deleteImage = async (
+  deliveryId: string,
+  imageId: string
+): Promise<any> => {
+  const url = Config.Delivery.IMAGE;
+  try {
+    const result = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+      body: JSON.stringify({ deliveryId, imageId }),
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
 const apiObj = {
   getSMSSettings,
   updateSMSSettings,
@@ -683,5 +765,9 @@ const apiObj = {
   createPin,
   updateShopifyOrder,
   updateUser,
+  getDelivery,
+  sendImage,
+  getImage,
+  deleteImage,
 };
 export default apiObj;

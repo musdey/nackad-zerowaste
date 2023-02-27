@@ -4,6 +4,7 @@ import { IonReactRouter } from '@ionic/react-router'
 import Login from './pages/Login'
 import Deposit from './pages/Deposit'
 import Overview from './pages/Overview'
+import Images from './pages/Images'
 import { ProvideAuth } from './lib/use-auth'
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css'
@@ -46,24 +47,25 @@ const App: React.FC = () => {
         {/* <IonRouterOutlet animated={false} animation={undefined}> */}
         <ProvideAuth>
           <Menu />
-          <Route path='/' exact={true}>
-            <Redirect to='/overview' />
+          <Route path="/" exact={true}>
+            <Redirect to="/overview" />
           </Route>
-          <Route path='/login' component={Login} exact />
-          <Route path='/requestpw' component={ResetPWRequest} exact />
-          <Route path='/resetpw/:token' component={ResetPWSet} exact />
-          <Route path='/user' component={UserPage} exact />
-          <Route path='/settings' component={Settings} exact />
-          <Route path='/smssettings' component={SMSSettings} exact />
-          <Route path='/statistics' component={Statistics} exact />
-          <Route path='/deliveryslots' component={DeliverySlots} exact />
-          <Route path='/signup' component={Signup} exact />
-          <Route path='/overview' component={Overview} exact />
-          <Route path='/order/:orderId' component={Order} exact />
-          <Route path='/deposit/:userId' component={Deposit} exact />
-          <Route path='/depositdetail/:depositId' component={DepositDetail} exact />
-          <Route path='/orderdetail/:webShopOrderId' component={OrderDetail} exact />
-          <Route path='/customerdetail/:webShopOrderId' component={CustomerDetail} exact />
+          <Route path="/login" component={Login} exact />
+          <Route path="/requestpw" component={ResetPWRequest} exact />
+          <Route path="/resetpw/:token" component={ResetPWSet} exact />
+          <Route path="/user" component={UserPage} exact />
+          <Route path="/settings" component={Settings} exact />
+          <Route path="/smssettings" component={SMSSettings} exact />
+          <Route path="/statistics" component={Statistics} exact />
+          <Route path="/deliveryslots" component={DeliverySlots} exact />
+          <Route path="/signup" component={Signup} exact />
+          <Route path="/overview" component={Overview} exact />
+          <Route path="/order/:orderId" component={Order} exact />
+          <Route path="/deposit/:userId" component={Deposit} exact />
+          <Route path="/depositdetail/:depositId" component={DepositDetail} exact />
+          <Route path="/orderdetail/:webShopOrderId" component={OrderDetail} exact />
+          <Route path="/customerdetail/:webShopOrderId" component={CustomerDetail} exact />
+          <Route path="/images/:deliveryId" component={Images} exact />
         </ProvideAuth>
         {/* </IonRouterOutlet> */}
       </IonReactRouter>

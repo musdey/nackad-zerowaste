@@ -295,7 +295,7 @@ const Settings: React.FC = () => {
                     </IonItem>
                     <div slot="content">
                       {deliverySlots[day].map((vehicleSlots, vehicleIndex) => (
-                        <IonCard>
+                        <IonCard key={vehicleIndex}>
                           <IonCardHeader>
                             <IonItem>
                               <IonInput
@@ -328,7 +328,7 @@ const Settings: React.FC = () => {
                           </IonCardHeader>
                           <IonCardContent>
                             {vehicleSlots.slots.map((slot, slotIndex) => (
-                              <IonCard>
+                              <IonCard key={slotIndex}>
                                 <IonItem>
                                   <IonLabel>Zeitslots</IonLabel>
                                   <IonInput

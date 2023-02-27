@@ -19,7 +19,7 @@ import { useAuth } from '../lib/use-auth'
 import { Redirect, useHistory, useParams } from 'react-router'
 import { Header } from '../components/Header'
 import { UserOrderProp } from '../lib/types'
-import { cubeOutline, newspaperOutline, personCircleOutline, mailOutline } from 'ionicons/icons'
+import { cubeOutline, newspaperOutline, personCircleOutline, mailOutline, arrowUpCircleOutline } from 'ionicons/icons'
 
 const Order: React.FC = (props) => {
   const history = useHistory()
@@ -72,7 +72,6 @@ const Order: React.FC = (props) => {
         setOrder(JSON.parse(cachedOrder))
       }
     }
-    console.log(order.user.phoneNumber)
   }, [])
 
   if (!loggedIn) {
@@ -101,6 +100,10 @@ const Order: React.FC = (props) => {
     history.push('/deposit/' + order.user._id, {
       state: order,
     })
+  }
+
+  const handleImagesDetail = () => {
+    history.push('/images/' + order.deliveryId)
   }
 
   function containsNumbers(str: string) {
@@ -196,6 +199,10 @@ const Order: React.FC = (props) => {
           >
             <IonIcon icon={mailOutline} slot='start'></IonIcon>
             <IonLabel>SMS senden</IonLabel>
+          </IonItem>
+          <IonItem lines="full" onClick={handleImagesDetail}>
+            <IonIcon icon={arrowUpCircleOutline} slot="start"></IonIcon>
+            <IonLabel>Upload images</IonLabel>
           </IonItem>
         </IonList>
       </IonContent>

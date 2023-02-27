@@ -69,6 +69,30 @@ const updateStatusById = async (id: string, status: 'OPEN' | 'PACKED' | 'INDELIV
   return delivery
 }
 
+const getOne = async (id: string, shop: string) => {
+  const delivery = await DeliveryModel.findOne({ _id: id, shop })
+  return delivery
+}
+
+const addImageToDelivery = async (id: string, imagePath: string, shop: string) => {
+  const delivery = await DeliveryModel.findOne({ _id: id, shop })
+  if (delivery) {
+    delivery.images.unshift(imagePath)
+    await delivery.save()
+  }
+  return delivery
+}
+
+const removeImageFromDelivery = async (id: string, imagePath: string, shop: string) => {
+  const delivery = await DeliveryModel.findOne({ _id: id, shop })
+  if (delivery) {
+    const index = delivery.images.findIndex((image) => image === imagePath)
+    if (index > -1) delivery.images.splice(index, 1)
+    await delivery.save()
+  }
+  return delivery
+}
+
 const getNextDeliveryDateForUser = async (user: IUser) => {
   const delivery = await DeliveryModel.findOne({ user, deliveryDay: { $gt: new Date().toISOString() } })
   return delivery?.deliveryDay
@@ -81,7 +105,10 @@ const deliveryController = {
   getAll,
   getAllWithStatus,
   getCurrent,
-  getTodays
+  getTodays,
+  getOne,
+  addImageToDelivery,
+  removeImageFromDelivery
 }
 
 export default deliveryController
