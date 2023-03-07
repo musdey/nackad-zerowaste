@@ -136,18 +136,12 @@ const getDeliverySlotsManagement = async (shop: string) => {
   })
 
   const sorted = deliverySlots.sort((a: any, b: any) => {
-    if (a.vehicleId > b.vehicleId) {
-      if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {
-        return -1
-      } else {
-        return 1
-      }
+    if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {
+      return 1
+    } else if (new Date(a.deliveryDay).getTime() < new Date(b.deliveryDay).getTime()) {
+      return -1
     } else {
-      if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {
-        return 1
-      } else {
-        return -1
-      }
+      return a.vehicleId.localeCompare(b.vehicleId)
     }
   })
 
