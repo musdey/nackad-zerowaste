@@ -10,7 +10,12 @@ const getDeliverySlotsPublic = async (shopName: string) => {
   let startDate = new Date()
   const today = startDate.getDay() // 5 is friday
   const currentTime = startDate.getTime()
-  const threshold = new Date().setHours(11, 0, 0, 0)
+  let threshold
+  if (shopName === 'NACKAD') {
+    threshold = new Date().setHours(12, 0, 0, 0)
+  } else {
+    threshold = new Date().setHours(11, 0, 0, 0)
+  }
 
   startDate.setDate(startDate.getDate() + (7 - today)) // Set date to sunday
   let endDate = new Date(startDate)
