@@ -58,6 +58,7 @@ router.post('/deliveryslot/:id', [authJwt.verifyToken, authJwt.isEmployee], deli
 router.get('/deliveryslots/detail', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.getAllManagement)
 router.post('/deliveryslot/:id/add', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.addSlot)
 router.post('/deliveryslot/:id/remove', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.removeSlot)
+router.get('/deliveryslots/overview', [authJwt.verifyToken, authJwt.isEmployee], deliverySlotHandler.getDeliverySlotsPerDay)
 router.get('/orders/today', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getToday)
 router.get('/orders/future', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getFuture)
 router.get('/orders/all', [authJwt.verifyToken, authJwt.isEmployee], orderHandler.getAll)

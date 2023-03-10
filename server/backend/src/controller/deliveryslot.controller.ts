@@ -133,7 +133,7 @@ const getDeliverySlotsManagement = async (shop: string) => {
     deliveryDay: {
       $gte: new Date()
     }
-  })
+  }).populate('deliveries')
 
   const sorted = deliverySlots.sort((a: any, b: any) => {
     if (new Date(a.deliveryDay).getTime() > new Date(b.deliveryDay).getTime()) {

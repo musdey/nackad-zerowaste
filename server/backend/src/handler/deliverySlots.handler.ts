@@ -73,12 +73,55 @@ const removeSlot: Handler = async (req: Request & { userId?: string }, res: Resp
   }
 }
 
+const getDeliverySlotsPerDay: Handler = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const deliverySlots = await deliverySlotController.getDeliverySlotsManagement(req.mainShop)
+    const deliveryDays: {
+      day: string
+      vehicles: { id: string; slots: { hours: string; id: string; deliveries?: any[] }[] }[]
+    }[] = []
+    deliverySlots.forEach((deliverySlot) => {
+      const day = deliverySlot.deliveryDay.toISOString().split('T')[0]
+      const dayIndex = deliveryDays.findIndex((deliveryDay) => deliveryDay.day === day)
+      if (dayIndex === -1) {
+        const vehicle = [
+          {
+            id: deliverySlot.vehicleId,
+            slots: [{ hours: deliverySlot.slotHours, id: deliverySlot.id, deliveries: deliverySlot.deliveries }]
+          }
+        ]
+        deliveryDays.push({ day, vehicles: vehicle })
+      } else {
+        const vehicleIndex = deliveryDays[dayIndex].vehicles.findIndex(
+          (vehicle) => vehicle.id === deliverySlot.vehicleId
+        )
+        if (vehicleIndex === -1) {
+          deliveryDays[dayIndex].vehicles.push({
+            id: deliverySlot.vehicleId,
+            slots: [{ hours: deliverySlot.slotHours, id: deliverySlot.id, deliveries: deliverySlot.deliveries }]
+          })
+        } else {
+          deliveryDays[dayIndex].vehicles[vehicleIndex].slots.push({
+            hours: deliverySlot.slotHours,
+            id: deliverySlot.id,
+            deliveries: deliverySlot.deliveries
+          })
+        }
+      }
+    })
+    return res.status(200).send(deliveryDays)
+  } catch (err) {
+    return next(err)
+  }
+}
+
 const deliverySlotHandler = {
   updateDeliverySlotById,
   getNackadPublic,
   getRexeatPublic,
   getAllManagement,
   addSlot,
-  removeSlot
+  removeSlot,
+  getDeliverySlotsPerDay
 }
 export default deliverySlotHandler
