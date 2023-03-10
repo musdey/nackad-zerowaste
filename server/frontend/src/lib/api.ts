@@ -731,6 +731,24 @@ const deleteImage = async (
   }
 };
 
+const getDeliverySlotsByDay = async (): Promise<any> => {
+  const url = Config.Delivery.GETSLOTSOVERVIEW;
+  try {
+    const result = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Token " + localStorage.getItem("TOKEN"),
+      },
+    });
+    if (result.ok) {
+      return result.json();
+    }
+  } catch (err) {
+    return undefined;
+  }
+};
+
 const apiObj = {
   getSMSSettings,
   updateSMSSettings,
@@ -769,5 +787,6 @@ const apiObj = {
   sendImage,
   getImage,
   deleteImage,
+  getDeliverySlotsByDay,
 };
 export default apiObj;
