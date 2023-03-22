@@ -20,6 +20,7 @@ import {
   barChartSharp,
   trailSignOutline,
   mailOutline,
+  cubeOutline,
 } from 'ionicons/icons'
 import { Redirect, useHistory } from 'react-router'
 
@@ -71,6 +72,12 @@ export const Menu: React.FC = () => {
     await history.push('/deliveryslots')
   }
 
+  const productsHandler = async () => {
+    const menu: HTMLElement & { toggle?: Function } = document.getElementById('first')!
+    await menu.toggle!()
+    await history.push('/products')
+  }
+
   return (
     <>
       <IonMenu menuId='first' contentId='content1' side='start' id='first'>
@@ -104,6 +111,12 @@ export const Menu: React.FC = () => {
                     <IonIcon icon={trailSignOutline} slot='start'></IonIcon>
                     <IonLabel>Lieferslots bearbeiten</IonLabel>
                   </IonItem>
+                  {user.mainShop.name === 'NACKAD' && (
+                    <IonItem onClick={productsHandler}>
+                      <IonIcon icon={cubeOutline} slot="start"></IonIcon>
+                      <IonLabel>Products</IonLabel>
+                    </IonItem>
+                  )}
                 </>
               )}
               <IonItem onClick={logoutHandler}>

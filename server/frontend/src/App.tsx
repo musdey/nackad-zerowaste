@@ -38,6 +38,7 @@ import DeliverySlots from './pages/DeliverySlots'
 import ResetPWRequest from './pages/ResetPWRequest'
 import ResetPWSet from './pages/ResetPWSet'
 import SMSSettings from './pages/SMSSettings'
+import Products from './pages/Products'
 setupIonicReact()
 
 const App: React.FC = () => {
@@ -66,6 +67,7 @@ const App: React.FC = () => {
           <Route path="/orderdetail/:webShopOrderId" component={OrderDetail} exact />
           <Route path="/customerdetail/:webShopOrderId" component={CustomerDetail} exact />
           <Route path="/images/:deliveryId" component={Images} exact />
+          <Route path="/products" component={Products} exact />
         </ProvideAuth>
         {/* </IonRouterOutlet> */}
       </IonReactRouter>
