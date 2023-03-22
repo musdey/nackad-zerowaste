@@ -71,7 +71,7 @@ router.get('/images', [authJwt.verifyToken, authJwt.isEmployee], imageHandler.ge
 router.delete('/images', [authJwt.verifyToken, authJwt.isEmployee], imageHandler.deleteImage)
 
 // Shopify Webhooks & Product Database
-router.get('/update-products', productsController.triggerUpdateProductsHandler)
+router.get('/update-products', [authJwt.verifyToken, authJwt.isManager], productsController.triggerUpdateProductsHandler)
 router.post('/update-products-handler', productsController.handleIncomingProductsHandler)
 router.post('/webhooks/new-rexeat-order', verifyRexeatWebhook, orderHandler.createNewRexeatOrderHandler)
 
