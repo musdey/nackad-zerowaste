@@ -731,6 +731,20 @@ const deleteImage = async (
   }
 };
 
+const updateProducts = async (): Promise<boolean> => {
+  const url = Config.Products.UPDATE;
+  try {
+    const result = await fetch(url, {
+      method: "GET",
+      headers: { Authorization: "Token " + localStorage.getItem("TOKEN") },
+    });
+    return result.ok;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
 const apiObj = {
   getSMSSettings,
   updateSMSSettings,
@@ -769,5 +783,6 @@ const apiObj = {
   sendImage,
   getImage,
   deleteImage,
+  updateProducts,
 };
 export default apiObj;

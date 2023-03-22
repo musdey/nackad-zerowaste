@@ -52,6 +52,9 @@ const Config = {
     GET: HOST + "order/",
     POST: HOST + "order/",
   },
+  Products: {
+    UPDATE: HOST + "update-products",
+  },
 };
 
 export default Config;
