@@ -1,6 +1,6 @@
 /* eslint-disable prefer-const */
 import DeliverySlotModel, { IDeliverySlot } from '../models/DeliverySlots'
-import Shop, { IShop } from '../models/Shop'
+import Shop from '../models/Shop'
 import ShopSettings from '../models/ShopSettings'
 import User from '../models/User'
 import { SlotDetails, VehicleConfig } from '../types/shopconfig'
@@ -12,9 +12,9 @@ const getDeliverySlotsPublic = async (shopName: string) => {
   const currentTime = startDate.getTime()
   let threshold
   if (shopName === 'NACKAD') {
-    threshold = new Date().setHours(12, 0, 0, 0)
-  } else {
     threshold = new Date().setHours(11, 0, 0, 0)
+  } else {
+    threshold = new Date().setHours(9, 0, 0, 0)
   }
 
   startDate.setDate(startDate.getDate() + (7 - today)) // Set date to sunday
