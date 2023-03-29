@@ -38,38 +38,50 @@ import DeliverySlots from './pages/DeliverySlots'
 import ResetPWRequest from './pages/ResetPWRequest'
 import ResetPWSet from './pages/ResetPWSet'
 import SMSSettings from './pages/SMSSettings'
+import React from 'react'
+import { DeliveriesProvider } from './lib/deliveryContext'
+import { AccordionProvider } from './lib/accordionContext'
 setupIonicReact()
 
 const App: React.FC = () => {
+  const [deliveries, setDeliveries] = React.useState([])
+  const [searchText, setSearchText] = React.useState('')
+  const [isSearch, setSearch] = React.useState(false)
+  const [currentAccordion, setCurrentAccordion] = React.useState({ group1: '', group2: '' })
+
   return (
     <IonApp>
       <IonReactRouter>
         {/* <IonRouterOutlet animated={false} animation={undefined}> */}
         <ProvideAuth>
-          <Menu />
-          <Route path="/" exact={true}>
-            <Redirect to="/overview" />
-          </Route>
-          <Route path="/login" component={Login} exact />
-          <Route path="/requestpw" component={ResetPWRequest} exact />
-          <Route path="/resetpw/:token" component={ResetPWSet} exact />
-          <Route path="/user" component={UserPage} exact />
-          <Route path="/settings" component={Settings} exact />
-          <Route path="/smssettings" component={SMSSettings} exact />
-          <Route path="/statistics" component={Statistics} exact />
-          <Route path="/deliveryslots" component={DeliverySlots} exact />
-          <Route path="/signup" component={Signup} exact />
-          <Route path="/overview" component={Overview} exact />
-          <Route path="/order/:orderId" component={Order} exact />
-          <Route path="/deposit/:userId" component={Deposit} exact />
-          <Route path="/depositdetail/:depositId" component={DepositDetail} exact />
-          <Route path="/orderdetail/:webShopOrderId" component={OrderDetail} exact />
-          <Route path="/customerdetail/:webShopOrderId" component={CustomerDetail} exact />
-          <Route path="/images/:deliveryId" component={Images} exact />
+          <DeliveriesProvider value={{ deliveries, setDeliveries, isSearch, setSearch, searchText, setSearchText }}>
+            <AccordionProvider value={{ currentAccordion, setCurrentAccordion }}>
+              <Menu />
+              <Route path="/" exact={true}>
+                <Redirect to="/overview" />
+              </Route>
+              <Route path="/login" component={Login} exact />
+              <Route path="/requestpw" component={ResetPWRequest} exact />
+              <Route path="/resetpw/:token" component={ResetPWSet} exact />
+              <Route path="/user" component={UserPage} exact />
+              <Route path="/settings" component={Settings} exact />
+              <Route path="/smssettings" component={SMSSettings} exact />
+              <Route path="/statistics" component={Statistics} exact />
+              <Route path="/deliveryslots" component={DeliverySlots} exact />
+              <Route path="/signup" component={Signup} exact />
+              <Route path="/overview" component={Overview} exact />
+              <Route path="/order/:orderId" component={Order} exact />
+              <Route path="/deposit/:userId" component={Deposit} exact />
+              <Route path="/depositdetail/:depositId" component={DepositDetail} exact />
+              <Route path="/orderdetail/:webShopOrderId" component={OrderDetail} exact />
+              <Route path="/customerdetail/:webShopOrderId" component={CustomerDetail} exact />
+              <Route path="/images/:deliveryId" component={Images} exact />
+            </AccordionProvider>
+          </DeliveriesProvider>
         </ProvideAuth>
         {/* </IonRouterOutlet> */}
       </IonReactRouter>
-    </IonApp>
+    </IonApp >
   )
 }
 

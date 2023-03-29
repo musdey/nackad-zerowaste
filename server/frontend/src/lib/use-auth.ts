@@ -40,6 +40,7 @@ const useProvideAuth = (): AuthContextInterface => {
     setLoggedIn(false);
     setUser(undefined);
     localStorage.setItem("TOKEN", "");
+    localStorage.setItem("lastUpdate", "");
     history.push("/login");
   };
 

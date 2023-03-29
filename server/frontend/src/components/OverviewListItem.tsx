@@ -2,6 +2,9 @@ import { IonIcon, IonImg, IonItem, IonLabel } from '@ionic/react'
 import { useHistory } from 'react-router'
 import './custom.css'
 import { carOutline, homeOutline } from 'ionicons/icons'
+import { isDayAfterTomorrow, isToday, isTomorrow } from '../lib/helper'
+import { useContext } from 'react'
+import AccordionContext from '../lib/accordionContext'
 
 interface OverviewListItemProps {
   smsSent: boolean
@@ -34,45 +37,18 @@ interface OverviewListItemProps {
     }
     _id: string
   }
+  vehicleId: string
   deliveryId: string
   type: string
 }
 
 const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
   const history = useHistory()
+  const { currentAccordion, setCurrentAccordion } = useContext(AccordionContext)
 
-  const isToday = (someDate: Date) => {
-    const today = new Date()
-    return (
-      someDate.getDate() === today.getDate() &&
-      someDate.getMonth() === today.getMonth() &&
-      someDate.getFullYear() === today.getFullYear()
-    )
-  }
-
-  const isTomorrow = (someDate: Date) => {
-    const today = new Date()
-    let tomorrow = new Date()
-    tomorrow.setDate(today.getDate() + 1)
-    return (
-      someDate.getDate() === tomorrow.getDate() &&
-      someDate.getMonth() === tomorrow.getMonth() &&
-      someDate.getFullYear() === tomorrow.getFullYear()
-    )
-  }
-
-  const isDayAfterTomorrow = (someDate: Date) => {
-    const today = new Date()
-    let tomorrow = new Date()
-    tomorrow.setDate(today.getDate() + 2)
-    return (
-      someDate.getDate() === tomorrow.getDate() &&
-      someDate.getMonth() === tomorrow.getMonth() &&
-      someDate.getFullYear() === tomorrow.getFullYear()
-    )
-  }
 
   const handleClick = () => {
+    setCurrentAccordion({ group1: listData.deliveryDay, group2: listData.vehicleId })
     history.push('/order/' + listData.orderId, {
       state: listData,
     })
