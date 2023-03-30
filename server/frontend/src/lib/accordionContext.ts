@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 const AccordionContext = React.createContext({
-  currentAccordion: { group1: "", group2: "" },
+  currentAccordion: { deliveryDayGroup: "", vehicleGroup: "" },
   setCurrentAccordion: (accordion: any) => {},
 });
 export const AccordionProvider = AccordionContext.Provider;

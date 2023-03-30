@@ -47,7 +47,7 @@ const App: React.FC = () => {
   const [deliveries, setDeliveries] = React.useState([])
   const [searchText, setSearchText] = React.useState('')
   const [isSearch, setSearch] = React.useState(false)
-  const [currentAccordion, setCurrentAccordion] = React.useState({ group1: '', group2: '' })
+  const [currentAccordion, setCurrentAccordion] = React.useState({ deliveryDayGroup: '', vehicleGroup: '' })
 
   return (
     <IonApp>

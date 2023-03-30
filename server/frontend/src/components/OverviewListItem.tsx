@@ -48,7 +48,7 @@ const OverviewListItem: React.FC<OverviewListItemProps> = (listData) => {
 
 
   const handleClick = () => {
-    setCurrentAccordion({ group1: listData.deliveryDay, group2: listData.vehicleId })
+    setCurrentAccordion({ deliveryDayGroup: listData.deliveryDay, vehicleGroup: listData.vehicleId })
     history.push('/order/' + listData.orderId, {
       state: listData,
     })
