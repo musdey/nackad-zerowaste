@@ -67,39 +67,32 @@ const Overview: React.FC = () => {
     localStorage.removeItem('order')
     async function doIt() {
       if (!isSearch) {
-        if (localStorage.getItem('lastUpdate')) {
-          const lastUpdateString = localStorage.getItem('lastUpdate') || ''
-          if (lastUpdateString === '') {
+        const lastUpdateString = localStorage.getItem('lastUpdate') || ''
+        if (!lastUpdateString || lastUpdateString === '' || !deliveries) {
+          await updateData()
+        } else {
+          const lastUpdate = new Date(lastUpdateString)
+          const now = new Date()
+          const diff = Math.abs(now.getTime() - lastUpdate.getTime())
+          const diffMinutes = Math.ceil(diff / (1000 * 60))
+          if (diffMinutes > 5) {
             await updateData()
           } else {
-            const lastUpdate = new Date(lastUpdateString)
-            const now = new Date()
-            const diff = Math.abs(now.getTime() - lastUpdate.getTime())
-            const diffMinutes = Math.ceil(diff / (1000 * 60))
-            if (diffMinutes > 5) {
-              await updateData()
-            } else {
-              if (deliveries) {
-                const outerAccordion = document.getElementById("outeraccordion") as any
-                if (currentAccordion && outerAccordion) {
-                  const valueToSet = currentAccordion.deliveryDayGroup.split("T")[0] + "-day"
-                  outerAccordion.value = [valueToSet]
-                  setTimeout(() => {
-                    let innerAccordion = document.getElementById(currentAccordion.deliveryDayGroup.split("T")[0] + "-vehicle") as any
-                    if (innerAccordion) {
-                      const value = currentAccordion.deliveryDayGroup.split("T")[0] + "-" + currentAccordion.vehicleGroup
-                      innerAccordion.value = [value]
-                    }
-                  }, 100)
-
-                }
-              } else {
-                await updateData()
+            if (deliveries) {
+              const outerAccordion = document.getElementById("outeraccordion") as any
+              if (currentAccordion && outerAccordion) {
+                const valueToSet = currentAccordion.deliveryDayGroup.split("T")[0] + "-day"
+                outerAccordion.value = [valueToSet]
+                setTimeout(() => {
+                  let innerAccordion = document.getElementById(currentAccordion.deliveryDayGroup.split("T")[0] + "-vehicle") as any
+                  if (innerAccordion) {
+                    const value = currentAccordion.deliveryDayGroup.split("T")[0] + "-" + currentAccordion.vehicleGroup
+                    innerAccordion.value = [value]
+                  }
+                }, 100)
               }
             }
           }
-        } else {
-          await updateData()
         }
       }
     }
