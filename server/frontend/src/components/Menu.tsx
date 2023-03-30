@@ -114,7 +114,7 @@ export const Menu: React.FC = () => {
                   {user.mainShop.name === 'NACKAD' && (
                     <IonItem onClick={productsHandler}>
                       <IonIcon icon={cubeOutline} slot="start"></IonIcon>
-                      <IonLabel>Products</IonLabel>
+                      <IonLabel>Produkte</IonLabel>
                     </IonItem>
                   )}
                 </>

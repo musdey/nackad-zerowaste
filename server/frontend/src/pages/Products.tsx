@@ -8,19 +8,19 @@ const Products: React.FC = () => {
   const handleBtnClick = async () => {
     const result = await apiObj.updateProducts()
     if (result) {
-      await present('Products updated successfully', 2000)
+      await present('Produkte wurden erfolgreich aktualisiert!', 2000)
       return
     }
-    await present('Products not updated', 2000)
+    await present('Produkte wurden NICHT aktualisiert!', 2000)
   }
 
   return (
     <IonPage>
-      <Header subTitle="Products Settings" />
+      <Header subTitle="Produkteinstellungen" />
       <IonContent fullscreen>
         <IonCard>
           <IonCardContent>
-            <IonButton onClick={handleBtnClick}>Update Products</IonButton>
+            <IonButton onClick={handleBtnClick}>Produkte aktualisieren</IonButton>
           </IonCardContent>
         </IonCard>
       </IonContent>
