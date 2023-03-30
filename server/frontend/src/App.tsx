@@ -38,6 +38,7 @@ import DeliverySlots from './pages/DeliverySlots'
 import ResetPWRequest from './pages/ResetPWRequest'
 import ResetPWSet from './pages/ResetPWSet'
 import SMSSettings from './pages/SMSSettings'
+import Products from './pages/Products'
 import React from 'react'
 import { DeliveriesProvider } from './lib/deliveryContext'
 import { AccordionProvider } from './lib/accordionContext'
@@ -76,6 +77,7 @@ const App: React.FC = () => {
               <Route path="/orderdetail/:webShopOrderId" component={OrderDetail} exact />
               <Route path="/customerdetail/:webShopOrderId" component={CustomerDetail} exact />
               <Route path="/images/:deliveryId" component={Images} exact />
+              <Route path="/products" component={Products} exact />
             </AccordionProvider>
           </DeliveriesProvider>
         </ProvideAuth>

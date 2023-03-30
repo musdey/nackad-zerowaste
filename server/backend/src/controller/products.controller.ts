@@ -13,8 +13,12 @@ const triggerUpdateProducts = async () => {
 }
 
 const triggerUpdateProductsHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
-  await triggerUpdateProducts()
-  return res.status(200).send('200')
+  try {
+    await triggerUpdateProducts()
+    return res.status(200).send('ok')
+  } catch (e) {
+    return res.status(500).send((e as Error).message)
+  }
 }
 
 const handleIncomingProductsHandler: Handler = async (req: Request, res: Response, next: NextFunction) => {
