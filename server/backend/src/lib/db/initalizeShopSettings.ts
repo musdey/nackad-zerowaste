@@ -1,10 +1,37 @@
 import deliverySlotController from '../../controller/deliveryslot.controller'
 import productsController from '../../controller/products.controller'
 import rechargeController from '../../controller/recharge.controller'
+import DepositTypeModel from '../../models/DepositType'
 import Product from '../../models/Product'
 import Shop from '../../models/Shop'
 import ShopSettings from '../../models/ShopSettings'
 import shopConfigs from '../../ShopConfig'
+
+const initRexeatDepositTypes = async () => {
+  console.log('initRexeatDepositTypes called')
+  const rexeatShop = await Shop.findOne({ name: 'REXEAT' })
+
+  const kisteKlein = await DepositTypeModel.findOne({ name: 'Holzkiste Klein', shop: rexeatShop }).exec()
+  if (!kisteKlein) {
+    await new DepositTypeModel({ name: 'Holzkiste Klein', price: '2500', shop: rexeatShop }).save()
+  }
+  const kisteGross = await DepositTypeModel.findOne({ name: 'Holzkiste Gross', shop: rexeatShop }).exec()
+  if (!kisteGross) {
+    await new DepositTypeModel({ name: 'Holzkiste Gross', price: '2500', shop: rexeatShop }).save()
+  }
+  const rexGlasGross = await DepositTypeModel.findOne({ name: 'Rexglas Gross', shop: rexeatShop }).exec()
+  if (!rexGlasGross) {
+    await new DepositTypeModel({ name: 'Rexglas Gross', price: '200', shop: rexeatShop }).save()
+  }
+  const rexGlasKlein = await DepositTypeModel.findOne({ name: 'Rexglas Klein', shop: rexeatShop }).exec()
+  if (!rexGlasKlein) {
+    await new DepositTypeModel({ name: 'Rexglas Klein', price: '100', shop: rexeatShop }).save()
+  }
+  const karton = await DepositTypeModel.findOne({ name: 'Karton', shop: rexeatShop }).exec()
+  if (!karton) {
+    await new DepositTypeModel({ name: 'Karton', price: '0', shop: rexeatShop }).save()
+  }
+}
 
 const initializeShops = async function (shopString: string[]) {
   await Promise.all(
@@ -79,5 +106,6 @@ export default {
   initalizeDeliverySlots,
   initializeSettings,
   initProducts,
-  registerRechargeWebhooks
+  registerRechargeWebhooks,
+  initRexeatDepositTypes
 }

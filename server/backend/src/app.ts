@@ -29,6 +29,7 @@ const startup = async () => {
   await settings.initalizeDeliverySlots()
   await settings.initProducts()
   await settings.registerRechargeWebhooks()
+  await settings.initRexeatDepositTypes()
   if (process.env.NODE_ENV === 'development') {
     await initializeTestUser()
   }

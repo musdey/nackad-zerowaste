@@ -2,13 +2,17 @@ import { URL } from 'url'
 import Order from '../../types/order'
 import Address from '../../types/address'
 import Shop from '../../models/Shop'
-import { ShopwareOrder } from '../../types/ShopwareOrder'
 import Customer from '../../types/customer'
 import line_items from '../../types/lineItems'
 import UserModel from '../../models/User'
 import OrderModel from '../../models/Order'
 import DeliverySlotModel from '../../models/DeliverySlots'
 import DeliveryModel from '../../models/Delivery'
+import DepositItemModel, { IDepositItem } from '../../models/DepositItem'
+import { ShopwareOrder } from '../../types/ShopwareOrder'
+import DepositModel from '../../models/Deposit'
+import DepositTypeModel from '../../models/DepositType'
+import { rexEatDepositCalculator, rexEatMissingBoxCalculator } from './helper'
 
 const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
   console.log('Rexeat Order create called')
@@ -76,19 +80,109 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
 
   const orderedProducts = newOrder.Shopware.sOrderVariables.sBasket.content
 
-  orderedProducts.forEach((product) => {
-    const newLine: line_items = {}
-    newLine.name = product.articlename
-    newLine.id = Number.parseInt(product.id)
-    newLine.quantity = Number.parseInt(product.quantity)
-    newLine.price = product.price
-    if (product.image) {
-      const url = new URL(product.image?.source)
-      newLine.imgUrl = url.href
-      const thumbnail = new URL(product.image.thumbnails[0].source)
-      newLine.thumbnail = thumbnail.href
+  const depositItemArr: IDepositItem[] = []
+  let totalDepositPrice = 0
+
+  await Promise.all(
+    orderedProducts.map(async (product) => {
+      let rexglas_gross = '0'
+      let rexglas_klein = '0'
+      if (product.additional_details) {
+        if (product.additional_details.rexglas_gross) {
+          rexglas_gross = product.additional_details.rexglas_gross
+        }
+        if (product.additional_details.rexglas_klein) {
+          rexglas_klein = product.additional_details.rexglas_klein
+        }
+      }
+      const smallGlasses = Number.parseInt(rexglas_klein)
+      const bigGlasses = Number.parseInt(rexglas_gross)
+      const calculatedDeposit = rexEatDepositCalculator(
+        product.quantity,
+        smallGlasses,
+        bigGlasses,
+        shippingAddress.zip || ''
+      )
+
+      calculatedDeposit.forEach(async (item) => {
+        const depoItem = await new DepositItemModel({
+          amount: item.amount,
+          type: item.depositType,
+          pricePerItem: item.pricePerItem
+        })
+        totalDepositPrice += item.pricePerItem * item.amount
+        depositItemArr.push(depoItem)
+      })
+
+      const newLine: line_items = {}
+      newLine.name = product.articlename
+      if (calculatedDeposit.length > 0) {
+        newLine.deposit = {
+          depositName: calculatedDeposit[0].depositType,
+          pricePerItem: calculatedDeposit[0].pricePerItem.toString()
+        }
+      }
+      newLine.id = Number.parseInt(product.id)
+      newLine.quantity = Number.parseInt(product.quantity)
+      newLine.price = product.price
+      if (product.image) {
+        const url = new URL(product.image?.source)
+        newLine.imgUrl = url.href
+        const thumbnail = new URL(product.image.thumbnails[0].source)
+        newLine.thumbnail = thumbnail.href
+      }
+      items.push(newLine)
+    })
+  )
+
+  // Group deposit to avoid multple deposit items with same type
+  const output: IDepositItem[] = []
+  depositItemArr.map(async (item) => {
+    const existing = output.filter(function (v, i) {
+      return v.type == item.type
+    })
+    if (existing.length) {
+      const existingIndex = output.indexOf(existing[0])
+      output[existingIndex].amount += item.amount
+    } else {
+      output.push(item)
     }
-    items.push(newLine)
+  })
+
+  const additionalDeposit = rexEatMissingBoxCalculator(output, shippingAddress.zip || '')
+  await Promise.all(
+    additionalDeposit.map(async (item) => {
+      const depoItem = await new DepositItemModel({
+        amount: item.amount,
+        type: item.depositType,
+        pricePerItem: item.pricePerItem
+      })
+      totalDepositPrice += item.pricePerItem * item.amount
+      output.push(depoItem)
+    })
+  )
+
+  const finalOutput: IDepositItem[] = []
+  output.map(async (item) => {
+    const existing = finalOutput.filter(function (v, i) {
+      return v.type == item.type
+    })
+    if (existing.length) {
+      const existingIndex = finalOutput.indexOf(existing[0])
+      finalOutput[existingIndex].amount += item.amount
+    } else {
+      finalOutput.push(item)
+    }
+  })
+
+  // Set deposit type to product itself in order
+
+  finalOutput.forEach(async (item) => {
+    const depositType = await DepositTypeModel.findOne({ name: item.type })
+    if (depositType) {
+      item.depositType = depositType
+    }
+    await item.save()
   })
 
   order.line_items = items
@@ -98,7 +192,7 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
   order.timeslot = newOrder.slotHours
   order.webShopOrderId = newOrder.orderNumber
   order.webShopOrderNumber = newOrder.orderNumber
-  order.note = newOrder.userComment
+  order.note = newOrder.userComment || newOrder.Shopware.sOrderVariables.sComment
   order.name = order.webShopOrderNumber
 
   // Return if order already exists
@@ -114,9 +208,7 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
 
   // Check user and create if does not exists
 
-  let user = await UserModel.findOne({
-    $or: [{ shopifyUserId: customer?.id + '' }, { webShopUserId: customer?.id + '' }]
-  })
+  let user = await UserModel.findOne({ webShopCustomerNumber: shopWareUser?.customernumber })
   if (!user) {
     user = await new UserModel({
       mainShop,
@@ -183,6 +275,20 @@ const createNewRexEatOrder = async (newOrder: ShopwareOrder) => {
   delivery.slotHours = order.timeslot
   delivery.deliveryDay = deliveryDay!
   await delivery.save()
+
+  // Create deposit object and fill with all data
+  const totalPriceString = totalDepositPrice.toString()
+
+  const tod = new Date(deliveryDay)
+  await new DepositModel({
+    customer: user._id,
+    order: orderDatabase,
+    depositItems: finalOutput,
+    totalPrice: totalPriceString,
+    orderDate: deliveryDay,
+    dueDate: new Date(tod.setDate(tod.getDate() + 21)),
+    lastDueDate: new Date(tod.setDate(tod.getDate() + 90))
+  }).save()
 }
 
 export default createNewRexEatOrder

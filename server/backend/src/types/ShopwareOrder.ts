@@ -430,6 +430,8 @@ type Shopware = {
           shippinginfo: boolean
           esd: string
           additional_details: {
+            rexglas_gross: string
+            rexglas_klein: string
             articleID: 10
             articleDetailsID: 10
             ordernumber: string
@@ -748,6 +750,8 @@ type Shopware = {
           shippinginfo: boolean
           esd: string
           additional_details: {
+            rexglas_gross: string
+            rexglas_klein: string
             articleID: 12
             articleDetailsID: 12
             ordernumber: string
@@ -1109,32 +1113,34 @@ type Shopware = {
           shippinginfo: boolean
           esd: string
           additional_details: {
-            articleID: 10
-            articleDetailsID: 10
+            rexglas_klein: string
+            rexglas_gross: string
+            articleID: number
+            articleDetailsID: number
             ordernumber: string
             highlight: boolean
             description: string
             description_long: string
             esd: boolean
             articleName: string
-            taxID: 1
-            tax: 19
-            instock: 200
+            taxID: number
+            tax: number
+            instock: number
             isAvailable: boolean
             hasAvailableVariant: boolean
-            weight: 1
+            weight: number
             shippingtime: any
             pricegroupActive: boolean
             pricegroupID: any
-            length: 0
-            height: 0
-            width: 0
+            length: number
+            height: number
+            width: number
             laststock: boolean
             additionaltext: string
             datum: string
             update: string
-            sales: 5
-            filtergroupID: 2
+            sales: number
+            filtergroupID: number
             priceStartingFrom: any
             pseudopricePercent: any
             sVariantArticle: any
@@ -1415,6 +1421,8 @@ type Shopware = {
           shippinginfo: boolean
           esd: string
           additional_details: {
+            rexglas_gross: string
+            rexglas_klein: string
             articleID: 12
             articleDetailsID: 12
             ordernumber: string
