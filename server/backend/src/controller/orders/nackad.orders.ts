@@ -10,6 +10,15 @@ import DepositTypeModel from '../../models/DepositType'
 import OrderModel from '../../models/Order'
 import DeliveryModel from '../../models/Delivery'
 
+function parseDate(dateString: string) {
+  const parts = dateString.split('.')
+  const day = parseInt(parts[0], 10)
+  const month = parseInt(parts[1], 10) - 1
+  const year = parseInt(parts[2], 10)
+
+  return new Date(year, month, day)
+}
+
 // Webhook that is called when a new order is created on webshop
 const createNewNackadOrder = async (newOrder: Order) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -22,12 +31,16 @@ const createNewNackadOrder = async (newOrder: Order) => {
     return
   }
   console.log(newOrder)
+  let deliverySlotNew = 'unset' // if the new form data is set eg. 16.5.2023x9:00-13:00
   let deliveryDayString = 'unset'
   let deliveryDay = new Date()
   let timeslot = 'unset'
   const arr = newOrder.note_attributes
   if (arr && arr.length > 0) {
     arr.forEach((data) => {
+      if (data.name === 'deliverySlot') {
+        deliverySlotNew = data.value
+      }
       if (data.name === 'timeslot') {
         timeslot = data.value
       }
@@ -35,8 +48,15 @@ const createNewNackadOrder = async (newOrder: Order) => {
         deliveryDayString = data.value
       }
     })
-    const dateParts = deliveryDayString.split('-')
-    deliveryDay = new Date(+dateParts[0], parseInt(dateParts[1]) - 1, +dateParts[2])
+    if (deliverySlotNew !== 'unset') {
+      const [day, slot] = deliverySlotNew.split('x')
+      timeslot = slot
+      deliveryDayString = day
+      deliveryDay = parseDate(day)
+    } else {
+      const dateParts = deliveryDayString.split('-')
+      deliveryDay = new Date(+dateParts[0], parseInt(dateParts[1]) - 1, +dateParts[2])
+    }
     deliveryDay.setHours(parseInt(timeslot.split('-')[0].split(':')[0]), 0, 0)
   }
   newOrder.timeslot = timeslot
