@@ -1,10 +1,10 @@
-# Nacakad: Zero-Waste Quick Commerce Platform
+# Nackad: Zero-Waste Quick Commerce Platform
 
-Welcome to the **Nacakad** repository – the codebase that powered a zero-waste quick commerce startup based in Vienna. This project encapsulates the entire operational infrastructure necessary for Nacakad, built with a modern tech stack to support efficient and sustainable commerce.
+Welcome to the **Nackad** repository – the codebase that powered a zero-waste quick commerce startup based in Vienna. This project encapsulates the entire operational infrastructure necessary for Nacakad, built with a modern tech stack to support efficient and sustainable commerce.
 
 ## Overview
 
-Nacakad aimed to revolutionize quick commerce by focusing on zero-waste principles. This repository contains the complete system that was used to manage and automate Nacakad's operations. Originally designed as a proof of concept (POC), this system evolved in response to the dynamic needs and challenges faced by the startup. As Nacakad grew, so did the system, expanding to support multiple companies and integrating with both Shopware and Shopify.
+Nackad aimed to revolutionize quick commerce by focusing on zero-waste principles. This repository contains the complete system that was used to manage and automate Nackad's operations. Originally designed as a proof of concept (POC), this system evolved in response to the dynamic needs and challenges faced by the startup. As Nacakad grew, so did the system, expanding to support multiple companies and integrating with both Shopware and Shopify.
 
 ## Technology Stack
 
@@ -23,7 +23,7 @@ Nacakad aimed to revolutionize quick commerce by focusing on zero-waste principl
 
 ## Evolution
 
-This codebase was initially developed as a POC and adapted continuously to meet the startup's evolving requirements. It served as the backbone of Nacakad's operations, supporting its growth and eventual extension to work with multiple businesses. The flexibility of this system allowed for seamless integration with both Shopify and Shopware, catering to diverse business needs.
+This codebase was initially developed as a POC and adapted continuously to meet the startup's evolving requirements. It served as the backbone of Nackad's operations, supporting its growth and eventual extension to work with multiple businesses. The flexibility of this system allowed for seamless integration with both Shopify and Shopware, catering to diverse business needs.
 
 ## Video
 
