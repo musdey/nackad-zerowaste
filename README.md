@@ -27,14 +27,14 @@ This codebase was initially developed as a POC and adapted continuously to meet 
 
 ## Video
 
-# Embedded low quality
+### Embedded low quality
 
 <video width="600" controls>
-  <source src="./screen-record.mp4" type="video/mp4">
+  <source src="screen-record.mp4" type="video/mp4">
   Dein Browser unterstützt dieses Videoformat nicht.
 </video>
 
-# External link with highy quality
+### External link with highy quality
 
 <a href="https://photos.app.goo.gl/arRdVP6aZ5rZLxDY9" target="_blank">Screen video in high quality</a>
 
